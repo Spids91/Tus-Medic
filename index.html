@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#2C5F82"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="PHECC Rx"/>
+  <link rel="manifest" href="manifest.json"/>
+  <title>PHECC Formulary 2026</title>
+<style>
+:root {
+  --b900:#1A3A52;--b800:#2C5F82;--b700:#3474A0;--b600:#4A8DBF;
+  --b200:#B8D4E8;--b100:#D9EAF5;--b50:#EEF5FB;
+  --s800:#2D3748;--s600:#4A5568;--s400:#718096;
+  --s200:#E2E8F0;--s100:#F1F5F9;--s50:#F8FAFC;
+  --emt:#2C7A3F;--par:#2C5F82;--ap:#6B46C1;
+  --green:#276749;--greenl:#C6F6D5;
+  --red:#C53030;--redl:#FED7D7;
+  --amber:#B7791F;--amberl:#FEFCBF;
+  --gold:#F6C90E;--xp:#6B46C1;
+  --nav:64px;--hdr:60px;--safe:env(safe-area-inset-bottom,0px);
+  --r6:6px;--r10:10px;--r16:16px;--r24:24px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased;background:var(--s50);color:var(--s800)}
+body{min-height:100dvh;overflow-x:hidden;padding-bottom:calc(var(--nav) + var(--safe))}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input{font-family:inherit}
+ul{list-style:none}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;height:var(--hdr);background:var(--b800);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.hdr-brand{display:flex;flex-direction:column}
+.hdr-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px;line-height:1.2}
+.hdr-sub{font-size:10px;color:var(--b200);letter-spacing:.5px;text-transform:uppercase;font-weight:500}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.xp-badge{background:rgba(255,255,255,.15);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:4px}
+.streak-badge{background:rgba(246,201,14,.2);color:#F6C90E;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:3px}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:calc(var(--nav) + var(--safe));padding-bottom:var(--safe);background:#fff;border-top:1px solid var(--s200);display:flex;align-items:stretch;box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--s400);font-size:10px;font-weight:500;transition:color .15s;padding:8px 0 0}
+.bnav-btn.active{color:var(--b800)}
+.bnav-btn svg{width:22px;height:22px;stroke-width:1.8}
+.bnav-btn.active svg{stroke-width:2.3}
+
+/* PAGES */
+.page{display:none;min-height:calc(100dvh - var(--hdr) - var(--nav));padding:16px;animation:fadeIn .2s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap input{width:100%;padding:11px 16px 11px 42px;border:1.5px solid var(--s200);border-radius:var(--r16);font-size:15px;background:#fff;color:var(--s800);transition:border-color .15s,box-shadow .15s}
+.search-wrap input:focus{outline:none;border-color:var(--b600);box-shadow:0 0 0 3px rgba(74,141,191,.15)}
+.search-wrap input::placeholder{color:var(--s400)}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--s400);pointer-events:none}
+
+/* FILTER CHIPS */
+.chips{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.3px;border:1.5px solid transparent;transition:all .15s;cursor:pointer}
+.chip-all{background:var(--s100);color:var(--s600);border-color:var(--s200)}
+.chip-all.on{background:var(--s800);color:#fff;border-color:var(--s800)}
+.chip-emt{background:#E8F5E9;color:var(--emt);border-color:#A5D6A7}
+.chip-emt.on{background:var(--emt);color:#fff}
+.chip-p{background:var(--b50);color:var(--par);border-color:var(--b200)}
+.chip-p.on{background:var(--par);color:#fff}
+.chip-ap{background:#F5F3FF;color:var(--ap);border-color:#C4B5FD}
+.chip-ap.on{background:var(--ap);color:#fff}
+
+/* DRUG LIST */
+.drug-list{display:flex;flex-direction:column;gap:10px}
+.drug-card{background:#fff;border-radius:var(--r10);padding:13px 15px;box-shadow:0 1px 3px rgba(0,0,0,.07);border:1px solid var(--s200);display:flex;align-items:center;gap:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s,transform .1s;-webkit-tap-highlight-color:transparent}
+.drug-card:active{transform:scale(.98)}
+.drug-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);border-color:var(--b200)}
+.drug-init{width:40px;height:40px;border-radius:8px;background:var(--b50);color:var(--b800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.drug-info{flex:1;min-width:0}
+.drug-name{font-size:15px;font-weight:600;color:var(--s800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drug-class{font-size:11px;color:var(--s400);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drug-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.scope-dots{display:flex;gap:3px}
+.sdot{width:8px;height:8px;border-radius:50%}
+.sdot-EMT{background:var(--emt)}
+.sdot-P{background:var(--par)}
+.sdot-AP{background:var(--ap)}
+.mastery-pip{font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px}
+.mp-unseen{background:var(--s100);color:var(--s400)}
+.mp-learning{background:var(--amberl);color:var(--amber)}
+.mp-mastered{background:var(--greenl);color:var(--green)}
+.chev{color:var(--s200);flex-shrink:0}
+
+/* DETAIL OVERLAY */
+.overlay{display:none;position:fixed;inset:0;z-index:200;background:var(--s50);overflow-y:auto;animation:slideUp .25s ease}
+.overlay.open{display:block}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.det-hdr{position:sticky;top:0;z-index:10;background:var(--b800);padding:14px 16px 18px}
+.det-back{display:flex;align-items:center;gap:6px;color:var(--b200);font-size:14px;font-weight:500;margin-bottom:10px;cursor:pointer}
+.det-name{font-size:22px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.4px}
+.det-class{font-size:12px;color:var(--b200);margin-top:3px}
+.det-scopes{display:flex;gap:8px;margin-top:10px}
+.sbadge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.sbadge-EMT{background:rgba(39,103,73,.25);color:#A7F3D0}
+.sbadge-P{background:rgba(255,255,255,.15);color:#fff}
+.sbadge-AP{background:rgba(167,139,250,.25);color:#DDD6FE}
+.det-body{padding:14px;display:flex;flex-direction:column;gap:11px}
+.det-sec{background:#fff;border-radius:var(--r10);border:1px solid var(--s200);overflow:hidden}
+.det-sec-hdr{padding:11px 14px 9px;border-bottom:1px solid var(--s100);display:flex;align-items:center;gap:8px}
+.sec-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.det-sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--s600)}
+.det-sec-body{padding:12px 14px;font-size:14px;color:var(--s700,#4A5568);line-height:1.6}
+.blist{display:flex;flex-direction:column;gap:6px}
+.blist li{position:relative;padding-left:14px}
+.blist li::before{content:'•';position:absolute;left:0;color:var(--b600);font-weight:700}
+.contra-list{display:flex;flex-direction:column}
+.ci{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--s100)}
+.ci:last-child{border-bottom:none;padding-bottom:0}
+.ci-icon{width:17px;height:17px;border-radius:50%;background:var(--redl);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px}
+.dose-block{display:flex;flex-direction:column;gap:9px}
+.dose-grp{background:var(--s50);border-radius:6px;padding:9px 11px}
+.dose-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--s400);margin-bottom:4px}
+.dose-sub{margin-top:5px}
+.dose-sub-lbl{font-size:11px;font-weight:600;color:var(--b700);margin-bottom:2px}
+.info-box{background:var(--b50);border-left:3px solid var(--b600);border-radius:0 6px 6px 0;padding:11px 13px;font-size:13.5px;color:var(--b900);line-height:1.6}
+.mastery-row{display:flex;gap:8px;margin-top:4px}
+.m-btn{flex:1;padding:10px 6px;border-radius:8px;font-size:13px;font-weight:700;border:1.5px solid;transition:all .15s;cursor:pointer}
+.m-btn-unseen{background:var(--s100);color:var(--s600);border-color:var(--s200)}
+.m-btn-learning{background:var(--amberl);color:var(--amber);border-color:#F6D860}
+.m-btn-mastered{background:var(--greenl);color:var(--green);border-color:#86EFAC}
+.m-btn.active{transform:scale(.97)}
+
+/* QUIZ */
+.qsetup{max-width:480px;margin:0 auto}
+.qlabel{font-size:20px;font-weight:700;color:var(--s800);margin-bottom:3px}
+.qsub{font-size:13px;color:var(--s400);margin-bottom:22px}
+.opt-group{margin-bottom:20px}
+.opt-group-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--s600);margin-bottom:9px;display:block}
+.scope-opts{display:flex;flex-direction:column;gap:8px}
+.scope-opt{display:flex;align-items:center;gap:12px;padding:13px 15px;background:#fff;border:1.5px solid var(--s200);border-radius:var(--r10);cursor:pointer;transition:all .15s}
+.scope-opt.sel-all{border-color:var(--s800);background:var(--s100)}
+.scope-opt.sel-emt{border-color:var(--emt);background:#F0FBF4}
+.scope-opt.sel-p{border-color:var(--par);background:var(--b50)}
+.scope-opt.sel-ap{border-color:var(--ap);background:#F5F3FF}
+.sdot-big{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.sopt-txt{flex:1}
+.sopt-name{font-size:15px;font-weight:600;color:var(--s800)}
+.sopt-count{font-size:12px;color:var(--s400)}
+.sopt-check{width:20px;height:20px;border:2px solid var(--s200);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all .15s}
+.scope-opt.sel-all .sopt-check{background:var(--s800);border-color:var(--s800);color:#fff}
+.scope-opt.sel-emt .sopt-check{background:var(--emt);border-color:var(--emt);color:#fff}
+.scope-opt.sel-p .sopt-check{background:var(--par);border-color:var(--par);color:#fff}
+.scope-opt.sel-ap .sopt-check{background:var(--ap);border-color:var(--ap);color:#fff}
+.mode-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mode-opt{display:flex;flex-direction:column;align-items:center;gap:7px;padding:15px 10px;background:#fff;border:1.5px solid var(--s200);border-radius:var(--r10);cursor:pointer;text-align:center;transition:all .15s}
+.mode-opt.on{border-color:var(--b600);background:var(--b50)}
+.mode-icon{font-size:22px}
+.mode-name{font-size:13px;font-weight:600;color:var(--s800)}
+.mode-desc{font-size:11px;color:var(--s400);line-height:1.4}
+.btn-pri{width:100%;padding:15px;background:var(--b800);color:#fff;border-radius:var(--r10);font-size:16px;font-weight:700;letter-spacing:.2px;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.btn-pri:active{transform:scale(.98);background:var(--b900)}
+
+/* QUIZ ACTIVE */
+.qactive{display:none}
+.qactive.open{display:block}
+.qprog-bar{height:4px;background:var(--s200);border-radius:2px;margin-bottom:18px;overflow:hidden}
+.qprog-fill{height:100%;background:var(--b600);border-radius:2px;transition:width .4s ease}
+.qcounter{text-align:center;font-size:12px;color:var(--s400);font-weight:600;margin-bottom:18px;letter-spacing:.4px}
+
+/* FLASHCARD */
+.fc-wrap{perspective:1000px;margin-bottom:22px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fc{position:relative;width:100%;min-height:210px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.fc.flipped{transform:rotateY(180deg)}
+.fc-face{position:absolute;width:100%;min-height:210px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r16);padding:26px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.fc-front{background:var(--b800);color:#fff}
+.fc-back{background:#fff;border:1.5px solid var(--s200);color:var(--s800);transform:rotateY(180deg)}
+.fc-prompt{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--b200);margin-bottom:10px}
+.fc-q{font-size:18px;font-weight:700;line-height:1.3;color:#fff}
+.fc-hint{font-size:11px;color:rgba(255,255,255,.35);margin-top:16px}
+.fc-back-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--b600);margin-bottom:8px}
+.fc-ans{font-size:14px;line-height:1.6;color:var(--s800)}
+.fc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.btn-wrong{padding:13px;background:var(--redl);color:var(--red);border-radius:var(--r10);font-size:14px;font-weight:700;border:1.5px solid #FCA5A5;transition:all .15s;cursor:pointer}
+.btn-correct{padding:13px;background:var(--greenl);color:var(--green);border-radius:var(--r10);font-size:14px;font-weight:700;border:1.5px solid #86EFAC;transition:all .15s;cursor:pointer}
+.btn-skip{width:100%;padding:10px;color:var(--s400);font-size:13px;font-weight:500;text-align:center;cursor:pointer}
+
+/* MC */
+.mc-qcard{background:var(--b800);border-radius:var(--r16);padding:22px;margin-bottom:18px;color:#fff}
+.mc-prompt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--b200);margin-bottom:8px}
+.mc-q{font-size:16px;font-weight:600;line-height:1.4}
+.mc-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+.mc-opt{padding:13px 15px;background:#fff;border:1.5px solid var(--s200);border-radius:var(--r10);font-size:13px;color:var(--s800);text-align:left;transition:all .15s;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mc-opt.correct{background:var(--greenl);border-color:#86EFAC;color:var(--green);font-weight:700}
+.mc-opt.wrong{background:var(--redl);border-color:#FCA5A5;color:var(--red)}
+.mc-opt.revealed{pointer-events:none}
+.mc-next{display:none;width:100%;padding:14px;background:var(--b800);color:#fff;border-radius:var(--r10);font-size:15px;font-weight:700;margin-top:4px;transition:all .15s;cursor:pointer}
+.mc-next.show{display:block}
+
+/* RESULTS */
+.qresults{display:none;text-align:center;padding:28px 16px}
+.qresults.show{display:block}
+.res-emoji{font-size:54px;margin-bottom:14px}
+.res-title{font-size:24px;font-weight:700;color:var(--s800);margin-bottom:5px}
+.res-sub{font-size:14px;color:var(--s400);margin-bottom:28px}
+.res-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:28px}
+.res-stat{background:#fff;border:1px solid var(--s200);border-radius:var(--r10);padding:15px 8px}
+.res-num{font-size:26px;font-weight:800;color:var(--b800);line-height:1}
+.res-lbl{font-size:10px;color:var(--s400);margin-top:3px;font-weight:500}
+
+/* XP TOAST */
+.xp-toast{position:fixed;bottom:calc(var(--nav) + var(--safe) + 10px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--b800);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:all .4s;z-index:300;white-space:nowrap}
+.xp-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* STATS PAGE */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{background:#fff;border:1px solid var(--s200);border-radius:var(--r10);padding:16px;text-align:center}
+.stat-num{font-size:28px;font-weight:800;color:var(--b800)}
+.stat-lbl{font-size:11px;color:var(--s400);margin-top:3px}
+.mastery-bars{background:#fff;border:1px solid var(--s200);border-radius:var(--r10);padding:16px;margin-bottom:16px}
+.mb-title{font-size:13px;font-weight:700;color:var(--s800);margin-bottom:12px}
+.mb-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.mb-label{font-size:12px;font-weight:600;width:70px;flex-shrink:0}
+.mb-bar-wrap{flex:1;height:10px;background:var(--s100);border-radius:5px;overflow:hidden}
+.mb-bar{height:100%;border-radius:5px;transition:width .6s ease}
+.mb-count{font-size:11px;color:var(--s400);width:28px;text-align:right;flex-shrink:0}
+.reset-btn{width:100%;padding:12px;background:var(--redl);color:var(--red);border-radius:var(--r10);font-size:14px;font-weight:700;border:1.5px solid #FCA5A5;cursor:pointer;margin-top:8px}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--s400)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+
+/* LABEL */
+.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--s400);margin-bottom:9px;padding-left:2px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-title">PHECC Formulary</div>
+    <div class="hdr-sub">2026 Edition</div>
+  </div>
+  <div class="hdr-right">
+    <div class="streak-badge" id="streakBadge">🔥 <span id="streakVal">0</span></div>
+    <div class="xp-badge">⚡ <span id="xpVal">0</span> XP</div>
+  </div>
+</header>
+
+<!-- REFERENCE PAGE -->
+<div class="page active" id="page-ref">
+  <div class="search-wrap">
+    <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="search" id="searchInput" placeholder="Search drugs…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+  </div>
+  <div class="chips">
+    <button class="chip chip-all on" data-scope="all">All</button>
+    <button class="chip chip-emt" data-scope="EMT">EMT</button>
+    <button class="chip chip-p" data-scope="P">Paramedic</button>
+    <button class="chip chip-ap" data-scope="AP">Adv. Paramedic</button>
+  </div>
+  <div class="sec-label" id="listLabel">All Medications</div>
+  <div class="drug-list" id="drugList"></div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div class="page" id="page-quiz">
+  <div class="qsetup" id="quizSetup">
+    <div class="qlabel">Quiz Mode</div>
+    <div class="qsub">Test your knowledge of the PHECC 2026 formulary</div>
+    <div class="opt-group">
+      <span class="opt-group-label">Scope Level</span>
+      <div class="scope-opts">
+        <div class="scope-opt sel-all" onclick="selScope('all',this)">
+          <div class="sdot-big" style="background:var(--s800)"></div>
+          <div class="sopt-txt"><div class="sopt-name">All Scopes</div><div class="sopt-count" id="cntAll">46 medications</div></div>
+          <div class="sopt-check">✓</div>
+        </div>
+        <div class="scope-opt" onclick="selScope('EMT',this)">
+          <div class="sdot-big" style="background:var(--emt)"></div>
+          <div class="sopt-txt"><div class="sopt-name">EMT</div><div class="sopt-count" id="cntEMT">— medications</div></div>
+          <div class="sopt-check">✓</div>
+        </div>
+        <div class="scope-opt" onclick="selScope('P',this)">
+          <div class="sdot-big" style="background:var(--par)"></div>
+          <div class="sopt-txt"><div class="sopt-name">Paramedic</div><div class="sopt-count" id="cntP">— medications</div></div>
+          <div class="sopt-check">✓</div>
+        </div>
+        <div class="scope-opt" onclick="selScope('AP',this)">
+          <div class="sdot-big" style="background:var(--ap)"></div>
+          <div class="sopt-txt"><div class="sopt-name">Advanced Paramedic</div><div class="sopt-count" id="cntAP">— medications</div></div>
+          <div class="sopt-check">✓</div>
+        </div>
+      </div>
+    </div>
+    <div class="opt-group">
+      <span class="opt-group-label">Quiz Format</span>
+      <div class="mode-opts">
+        <div class="mode-opt on" onclick="selMode('fc',this)">
+          <div class="mode-icon">🃏</div>
+          <div class="mode-name">Flashcard</div>
+          <div class="mode-desc">Tap to flip — self-mark</div>
+        </div>
+        <div class="mode-opt" onclick="selMode('mc',this)">
+          <div class="mode-icon">🎯</div>
+          <div class="mode-name">Multiple Choice</div>
+          <div class="mode-desc">4 options — auto-marked</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-pri" onclick="startQuiz()">Start Quiz →</button>
+  </div>
+
+  <div class="qactive" id="quizActive">
+    <!-- Flashcard -->
+    <div id="fcMode">
+      <div class="qprog-bar"><div class="qprog-fill" id="fcProg" style="width:0%"></div></div>
+      <div class="qcounter" id="fcCtr">1 / 10</div>
+      <div class="fc-wrap" onclick="flipCard()">
+        <div class="fc" id="fc">
+          <div class="fc-face fc-front">
+            <div class="fc-prompt" id="fcPrompt">Drug Name</div>
+            <div class="fc-q" id="fcQ">Loading…</div>
+            <div class="fc-hint">Tap to reveal answer</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-back-lbl" id="fcAnsLbl">Answer</div>
+            <div class="fc-ans" id="fcAns">Loading…</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-actions" id="fcActions" style="display:none">
+        <button class="btn-wrong" onclick="markCard(false)">✗ Missed it</button>
+        <button class="btn-correct" onclick="markCard(true)">✓ Got it</button>
+      </div>
+      <button class="btn-skip" onclick="skipCard()">Skip →</button>
+    </div>
+
+    <!-- Multiple Choice -->
+    <div id="mcMode" style="display:none">
+      <div class="qprog-bar"><div class="qprog-fill" id="mcProg" style="width:0%"></div></div>
+      <div class="qcounter" id="mcCtr">1 / 10</div>
+      <div class="mc-qcard">
+        <div class="mc-prompt" id="mcPrompt">Question</div>
+        <div class="mc-q" id="mcQ">Loading…</div>
+      </div>
+      <div class="mc-opts" id="mcOpts"></div>
+      <button class="mc-next" id="mcNext" onclick="nextMC()">Next →</button>
+    </div>
+
+    <!-- Results -->
+    <div class="qresults" id="qResults">
+      <div class="res-emoji" id="resEmoji">🎉</div>
+      <div class="res-title" id="resTitle">Quiz Complete!</div>
+      <div class="res-sub" id="resSub">Here's how you did</div>
+      <div class="res-stats">
+        <div class="res-stat"><div class="res-num" id="resCorrect">0</div><div class="res-lbl">Correct</div></div>
+        <div class="res-stat"><div class="res-num" id="resTotal">0</div><div class="res-lbl">Questions</div></div>
+        <div class="res-stat"><div class="res-num" id="resPct">0%</div><div class="res-lbl">Score</div></div>
+      </div>
+      <button class="btn-pri" onclick="resetQuiz()" style="margin-bottom:10px">Try Again</button>
+      <button class="btn-skip" onclick="resetQuiz()">Back to Setup</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATS PAGE -->
+<div class="page" id="page-stats">
+  <div class="qlabel" style="margin-bottom:4px">Your Progress</div>
+  <div class="qsub">Track your mastery of the formulary</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" id="stXP">0</div><div class="stat-lbl">Total XP</div></div>
+    <div class="stat-card"><div class="stat-num" id="stStreak">0</div><div class="stat-lbl">Day Streak 🔥</div></div>
+    <div class="stat-card"><div class="stat-num" id="stQuizzes">0</div><div class="stat-lbl">Quizzes Done</div></div>
+    <div class="stat-card"><div class="stat-num" id="stAccuracy">—</div><div class="stat-lbl">Accuracy</div></div>
+  </div>
+  <div class="mastery-bars">
+    <div class="mb-title">Drug Mastery</div>
+    <div class="mb-row">
+      <div class="mb-label" style="color:var(--green)">Mastered</div>
+      <div class="mb-bar-wrap"><div class="mb-bar" id="barMastered" style="background:var(--green);width:0%"></div></div>
+      <div class="mb-count" id="cntMastered">0</div>
+    </div>
+    <div class="mb-row">
+      <div class="mb-label" style="color:var(--amber)">Learning</div>
+      <div class="mb-bar-wrap"><div class="mb-bar" id="barLearning" style="background:var(--amber);width:0%"></div></div>
+      <div class="mb-count" id="cntLearning">0</div>
+    </div>
+    <div class="mb-row">
+      <div class="mb-label" style="color:var(--s400)">Unseen</div>
+      <div class="mb-bar-wrap"><div class="mb-bar" id="barUnseen" style="background:var(--s200);width:0%"></div></div>
+      <div class="mb-count" id="cntUnseen">46</div>
+    </div>
+  </div>
+  <button class="reset-btn" onclick="confirmReset()">Reset All Progress</button>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="overlay" id="detOverlay">
+  <div class="det-hdr">
+    <div class="det-back" onclick="closeDet()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </div>
+    <div class="det-name" id="detName">—</div>
+    <div class="det-class" id="detClass">—</div>
+    <div class="det-scopes" id="detScopes"></div>
+  </div>
+  <div class="det-body" id="detBody"></div>
+</div>
+
+<div class="xp-toast" id="xpToast">+10 XP</div>
+
+<nav class="bnav">
+  <button class="bnav-btn active" onclick="showPage('ref',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Reference
+  </button>
+  <button class="bnav-btn" onclick="showPage('quiz',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+    Quiz
+  </button>
+  <button class="bnav-btn" onclick="showPage('stats',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Progress
+  </button>
+</nav>
+
+<script>
+// ─── ALL 46 MEDICATIONS ───────────────────────────────────────────────────────
+const MEDS = [
+  {id:1,name:"Activated Charcoal",classification:"Antidotes & Chelators – Intestinal Adsorbent",scope:["EMT","P","AP"],
+   presentation:["Activated Charcoal granules for suspension"],
+   administration:["Oral suspension (PO)"],
+   indications:["Emergency treatment of acute oral poisoning or drug overdose"],
+   contraindications:["Limited value for strong acids, alkalis and corrosive substances","Poor binding of cyanide, iron salts, methanol, ethanol and ethylene glycol"],
+   dosages:{adult:"50g PO. Reconstitute with water as directed. Take immediately. Repeat as necessary.",paediatric:"Not indicated."},
+   sideEffects:["Bezoar","Constipation","Diarrhoea","GI disorders","Black stools","Aspiration may lead to airway obstruction"],
+   additionalInfo:"May be mixed with soft drinks or fruit juice to mask taste. Absorbs: Aspirin, Barbiturates, Benzodiazepines, Paracetamol, Digoxin, Ibuprofen, Theophylline and many others.",
+   quizHints:{mechanism:"Adsorbs toxins in GI tract, reducing systemic absorption of ingested poisons",keyFact:"50g adult dose — do NOT use for cyanide, iron, methanol, ethanol, ethylene glycol"}},
+
+  {id:2,name:"Adenosine",classification:"Cardiovascular: Antiarrhythmic",scope:["AP"],
+   presentation:["6mg in 2mL solution","3mg per 1mL (30mg/10mL) solution for infusion vials"],
+   administration:["Intravenous (IV)"],
+   indications:["Paroxysmal supraventricular tachycardia (SVT >150) with signs of poor perfusion"],
+   contraindications:["Asthma","COPD","Wolff-Parkinson-White Syndrome","Decompensated heart failure","Long QT syndrome","2nd or 3rd degree AV block","Severe hypotension","Sick sinus syndrome (unless pacemaker fitted)"],
+   dosages:{adult:"6mg IV into large peripheral vein over 2 seconds followed by rapid 10mL NaCl 0.9% flush. If unsuccessful after 1–2 min: 12mg IV.",paediatric:"Not indicated."},
+   sideEffects:["Angina (discontinue)","Apprehension","Arrhythmia","AV block","Dizziness","Dyspnoea","Flushing","Headache","Nausea","Sinus pause"],
+   additionalInfo:"Administer into large peripheral vein over 2 seconds followed by rapid 10mL NaCl flush. Monitor ECG throughout.",
+   quizHints:{mechanism:"Slows conduction through AV node by activating adenosine receptors, terminating re-entrant SVT",keyFact:"6mg IV rapid bolus into large vein + immediate 10mL NaCl flush — must be given FAST"}},
+
+  {id:3,name:"Adrenaline 1:1,000",classification:"Sympathomimetic – Vasoconstrictor",scope:["EMT","P","AP"],
+   presentation:["Pre-filled syringe, ampoule or auto-injector 1mg/1mL (1:1,000)"],
+   administration:["Intramuscular (IM)","Intravenous (IV)","Nebulisation (NEB)"],
+   indications:["Severe allergic reaction / Anaphylaxis","Stridor","Symptomatic bradycardia / Cardiogenic shock (AP)","Refractory severe life-threatening bronchospasm (P/AP)","Sepsis (AP)"],
+   contraindications:["Hypersensitivity to excipients","No absolute contraindications in life-threatening emergencies"],
+   dosages:{adult:"Anaphylaxis: 500mcg IM (0.5mL of 1:1,000). Repeat every 5 min PRN.\nBradycardia/Cardiogenic shock (AP): 10mcg IV/IO.\nBronchospasm (P/AP): 500mcg IM.",
+    paediatric:"Anaphylaxis:\n<6 months: 10mcg/kg IM\n6m to <6yr: 150mcg IM\n≥6yr to <12yr: 300mcg IM\n≥12yr: 300–500mcg IM\nStridor (P/AP): <1yr: 2.5mg NEB; ≥1yr: 5mg NEB"},
+   sideEffects:["Palpitations","Tachyarrhythmias","Hypertension","Angina-like symptoms"],
+   additionalInfo:"Always double check concentration on pack before use. 1:1,000 is for IM use. Do NOT give 1:1,000 IV.",
+   quizHints:{mechanism:"Non-selective adrenoceptor agonist: α1 vasoconstriction, β1 ↑HR/contractility, β2 bronchodilation",keyFact:"Anaphylaxis: 500mcg IM (1:1,000) anterolateral thigh — 1:1,000 is IM ONLY"}},
+
+  {id:4,name:"Adrenaline 1:10,000",classification:"Sympathomimetic – Vasoconstrictor",scope:["AP"],
+   presentation:["Pre-filled syringe 1mg/10mL (1:10,000) as 0.1mg/mL"],
+   administration:["Intravenous (IV)","Intraosseous (IO)"],
+   indications:["Cardiac arrest","Paediatric bradycardia unresponsive to other measures"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"Cardiac arrest: 1mg (1:10,000) IV/IO. Repeat every 3–5 min.",paediatric:"Cardiac arrest: 10mcg/kg (1:10,000) IV/IO. Repeat every 3–5 min.\nBradycardia: 10mcg/kg (1:10,000) IV/IO. Repeat every 3–5 min."},
+   sideEffects:["Palpitations (in non-arrest patients)","Tachyarrhythmias","Hypertension"],
+   additionalInfo:"Double check concentrations on pack before use. 1:10,000 is for IV/IO use only.",
+   quizHints:{mechanism:"Adrenoceptor agonist: increases cardiac output and coronary perfusion pressure during CPR",keyFact:"1mg IV/IO every 3–5 min in cardiac arrest — 1:10,000 is IV/IO ONLY"}},
+
+  {id:5,name:"Amiodarone",classification:"Cardiovascular: Antiarrhythmic Class III",scope:["AP"],
+   presentation:["150mg in 3mL solution","Pre-filled syringe 300mg/10mL (30mg/mL)"],
+   administration:["Intravenous (IV)","Intraosseous (IO)"],
+   indications:["Ventricular Fibrillation (VF) and Pulseless Ventricular Tachycardia (pVT)","Symptomatic Tachycardia (>150)"],
+   contraindications:["Known hypersensitivity to Iodine","Known severe adverse reaction (KSAR)"],
+   dosages:{adult:"VF/pVT cardiac arrest: 300mg IV/IO loading dose (undiluted); supplemental 150mg if VF persists after 15 min.\nSymptomatic tachycardia: 150mg IV infusion in 100mL Glucose 5% over 10–20 min.",paediatric:"VF/pVT: 5mg/kg IV/IO. If refractory VF/pVT post-adrenaline and 3rd shock."},
+   sideEffects:["Inflammation of peripheral veins","Bradycardia","AV conduction abnormalities","Hypotension (especially with rapid injection)"],
+   additionalInfo:"For cardiac arrest: do not dilute pre-filled syringe — administer directly followed by flush. If diluted, mix with Glucose 5%. May be flushed with NaCl 0.9%.",
+   quizHints:{mechanism:"Prolongs refractory period in atria and ventricles; decreases SA automaticity and AV conduction",keyFact:"300mg IV/IO for VF/pVT cardiac arrest — give undiluted, then flush"}},
+
+  {id:6,name:"Aspirin",classification:"Antithrombotic – Antiplatelet",scope:["EMT","P","AP"],
+   presentation:["300mg dispersible tablet","300mg Enteric Coated (EC) tablet"],
+   administration:["Orally (PO) — dispersed in water or chewed"],
+   indications:["Cardiac chest pain or suspected myocardial infarction","Unstable angina and NSTEMI","STEMI"],
+   contraindications:["Active symptomatic GI ulcer","Bleeding disorder (e.g. haemophilia)","Known severe adverse reaction","Patients <16 years old (Reye's Syndrome risk)"],
+   dosages:{adult:"300mg PO.",paediatric:"Contraindicated."},
+   sideEffects:["Epigastric pain and discomfort","Bronchospasm","Gastrointestinal haemorrhage","Increased bleeding times","Skin reactions in hypersensitive patients"],
+   additionalInfo:"Indicated for cardiac chest pain regardless of whether patient is on anticoagulant or already on Aspirin. If patient swallowed Aspirin EC without chewing, regard as not taken — administer 300mg PO.",
+   quizHints:{mechanism:"Irreversibly inhibits COX-1/COX-2, preventing thromboxane A2 formation and platelet aggregation",keyFact:"300mg for cardiac chest pain — EC tablets must be chewed, not swallowed whole"}},
+
+  {id:7,name:"Atropine",classification:"Systemic Antimuscarinic – Anticholinergic",scope:["AP"],
+   presentation:["Pre-filled syringe 1mg/10mL","Pre-filled syringe 0.5mg/0.5mL","Ampoule 600mcg in 1mL"],
+   administration:["Intravenous (IV)","Intraosseous (IO)"],
+   indications:["Symptomatic bradycardia","Cholinergic poisoning (organophosphorus) with bradycardia and salivation"],
+   contraindications:["Post-cardiac transplantation","Hypersensitivity to atropine","Closed angle glaucoma","Achalasia, paralytic ileus, toxic megacolon","Do NOT give for 2nd degree type II or 3rd degree AV block with wide QRS"],
+   dosages:{adult:"Cholinergic poison: 1mg IV. Repeat at 3–5 min intervals to ensure minimal salivary secretions.\nSymptomatic bradycardia: 0.5–1mg IV. Repeat at 3–5 min intervals to max 3mg.",paediatric:"Not indicated."},
+   sideEffects:["Tachycardia","Dry mouth","Dilated pupils"],
+   additionalInfo:"Do not administer Atropine if temperature <34°C. Contraindications not relevant in life-threatening emergencies.",
+   quizHints:{mechanism:"Competitively antagonises acetylcholine at postganglionic nerve endings — reverses vagal overdrive, increases heart rate",keyFact:"Do not use for 2nd degree type II or 3rd degree AV block with wide QRS — may worsen block"}},
+
+  {id:8,name:"Ceftriaxone",classification:"Antibacterial – Cephalosporin",scope:["P","AP"],
+   presentation:["Powder for solution: 250mg / 1g / 2g vials for IV","Powder and solvent for IM injection"],
+   administration:["IV/IO","Intravenous infusion","Intramuscular (IM)"],
+   indications:["Severe sepsis","Open fractures"],
+   contraindications:["Age <1 month","Known severe adverse reaction","Severe hypersensitivity to beta-lactam antibacterials","Ceftriaxone-Lidocaine solution NEVER IV"],
+   dosages:{adult:"2g IV/IO/IM.",paediatric:"1 month–11 years: 50mg/kg IV/IO/IM (max daily 2g).\n>11 years or >50kg: 2g IV/IO/IM."},
+   sideEffects:["Rash","Anaemia","Coagulation disorder"],
+   additionalInfo:"MUST NOT be mixed or administered simultaneously with calcium-containing IV solutions. For IM: reconstitute 1g vial with 3.5mL of 1% Lidocaine. Preferred route for >1g is IV infusion.",
+   quizHints:{mechanism:"3rd generation cephalosporin — inhibits bacterial cell wall synthesis, bactericidal against gram-positive and gram-negative organisms",keyFact:"NEVER mix with calcium-containing solutions — fatal precipitate risk. IM must use Lidocaine diluent (never give this mix IV)"}},
+
+  {id:9,name:"Chlorphenamine",classification:"Sedating Antihistamine – H1 Receptor Antagonist",scope:["EMT","P","AP"],
+   presentation:["10mg in 1mL ampoule","4mg tablet"],
+   administration:["Intravenous (IV)","Intramuscular (IM)","Orally (PO)"],
+   indications:["Anaphylaxis or allergic reaction"],
+   contraindications:["Known severe adverse reaction","Pre-coma states"],
+   dosages:{adult:"Mild allergic reaction: 4mg PO (EMT/P/AP).\nModerate: 4mg PO or 10mg IM (EMT/P) or 10mg IV (AP).\nSevere/Anaphylaxis: 10mg IM (EMT/P) or 10mg IV (AP).",
+    paediatric:"Mild 6–11yr: 2mg PO. ≥12yr: 4mg PO.\nModerate/Severe 1m–6m: 0.25mg/kg IM or IV.\n>6m–<6yr: 2.5mg IM or IV.\n6–<12yr: 5mg IM or IV.\n≥12yr: 10mg IM or IV."},
+   sideEffects:["Drowsiness (do not drive)"],
+   additionalInfo:"Causes drowsiness. Use with caution in epilepsy, prostatic hypertrophy, glaucoma, hepatic disease, thyrotoxicosis, severe hypertension, asthma.",
+   quizHints:{mechanism:"H1 receptor antagonist — blocks histamine-mediated effects of allergic response",keyFact:"Causes drowsiness — warn patients not to drive. IV route AP only; give over 1 minute"}},
+
+  {id:10,name:"Clopidogrel",classification:"Antiplatelet – Platelet Aggregation Inhibitor",scope:["P","AP"],
+   presentation:["300mg tablet","75mg tablet"],
+   administration:["Orally (PO)"],
+   indications:["STEMI if patient not suitable for PCI"],
+   contraindications:["Known severe adverse reaction","Active pathological bleeding","Severe liver impairment"],
+   dosages:{adult:"300mg PO. (≥75 years: 75mg PO.)",paediatric:"Not indicated."},
+   sideEffects:["Abdominal pain","Dyspepsia","Diarrhoea","Bleeding"],
+   additionalInfo:"If patient has been loaded with an antiplatelet medication other than Aspirin prior to arrival, do NOT administer Clopidogrel.",
+   quizHints:{mechanism:"Irreversibly inhibits P2Y12 ADP receptor on platelets, preventing platelet aggregation",keyFact:"300mg PO for STEMI (not suitable for PCI) — reduce to 75mg if patient ≥75 years"}},
+
+  {id:11,name:"Cyclizine",classification:"Antiemetic – Antihistamine with Antimuscarinic Effect",scope:["EMT","P","AP"],
+   presentation:["Ampoule 50mg in 1mL"],
+   administration:["Intravenous (IV)","Intraosseous (IO)","Intramuscular (IM)","Subcutaneous (SC)"],
+   indications:["Management, prevention and treatment of nausea and vomiting"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"50mg slow IV/IO or IM. Palliative care: 50mg SC.",paediatric:"Not indicated."},
+   sideEffects:["Tachycardia","Dry mouth","Sedation","Blisters at injection site (IV)","Hypotension with rapid IV"],
+   additionalInfo:"IM route only where IV/IO access is unavailable. Rapid IV administration can cause symptoms similar to overdose.",
+   quizHints:{mechanism:"H1 receptor antagonist with antimuscarinic properties — inhibits vestibular and chemoreceptor trigger zone stimulation",keyFact:"50mg slow IV — rapid injection causes overdose-like reaction. IM only if no IV access"}},
+
+  {id:12,name:"Dexamethasone",classification:"Corticosteroid – Systemic",scope:["P","AP"],
+   presentation:["2mg tablet","2mg/5mL oral solution"],
+   administration:["Oral (PO)"],
+   indications:["Severe croup"],
+   contraindications:["Systemic infection without anti-infective therapy","Hypersensitivity to any ingredient","Gastric and duodenal ulcer","Live vaccines","Galactose intolerance / Lapp lactase deficiency"],
+   dosages:{adult:"Not indicated.",paediatric:"300mcg (0.3mg)/kg PO. Maximum dose = 12mg."},
+   sideEffects:["Hiccups","Hyperglycaemia","MI rupture","Protein catabolism"],
+   additionalInfo:"All doses stated in terms of dexamethasone base. Paediatric drug only for croup.",
+   quizHints:{mechanism:"High glucocorticoid activity → reduces airway inflammation and subglottic oedema in croup",keyFact:"0.3mg/kg PO for severe croup — paediatric use only, max 12mg"}},
+
+  {id:13,name:"Diazepam Injection",classification:"Benzodiazepine – Anticonvulsant / Sedative",scope:["AP"],
+   presentation:["Ampoule 10mg in 2mL"],
+   administration:["Intravenous (IV)","Intraosseous (IO)"],
+   indications:["Seizure"],
+   contraindications:["Known severe adverse reaction","Respiratory depression","Shock","Depressed vital signs or alcohol-related altered LOC"],
+   dosages:{adult:"5mg IV/IO.",paediatric:">1 month: 0.1mg/kg IV/IO. Maximum 4 doses of benzodiazepine regardless of route."},
+   sideEffects:["Hypotension","Respiratory depression","Drowsiness","Confusion and ataxia (elderly)","Amnesia","Paradoxical aggression"],
+   additionalInfo:"Titrate to effect. Use large vein — can cause thrombophlebitis. Maximum dose includes that given by carer pre-arrival. If patient reseizes, regard as new event.",
+   quizHints:{mechanism:"Positive allosteric GABA-A modulator → enhanced CNS inhibition, raising seizure threshold",keyFact:"5mg IV for seizure — titrate to effect, large vein only, max 4 total benzodiazepine doses"}},
+
+  {id:14,name:"Diazepam Rectal Solution",classification:"Benzodiazepine – Anticonvulsant",scope:["AP"],
+   presentation:["Rectal tube: 2.5mg/1.25mL, 5mg/2.5mL, 10mg/2.5mL"],
+   administration:["Per Rectum (PR)"],
+   indications:["Seizure"],
+   contraindications:["Known severe adverse reaction","Respiratory depression","Shock","Depressed vital signs or alcohol-related altered LOC"],
+   dosages:{adult:"10mg PR.",paediatric:"≥1m–<2yr: 5mg PR.\n≥2yr–<12yr: 5–10mg PR.\n≥12yr: 10mg PR.\nRepeat after 5–10 min if required. Max 4 benzodiazepine doses."},
+   sideEffects:["Hypotension","Respiratory depression","Drowsiness","Confusion","Amnesia","Paradoxical aggression"],
+   additionalInfo:"Be aware of patient modesty. Administer in presence of a 2nd person. Contains egg and soya proteins — check for allergies. Max dose includes carer-administered doses.",
+   quizHints:{mechanism:"Positive allosteric GABA-A modulator — stops seizure activity via rectal absorption",keyFact:"Administer in presence of 2nd person — contains egg and soya proteins, check allergies"}},
+
+  {id:15,name:"Fentanyl",classification:"Analgesics – Opioids",scope:["AP"],
+   presentation:["Ampoule 100mcg in 2mL (0.1mg in 2mL)"],
+   administration:["Intranasal (IN)","Intramuscular (IM)","Intravenous (IV)","Intraosseous (IO)"],
+   indications:["Procedural sedation","Acute severe pain"],
+   contraindications:["<1 year old","Known Fentanyl hypersensitivity","Altered LOC","Bilateral occluded nasal passage","Nasal trauma","Epistaxis","Hypovolaemia"],
+   dosages:{adult:"Pain: 100mcg IN (repeat x1 at ≥10 min if severe pain persists). 50mcg IV.\nProcedural sedation: 25–50mcg IV (repeat >5 min intervals); 50mcg IN/IM (repeat >5 min intervals).",
+    paediatric:">1 year (≥10kg): Pain: 1.5mcg/kg IN (max 100mcg), repeat x1 at ≥10 min if severe.\nProcedural sedation: 0.75mcg/kg IV/IO or IN (repeat >5 min intervals)."},
+   sideEffects:["Sedation","Nausea","Vomiting","Respiratory depression"],
+   additionalInfo:"Caution with transdermal Fentanyl patches. Add 0.1mL for MAD dead space. Administer 50% in each nostril if >1mL. Following IN Fentanyl, next dose may be Fentanyl or Morphine IV — not both. Controlled Drug Schedule 2.",
+   quizHints:{mechanism:"μ-opioid receptor agonist — potent analgesia, 100x more potent than morphine",keyFact:"IN route: add 0.1mL for MAD dead space; split >1mL between nostrils. Controlled Drug — document carefully"}},
+
+  {id:16,name:"Furosemide Injection",classification:"Diuretic – Loop Diuretic",scope:["AP"],
+   presentation:["Ampoule 10mg per mL (2mL, 5mL, 25mL)"],
+   administration:["Intravenous (IV)"],
+   indications:["Pulmonary oedema"],
+   contraindications:["Pregnancy","Known hypokalaemia","Known severe adverse reaction"],
+   dosages:{adult:"40mg slow IV at maximum rate of 4mg/min (2.5mg/min in severe renal impairment).",paediatric:"Not indicated."},
+   sideEffects:["Headache","Dizziness","Hypotension","Arrhythmias","Transient deafness (rapid IV)","Diarrhoea","Nausea and vomiting","Electrolyte imbalance"],
+   additionalInfo:"Protect from light.",
+   quizHints:{mechanism:"Inhibits Na-K-Cl transporter in loop of Henle → rapid diuresis, reduces preload and pulmonary congestion",keyFact:"40mg slow IV max 4mg/min — rapid injection causes transient deafness"}},
+
+  {id:17,name:"Glucagon",classification:"Glycogenolytic Hormone – Antihypoglycaemic",scope:["EMT","P","AP"],
+   presentation:["1mg vial powder and solution for reconstitution (1mL)"],
+   administration:["Intramuscular (IM)"],
+   indications:["Hypoglycaemia in patients unable to take oral glucose or unable to gain IV access (BGL <4 mmol/L)"],
+   contraindications:["<1 month","Phaeochromocytoma","Known severe adverse reaction"],
+   dosages:{adult:"1mg IM.",paediatric:"≥1 month and <25kg: 500mcg IM.\n≥1 month and ≥25kg: 1mg IM."},
+   sideEffects:["Nausea (common)","Vomiting (uncommon)","Hypotension, dizziness, headache (rare)"],
+   additionalInfo:"May be ineffective in patients with low glycogen stores (prior use in 24 hrs, alcohol-dependent, liver disease). Store in refrigerator. Use immediately once reconstituted. Protect from light. Do NOT give to non-diabetic hypoglycaemic paediatric patients.",
+   quizHints:{mechanism:"Stimulates hepatic glycogenolysis and gluconeogenesis → raises blood glucose",keyFact:"Ineffective with depleted glycogen (alcohol dependency, recent use) — store in fridge, use immediately once reconstituted"}},
+
+  {id:18,name:"Glucose Gel",classification:"Nutrients / Sugars – Antihypoglycaemic",scope:["EMT","P","AP"],
+   presentation:["Glucose gel in tube or sachet"],
+   administration:["Buccal — apply to inside of cheek and gently massage outside"],
+   indications:["Hypoglycaemia","Blood glucose <4 mmol/L"],
+   contraindications:["Known severe adverse reaction","Airway compromise","Altered level of consciousness"],
+   dosages:{adult:"10–20g buccal. Recheck BGL and repeat after 15 min if required.",paediatric:"Neonate: 2–4mL if BGL ≤2.6 mmol/L.\n≤8 years: 5–10g buccal.\n>8 years: 10–20g buccal."},
+   sideEffects:["May cause vomiting in children <5 years if administered too quickly"],
+   additionalInfo:"Maintains glucose levels once raised but should be used secondary to IV glucose to reverse hypoglycaemia. Proceed with caution in airway compromise or altered LOC.",
+   quizHints:{mechanism:"Direct buccal glucose absorption → raises blood glucose rapidly",keyFact:"Buccal only — confirm patient can protect airway. Recheck BGL at 15 min"}},
+
+  {id:19,name:"Glucose 5% Solution",classification:"Fluid & Electrolyte: Carbohydrate",scope:["P","AP"],
+   presentation:["Soft pack for infusion 100mL and 500mL"],
+   administration:["Intravenous (IV) infusion","Intraosseous (IO) infusion"],
+   indications:["Diluent for Amiodarone infusion"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"Dilute appropriate dose of Amiodarone in 100mL Glucose 5% solution.",paediatric:"Not indicated."},
+   sideEffects:["Necrosis of tissue around IV access"],
+   additionalInfo:"Used specifically as diluent for Amiodarone infusion. Paramedic: maintain infusion once commenced.",
+   quizHints:{mechanism:"Isotonic glucose solution used as diluent — provides vehicle for Amiodarone administration",keyFact:"Used ONLY as Amiodarone diluent — do NOT use for hypoglycaemia treatment (use 10% glucose)"}},
+
+  {id:20,name:"Glucose 10% Solution",classification:"Fluid & Electrolyte: Carbohydrate – Antihypoglycaemic",scope:["P","AP"],
+   presentation:["Soft pack for infusion 250mL and 500mL"],
+   administration:["Intravenous (IV) infusion/bolus","Intraosseous (IO)"],
+   indications:["Hypoglycaemic emergency — BGL <4 mmol/L"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"100mL IV/IO infusion. Repeat after 5 min to max 300mL.",paediatric:"2mL/kg IV/IO."},
+   sideEffects:["Necrosis of tissue around IV access"],
+   additionalInfo:"Cannula patency reduces tissue necrosis risk. Use largest vein possible. IO route increases risk of osteomyelitis — use only when IV impossible.",
+   quizHints:{mechanism:"IV glucose replacement → rapidly restores blood glucose in hypoglycaemic emergency",keyFact:"100mL IV adult, repeat to max 300mL — IO route increases osteomyelitis risk"}},
+
+  {id:21,name:"Glyceryl Trinitrate (GTN)",classification:"Nitrate – Coronary Vasodilator",scope:["EMT","P","AP"],
+   presentation:["Aerosol spray: metered dose 400mcg per actuation"],
+   administration:["Sublingual spray"],
+   indications:["Angina / Suspected MI","Pulmonary oedema (P/AP)"],
+   contraindications:["SBP <90mmHg","PDE-5 inhibitors (Sildenafil, Tadalafil, Vardenafil) within previous 24 hours","Severe mitral stenosis","Known severe adverse reaction"],
+   dosages:{adult:"Angina/MI: 400mcg sublingual. Repeat at 3–5 min intervals, max 1200mcg.\nEFR: assist administration — 400mcg sublingual max.\nPulmonary oedema: 800mcg/2 sprays (repeat x1 PRN) — P/AP.",paediatric:"Not indicated."},
+   sideEffects:["Headache","Transient hypotension","Flushing","Dizziness"],
+   additionalInfo:"Caution with inferior MI with right ventricular involvement — may cause profound hypotension. If new or unused for >1 week, release first spray into air. EMT: requires SBP ≥110mmHg.",
+   quizHints:{mechanism:"Releases nitric oxide → vasodilation of coronary arteries and systemic veins → reduces preload and myocardial O₂ demand",keyFact:"Absolute contraindication with PDE-5 inhibitors (Viagra etc.) within 24hrs — profound hypotension risk"}},
+
+  {id:22,name:"Glycopyrronium Bromide",classification:"Systemic Antimuscarinic",scope:["AP"],
+   presentation:["Ampoule 200mcg/mL"],
+   administration:["Subcutaneous (SC)"],
+   indications:["Palliative care with excessive oropharyngeal secretions"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"200mcg SC.",paediatric:"Not applicable."},
+   sideEffects:["Transient bradycardia","Pupil dilation","Photophobia","Flushing"],
+   additionalInfo:"For palliative care patients, administer their doctor's prescribed dose if known.",
+   quizHints:{mechanism:"Muscarinic receptor antagonist → reduces salivary and bronchial secretions",keyFact:"200mcg SC for palliative secretions — administer prescribed dose if known"}},
+
+  {id:23,name:"Haloperidol",classification:"Antipsychotic",scope:["AP"],
+   presentation:["Ampoule 5mg/mL","Capsule 0.5mg PO"],
+   administration:["Subcutaneous (SC)","Oral (PO)"],
+   indications:["Palliative care with nausea and vomiting or agitation/delirium"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"Agitation/Delirium: 1–2mg SC/PO.\nNausea/Vomiting: 0.5–1mg SC.",paediatric:"Not applicable."},
+   sideEffects:["Insomnia","Agitation","Hyperkinesia","Headache"],
+   additionalInfo:"For agitation/delirium, consider Midazolam in addition only if severe. For palliative care patients, administer their doctor's prescribed dose if known.",
+   quizHints:{mechanism:"D2 receptor antagonist — antipsychotic and antiemetic effects via dopamine blockade",keyFact:"Palliative use — consider adding Midazolam only if agitation is severe"}},
+
+  {id:24,name:"Hydrocortisone",classification:"Systemic Corticosteroid – Anti-inflammatory",scope:["P","AP"],
+   presentation:["Powder and solvent for solution for injection/infusion (100mg vial)"],
+   administration:["Intravenous (IV infusion)","Intramuscular (IM)"],
+   indications:["Severe or recurrent anaphylactic reactions","Asthma refractory to Salbutamol and Ipratropium","COPD exacerbation (AP)","Adrenal insufficiency (P)"],
+   contraindications:["No major contraindications in acute anaphylaxis management"],
+   dosages:{adult:"Anaphylaxis: 200mg IV (in 100mL NaCl) AP or IM (P/AP).\nCOPD exacerbation: 200mg IV (AP) or IM (P/AP).\nAsthma: 100mg slow IV (AP).\nAdrenal insufficiency: 100mg IV (AP) or IM (P/AP). All infusions over 20–30 min.",
+    paediatric:"Anaphylaxis: <6m: 25mg IV/IM; ≥6m–<6yr: 50mg; ≥6yr–<12yr: 100mg; ≥12yr: 200mg.\nAsthma (AP): <1yr: 25mg IV; 1–5yr: 50mg IV; >5yr: 100mg IV (in 100mL NaCl)."},
+   sideEffects:["CCF","Hypertension","Abdominal distension","Vertigo","Headache","Nausea","Hiccups"],
+   additionalInfo:"IV is preferred route. IM injection should avoid deltoid area (tissue atrophy risk). Dose should not be less than 25mg. If patient still unwell after pre-arrival dose, give standard dose.",
+   quizHints:{mechanism:"Potent glucocorticoid — inhibits inflammatory mediators, stabilises mast cells, reduces airway inflammation",keyFact:"Infuse over 20–30 min — IM preferred over deltoid to avoid atrophy; IV is preferred in adrenal crisis"}},
+
+  {id:25,name:"Hyoscine Butylbromide",classification:"Systemic Antimuscarinic",scope:["AP"],
+   presentation:["Ampoule 20mg/mL"],
+   administration:["Subcutaneous (SC)"],
+   indications:["Palliative care with excessive oropharyngeal secretions"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"10–20mg SC.",paediatric:"Not applicable."},
+   sideEffects:["Transient bradycardia","Pupil dilation","Photophobia","Flushing"],
+   additionalInfo:"For palliative care patients, administer their doctor's prescribed dose if known.",
+   quizHints:{mechanism:"Muscarinic receptor antagonist — reduces glandular secretions in palliative patients",keyFact:"10–20mg SC — administer prescribed dose if known; do not exceed without guidance"}},
+
+  {id:26,name:"Ibuprofen",classification:"Analgesic – NSAID",scope:["EMT","P","AP"],
+   presentation:["Suspension 100mg/5mL and 200mg/5mL","200mg and 400mg tablets"],
+   administration:["Orally (PO)"],
+   indications:["Mild to moderate pain"],
+   contraindications:["Children <3 months or <5kg","Asthma exacerbated by Aspirin","Pregnancy","Peptic ulcer disease","Renal failure","Severe liver failure","Severe heart failure","Concurrent NSAID use","Suspected or confirmed chicken pox"],
+   dosages:{adult:"Mild pain: 400mg PO. Moderate pain: 600mg PO.",paediatric:"10mg/kg PO to maximum 400mg."},
+   sideEffects:["Skin rashes","Gastrointestinal intolerance and bleeding"],
+   additionalInfo:"If given in previous 6 hours, adjust dose downward. Caution with significant burns or poor perfusion (renal failure risk). Caution with anticoagulants. May be combined with Paracetamol for synergistic effect. Do not give to children with chickenpox.",
+   quizHints:{mechanism:"Inhibits COX-1 and COX-2 → reduces prostaglandin synthesis → analgesia, anti-inflammatory, antipyretic",keyFact:"Contraindicated in chickenpox and pregnancy — can combine with Paracetamol for synergistic analgesia"}},
+
+  {id:27,name:"Ipratropium Bromide",classification:"Inhaled Antimuscarinic – Bronchodilator",scope:["P","AP"],
+   presentation:["Nebuliser solution 250mcg in 1mL (0.25mg/mL)"],
+   administration:["Nebulised (NEB) — mixed with age-specific dose of Salbutamol"],
+   indications:["Acute moderate asthma or COPD exacerbation not responding to initial Salbutamol"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"500mcg NEB (max 2mg/24 hours).",paediatric:"<12 years: 250mcg NEB (max 1mg/24 hours).\n≥12 years: 500mcg NEB (max 2mg/24 hours)."},
+   sideEffects:["Transient dry mouth","Blurred vision","Tachycardia","Headache"],
+   additionalInfo:"Always mix with appropriate dose of Salbutamol. Used as add-on therapy when Salbutamol alone is insufficient.",
+   quizHints:{mechanism:"Blocks muscarinic receptors in bronchial smooth muscle → bronchodilation via anticholinergic mechanism",keyFact:"Add-on to Salbutamol when initial nebuliser fails — always mix together, never give alone"}},
+
+  {id:28,name:"Ketamine",classification:"Anaesthetic – NMDA Receptor Antagonist",scope:["AP"],
+   presentation:["Clear aqueous solution — vial concentration 10mg/mL"],
+   administration:["Intravenous (IV)","Intramuscular (IM)"],
+   indications:["Severe pain","Procedural sedation (adult and paediatric)"],
+   contraindications:["Acute porphyrias","Pre-eclampsia","Eclampsia","Hypertension","Severe cardiac disease","Stroke","Known severe adverse reaction","Caution with head trauma"],
+   dosages:{adult:"Pain: 0.1–0.3mg/kg IV over 60–120 sec (repeat PRN, not <10 min).\nProcedural sedation: 0.5–1mg/kg IV over 60–120 sec; 5mg/kg IM.",
+    paediatric:">12 months: Pain: 0.1–0.3mg/kg IV over 60–120 sec (repeat once only at ≥10 min).\nProcedural sedation: 0.5–1mg/kg IV/IO over 60–120 sec; 4–5mg/kg IM."},
+   sideEffects:["Diplopia","Hallucinations","Hypertension","Nausea and vomiting","Tachycardia","Transient psychotic effects","Arrhythmias (uncommon)","Laryngospasm (uncommon)"],
+   additionalInfo:"Dilute doses <1mL to 1mL using NaCl 0.9%. Hallucinations reduced by benzodiazepine co-administration. Reduces morphine requirements. Patient maintains pharyngeal reflexes. Classified CD2 by PHECC.",
+   quizHints:{mechanism:"NMDA receptor antagonist → dissociative anaesthesia: sedation, amnesia, analgesia while maintaining airway reflexes",keyFact:"Dilute if <1mL. Maintain own airway — hallucinations reduced by concurrent benzodiazepine. CD2 drug"}},
+
+  {id:29,name:"Lidocaine",classification:"Antiarrhythmic Class 1B",scope:["AP"],
+   presentation:["Minijet 1% w/v 100mg per 10mL","Ampoule 1% Lidocaine 50mg/5mL"],
+   administration:["Intravenous (IV)","Intraosseous (IO)"],
+   indications:["VF/pVT arrest (special authorisation for paediatric CPG required)","Solvent for Ceftriaxone IM","IO pain management"],
+   contraindications:["No contraindications for cardiac arrest","KSAR when used as Ceftriaxone diluent"],
+   dosages:{adult:"VF/pVT: 100mg IV/IO (2nd dose 50mg if required).\nIO pain: 40mg Lidocaine 1% IO over 2 min; wait 1 min; 2nd dose 20mg over 1 min. Supplementary 20mg x1 PRN (≥45 min).\nCeftriaxone IM: 3.5mL solvent.",
+    paediatric:"VF/pVT: 1mg/kg IV/IO.\nIO pain: 500mcg/kg (max 40mg) IO over 2 min; wait 1 min; 2nd dose 250mcg/kg (max 20mg). Total max 60mg.\nCeftriaxone IM: 3.5mL solvent."},
+   sideEffects:["Drowsiness","Dizziness","Twitching","Paraesthesia","Convulsions","Bradycardia","Respiratory depression"],
+   additionalInfo:"Three distinct uses: cardiac arrest, IO analgesia, and Ceftriaxone diluent. Do not confuse indications and doses.",
+   quizHints:{mechanism:"Blocks sodium channels → stabilises cardiac membrane, suppresses ventricular arrhythmias",keyFact:"Three uses: VF/pVT arrest (100mg), IO pain management (40mg slow), Ceftriaxone diluent — do not confuse doses"}},
+
+  {id:30,name:"Lorazepam",classification:"Benzodiazepine – Anxiolytic / Sedative",scope:["AP"],
+   presentation:["1mg tablet"],
+   administration:["Orally (PO)"],
+   indications:["Combative with hallucinations/paranoia with risk to self or others — Behavioural emergency","Procedural sedation"],
+   contraindications:["Sensitivity to benzodiazepines","Severe hepatic or pulmonary insufficiency","Significant alcohol/sedatives ingested","KSAR"],
+   dosages:{adult:"2mg PO (repeat x1 PRN).",paediatric:"Not indicated."},
+   sideEffects:["Drowsiness","Confusion","Headache","Dizziness","Blurred vision","Nausea and vomiting","Hypotension/Hypertension (rare)"],
+   additionalInfo:"Must seek medical advice prior to administration.",
+   quizHints:{mechanism:"Positive allosteric GABA-A modulator → anxiolytic, sedative, amnesic effects",keyFact:"Seek medical advice before administering — behavioural emergencies only. 2mg PO, repeat x1"}},
+
+  {id:31,name:"Magnesium Sulphate",classification:"Electrolyte – Tocolytic Agent",scope:["AP"],
+   presentation:["Ampoule 5g in 10mL","Ampoule 1g in 2mL"],
+   administration:["Intravenous (IV)","Intraosseous (IO)"],
+   indications:["Life-threatening asthma","Torsades de pointes","Persistent bronchospasm","Seizure associated with eclampsia"],
+   contraindications:["None in cardiac arrest","Known severe adverse reaction"],
+   dosages:{adult:"Life-threatening asthma: 2g IV (in 100mL NaCl) over 20 min.\nTorsades de pointes: 2g IV (in 100mL NaCl) over 15 min.\nPersistent bronchospasm: 2g IV (in 100mL NaCl) over 20 min.\nEclampsia seizure: 4g IV (in 100mL NaCl) over 30 min.",paediatric:"Not indicated."},
+   sideEffects:["Bradycardia during administration (slow infusion rate)","Overdose signs: arrhythmias, coma, hypotension, respiratory depression, muscle weakness"],
+   additionalInfo:"Must be diluted prior to IV — max concentration 20% (200mg/mL). Monitor BP, RR, urinary output and signs of overdose. Compatible with Glucose 5% or NaCl 0.9%.",
+   quizHints:{mechanism:"Calcium antagonist → smooth muscle relaxation (bronchodilation), membrane stabilisation (anti-arrhythmic), inhibits motor neurone activity (anti-eclamptic)",keyFact:"4 different dose regimens for 4 different indications — must be diluted, monitor for respiratory depression"}},
+
+  {id:32,name:"Methoxyflurane",classification:"Volatile Anaesthetic – Analgesic",scope:["EMT","P","AP"],
+   presentation:["3mL vial administered via carbon inhalation vaporiser"],
+   administration:["Inhaled (INH) — self-administered through activated carbon chamber"],
+   indications:["Moderate to severe pain (adult and paediatric)"],
+   contraindications:["<5 years old","Altered LOC (head injury, drugs, alcohol)","Cardiovascular instability","Respiratory depression","Renal failure or impairment","Known severe adverse reaction","Malignant hyperthermia"],
+   dosages:{adult:"3mL INH (repeat x1 only PRN).",paediatric:"3mL INH (repeat x1 only PRN). Age ≥5 years."},
+   sideEffects:["Amnesia","Anxiety","Dizziness","Euphoria","Headache","Somnolence","Hypotension","Nausea","Dry mouth"],
+   additionalInfo:"Not suitable for ACS or migraine pain. Crosses placenta — consider foetal risk. Mildly pungent odour. In confined space: patient inhales and exhales through inhaler tube with carbon chamber attached.",
+   quizHints:{mechanism:"Volatile anaesthetic agent — analgesic mechanism via ion channel modulation; rapid onset via inhalation",keyFact:"Max 2 doses (3mL + 3mL) — contraindicated <5 years, renal impairment, cardiovascular instability"}},
+
+  {id:33,name:"Midazolam Solution",classification:"Benzodiazepine – Anticonvulsant / Sedative",scope:["P","AP"],
+   presentation:["Ampoule: 10mg in 2mL or 10mg in 5mL","Pre-filled buccal syringe: 2.5mg/5mg/7.5mg/10mg"],
+   administration:["Buccal","Intranasal (IN) — 50% in each nostril","Intramuscular (IM)","Intravenous (IV)","Intraosseous (IO)","Subcutaneous (SC)"],
+   indications:["Seizures","Combative behavioural emergency","Sedation (following medical advice)","Palliative care"],
+   contraindications:["Shock","Respiratory depression","KSAR","Depressed vital signs or alcohol-related altered LOC"],
+   dosages:{adult:"Seizure: 10mg buccal, 5mg IN or 5mg IM (P/AP); 2.5mg IV/IO (AP).\nPalliative: 2.5mg SC (AP) or 2.5–5mg buccal (P/AP).\nBehavioural: 5mg IN/IM (AP) — seek medical advice.\nProcedural: 1–2.5mg IV (>5 min intervals); 5mg IM/IN (>15 min intervals).",
+    paediatric:"Seizure buccal: <3m: 0.3mg/kg (max 2.5mg); 3m–1yr: 2.5mg; 1–5yr: 5mg; 5–10yr: 7.5mg; 10–18yr: 10mg.\nOr: 0.2mg/kg IN (P/AP) or 0.1mg/kg IV/IO (AP).\nMax 4 benzodiazepine doses."},
+   sideEffects:["Respiratory depression","Headache","Hypotension","Drowsiness"],
+   additionalInfo:"Titrate IV to effect. Ensure O₂ and resuscitation equipment available. Account for carer-administered doses. Contraindications (except KSAR) refer to non-seizing patients. If patient reseizes, treat as new event.",
+   quizHints:{mechanism:"Positive allosteric GABA-A modulator → anticonvulsant, sedative, anxiolytic, amnesic",keyFact:"Buccal route key for paediatric seizures when no IV — account for carer doses in max 4 benzodiazepine rule"}},
+
+  {id:34,name:"Morphine Sulphate",classification:"Analgesic – Opioid",scope:["AP"],
+   presentation:["Ampoule 10mg in 1mL (dilute in 9mL NaCl)","Oral suspension 10mg in 5mL"],
+   administration:["IV","IO","PO","IM"],
+   indications:["Severe pain (adult and paediatric)","Palliative care","Procedural sedation"],
+   contraindications:["PO use <1 year old","Labour pains","Acute respiratory depression","Acute intoxication","SBP <90mmHg","Known severe adverse reaction"],
+   dosages:{adult:"Pain: 4mg IV initial dose. Repeat 2mg at ≥2 min intervals PRN (max 16mg; musculoskeletal max 20mg).\nProcedural sedation: 2–4mg IV (>5 min); 5mg IM (>10 min).\nPalliative: 2.5–5mg SC (repeat x1 PRN) or 5–10mg PO (repeat x1 PRN).",
+    paediatric:"Pain: 300mcg/kg PO (max 10mg, >1yr); 50mcg/kg IV (over ≥5 min, repeat to max 0.1mg/kg).\nProcedural sedation: 100mcg/kg IV/IO (>5 min) or IM (>10 min)."},
+   sideEffects:["Respiratory depression","Drowsiness","Nausea and vomiting","Constipation"],
+   additionalInfo:"Use with extreme caution in elderly and young. Caution with reduced GCS and acute respiratory distress. Controlled Drug Schedule 2.",
+   quizHints:{mechanism:"μ-opioid receptor agonist → analgesia, sedation, respiratory depression, decreased GI motility",keyFact:"4mg IV initial dose, then 2mg increments at ≥2 min — dilute 10mg in 9mL NaCl. CD Schedule 2"}},
+
+  {id:35,name:"Naloxone",classification:"Opioid Antagonist",scope:["EMT","P","AP"],
+   presentation:["Ampoules 400mcg/mL (0.4mg in 1mL)","Minijet syringe"],
+   administration:["IV","IO","IM","SC","Intranasal (IN)"],
+   indications:["Inadequate respiration and/or altered LOC following known or suspected narcotic overdose"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"400mcg IV/IO (AP) — repeat after 3 min PRN.\n400mcg IM/SC (P) — repeat after 3 min PRN.\n800mcg IN (EMT) — repeat after 3 min PRN.",paediatric:"10mcg/kg IV/IO (AP).\n10mcg/kg IM/SC (P).\n20mcg/kg IN (EMT).\nRepeat PRN to max 0.1mg/kg or 2mg."},
+   sideEffects:["Acute opioid withdrawal — ranging from nausea/vomiting to agitation and seizures"],
+   additionalInfo:"Use with caution in pregnancy and in patients with large narcotic doses or physical dependency. Rapid reversal precipitates acute withdrawal syndrome. Prepare to deal with aggressive patients. If 10mg total does not improve, consider other causes.",
+   quizHints:{mechanism:"Competitive antagonist at all opioid receptors (μ, κ, δ) → reverses opioid-induced CNS and respiratory depression",keyFact:"EMT: 800mcg IN. P: 400mcg IM. AP: 400mcg IV — shorter half-life than opioids, may re-sedate, titrate to breathing not consciousness"}},
+
+  {id:36,name:"Nitrous Oxide / Oxygen (Entonox)",classification:"Analgesic – Volatile Anaesthetic Gas",scope:["EMT","P","AP"],
+   presentation:["Cylinder: blue with white/blue triangles. 50% Nitrous Oxide & 50% Oxygen"],
+   administration:["Self-administered inhalation via demand valve with face-mask or mouthpiece"],
+   indications:["Moderate to severe pain"],
+   contraindications:["Altered LOC","Chest injury","Pneumothorax","Shock","Recent scuba dive / decompression sickness","Intestinal obstruction","Inhalation injury","CO poisoning","Bullous emphysema","Head injury","Maxillo-facial injuries","Sedation or intoxication","Recent eye surgery with bubble gas"],
+   dosages:{adult:"Self-administered until pain tolerable.",paediatric:"Self-administered until pain tolerable."},
+   sideEffects:["Disinhibition","Decreased LOC","Light headedness"],
+   additionalInfo:"Caution with COPD — may cause respiratory depression and ↑PaCO₂. Do not use if patient cannot understand instructions. In cold temperatures warm and invert cylinder ≥3 times. Has additive property. Prolonged use can cause megaloblastic marrow changes.",
+   quizHints:{mechanism:"CNS depressant via multiple ion channel mechanisms → rapid onset inhalational analgesia",keyFact:"Many contraindications — especially pneumothorax, head injury, CO poisoning, recent dive. In cold: invert cylinder 3 times"}},
+
+  {id:37,name:"Ondansetron",classification:"Antiemetic – 5HT3 Receptor Antagonist",scope:["P","AP"],
+   presentation:["Ampoule 2mL (4mg in 2mL)"],
+   administration:["Intramuscular (IM)","Intravenous (IV)"],
+   indications:["Management, prevention and treatment of significant nausea and vomiting"],
+   contraindications:["Known severe adverse reaction","Congenital long QT syndrome"],
+   dosages:{adult:"4mg IM (P/AP) or slow IV (AP).",paediatric:"100mcg/kg slow IV (AP) or IM (P/AP) to max 4mg."},
+   sideEffects:["Flushing","Headache","Sensation of warmth","Injection site reactions","Arrhythmias (uncommon)","Bradycardia (uncommon)","QT prolongation (rare — monitor)"],
+   additionalInfo:"Caution with known or family history of QT prolongation, arrhythmias, or electrolyte imbalance.",
+   quizHints:{mechanism:"Selective 5HT3 receptor antagonist — blocks serotonin-mediated vagal afferents and chemoreceptor trigger zone",keyFact:"Contraindicated in congenital long QT syndrome — monitor ECG; rare but serious QT prolongation risk"}},
+
+  {id:38,name:"Oxygen",classification:"Medical Gas",scope:["EMT","P","AP"],
+   presentation:["D, E or F cylinders — black with white shoulders (transitioning to all-white by 2025)"],
+   administration:["Non-rebreather mask","Simple face mask","Venturi mask","Nasal cannulae","CPAP","Bag Valve Mask","Tracheostomy mask"],
+   indications:["Absent/inadequate ventilation","SpO₂ <94% adults, <96% paediatrics","SpO₂ <92% for COPD exacerbation","SpO₂ <90% for acute pulmonary oedema"],
+   contraindications:["Bleomycin lung injury"],
+   dosages:{adult:"Cardiac/respiratory arrest or sickle cell crisis: 100%.\nLife threats (primary survey): 100% until reliable SpO₂, then titrate to 94–98%.\nCOPD: titrate to SpO₂ 92% or as per COPD Alert Card.\nAll other: titrate to 94–98%.",
+    paediatric:"Cardiac/respiratory arrest or sickle cell: 100%.\nLife threats: 100% until SpO₂, then titrate to 96–98%.\nNeonatal resuscitation (<4 weeks): consider ≤30%.\nAll other: titrate to 96–98%."},
+   sideEffects:["Prolonged use in COPD may reduce ventilatory stimulus"],
+   additionalInfo:"Caution with paraffin-based emollients — fire risk. Document O₂ therapy and SpO₂ for every patient. Consider humidifier if paediatric O₂ >30 min. Caution with paraquat poisoning — give O₂ only if SpO₂ <92%. Avoid naked flames.",
+   quizHints:{mechanism:"Increases alveolar and arterial oxygen tension → reverses hypoxia and supports cellular metabolism",keyFact:"COPD target: SpO₂ 92% (not 94–98%) — high flow O₂ may suppress hypoxic drive. Always document"}},
+
+  {id:39,name:"Oxytocin",classification:"Prostaglandins and Oxytotics",scope:["P","AP"],
+   presentation:["5 international units in 1mL ampoule"],
+   administration:["Intramuscular (IM)"],
+   indications:["Pre-hospital emergency childbirth","Control of post-partum haemorrhage"],
+   contraindications:["Severe cardiac dysfunction","Known severe adverse reaction"],
+   dosages:{adult:"10 international units IM.",paediatric:"Not indicated."},
+   sideEffects:["Cardiac arrhythmias","Headache","Nausea and vomiting","Hypotension","Abdominal pain","Dizziness"],
+   additionalInfo:"Ensure that a second foetus is NOT in the uterus prior to administration. Check product storage conditions.",
+   quizHints:{mechanism:"Synthetic oxytocin → uterine contractions and vasoconstriction → controls post-partum haemorrhage",keyFact:"MUST confirm single foetus before administering — 10 units IM for PPH"}},
+
+  {id:40,name:"Paracetamol",classification:"Analgesic – Non-Opioid / Antipyretic",scope:["EMT","P","AP"],
+   presentation:["Rectal suppository (various strengths)","Suspension 120mg/5mL and 250mg/5mL","500mg tablet","IV infusion: 1g in 100mL, 500mg in 50mL"],
+   administration:["Per Rectum (PR)","Orally (PO)","IV infusion"],
+   indications:["Adult: Pyrexia >38.3°C / Mild or moderate pain","Paediatric: Pyrexia >38.5°C / Mild or moderate pain"],
+   contraindications:["<1 month old","Known severe adverse reaction","Chronic liver disease"],
+   dosages:{adult:"1g PO (EMT/P/AP).\n1g IV infusion (AP) — if <50kg: 15mg/kg over 15 min.\nPalliative (P/AP): 1g PO, repeat after 4–6 hours x1 PRN.",
+    paediatric:"PO: 15mg/kg.\nPR: >1m–<1yr: 80mg; 1–3yr: 180mg; 4–8yr: 360mg.\nIV (AP, ≥1yr, max 1g): <1yr: 7.5mg/kg slow IV; ≥1yr: 15mg/kg slow IV."},
+   sideEffects:["Hypotension if IV administered too fast"],
+   additionalInfo:"Contained in many OTC drugs — check with parent/guardian. Adjust dose if given in previous 4 hours (max 15mg/kg). Caution with IV in absence of buretrol. PR: ensure privacy, administer with 2nd person present.",
+   quizHints:{mechanism:"Inhibits COX in CNS → analgesia and antipyresis; exact mechanism not fully established",keyFact:"Adjust dose if given in last 4 hours. IV: give over 15 min, hypotension if given fast. Check for OTC use"}},
+
+  {id:41,name:"Salbutamol",classification:"Beta-2 Adrenoceptor Agonist – Bronchodilator",scope:["EMT","P","AP"],
+   presentation:["Nebule 2.5mg in 2.5mL","Nebule 5mg in 2.5mL","Aerosol inhaler 100mcg per actuation"],
+   administration:["Nebulisation","Inhalation via aerosol inhaler"],
+   indications:["Bronchospasm","COPD exacerbation","Respiratory distress following submersion"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"5mg NEB or 100mcg metered aerosol (repeat aerosol x11). Repeat NEB at 5-min intervals PRN.",paediatric:"<5yr: 2.5mg NEB or 100mcg (repeat x5).\n≥5yr: 5mg NEB or 100mcg (repeat x11). Repeat NEB at 5-min intervals PRN."},
+   sideEffects:["Tachycardia","Tremors","Tachyarrhythmias","Hypokalaemia (high doses)"],
+   additionalInfo:"Use volumiser/spacer with MDI for better efficacy. For COPD with O₂-driven nebuliser: limit to 6 minutes maximum.",
+   quizHints:{mechanism:"Selective β2 agonist → bronchial smooth muscle relaxation → bronchodilation",keyFact:"COPD: O₂-driven nebuliser max 6 minutes. Always use spacer with MDI. Tremor and tachycardia common — warn patient"}},
+
+  {id:42,name:"Sodium Bicarbonate",classification:"Fluid & Electrolyte – Alkalinising Agent",scope:["AP"],
+   presentation:["Glass vial 8.4% in 100mL"],
+   administration:["IV","IO"],
+   indications:["Wide complex QRS arrhythmias and/or seizures following TCA overdose","Cardiac arrest following TCA overdose","Cardiac arrest following harness-induced suspension trauma"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"1mEq/kg (1mL/kg 8.4% solution). Max 50mEq (50mL 8.4%).",paediatric:"Not indicated."},
+   sideEffects:["Nil when used for emergencies"],
+   additionalInfo:"Sodium Bicarbonate 8.4% is a 1mmol/mL solution.",
+   quizHints:{mechanism:"Alkalinises serum → reduces sodium channel blockade effect of TCAs → reverses QRS widening and arrhythmias",keyFact:"1mL/kg of 8.4% solution (max 50mL) — specific for TCA overdose and suspension trauma cardiac arrest"}},
+
+  {id:43,name:"Sodium Chloride 0.9% (NaCl)",classification:"Electrolytes & Minerals – Isotonic Crystalloid",scope:["P","AP"],
+   presentation:["Soft pack 100mL, 500mL, 1000mL","Ampoules/pre-filled syringe 10mL"],
+   administration:["IV infusion","IV flush","IO"],
+   indications:["IV/IO fluid for pre-hospital emergency care"],
+   contraindications:["Known severe adverse reaction"],
+   dosages:{adult:"KVO or medication flush PRN.\nAsystole/PEA: 1L IV/IO fluid challenge.\nCrush injury: 20mL/kg.\nSuspension trauma: 2L IV.\nShock from blood loss: 500mL, repeat 250mL aliquots to SBP 90–100mmHg.\nSepsis/Anaphylaxis/PPH: 1000mL.\nHypothermia: 250mL warmed to 40°C.",
+    paediatric:"10mL/kg for glycaemic emergency, neonatal resuscitation, sickle cell.\n20mL/kg for anaphylaxis, adrenal insufficiency, septic shock.\nHaemorrhagic shock: 10mL/kg."},
+   sideEffects:["Excessive volume replacement may lead to heart failure"],
+   additionalInfo:"IV/IO fluid of choice for pre-hospital care. For KVO use 500mL pack only. Medication flush in adult and paediatric cardiac arrest.",
+   quizHints:{mechanism:"Isotonic crystalloid — expands intravascular volume without causing cellular swelling",keyFact:"Many different volumes for different indications — know shock/sepsis (500mL–1L) vs hypothermia (250mL warmed)"}},
+
+  {id:44,name:"Tetracaine 0.5% Eye Drops",classification:"Topical Local Anaesthetic",scope:["P","AP"],
+   presentation:["Sterile single dose eye drop solution"],
+   administration:["Topical — ocular application"],
+   indications:["Eye injuries: radiation / chemical / abrasion"],
+   contraindications:["Known hypersensitivity to product","Patients treated with sulphonamides"],
+   dosages:{adult:"One drop to affected eye(s). Wait 1 minute before proceeding with treatment.",paediatric:"One drop to affected eye(s)."},
+   sideEffects:["Dermatitis in hypersensitive patients","Initial burning sensation (up to 30 seconds)","Superficial punctate keratitis or oedema","Corneal damage with prolonged use","Transient blurring of vision"],
+   additionalInfo:"Single use only — discard unused contents. Warn patient not to drive until vision clear. Protect anaesthetised eye from dust/contamination. Compress lacrimal sac at medial canthus to reduce systemic absorption. Remove contact lenses from affected eye before administration.",
+   quizHints:{mechanism:"Topical ester local anaesthetic → blocks sodium channels in corneal nerve endings → rapid surface anaesthesia",keyFact:"Single use — discard after use. Warn patient not to drive; compress lacrimal sac to reduce systemic absorption"}},
+
+  {id:45,name:"Ticagrelor",classification:"Antithrombotic – Antiplatelet",scope:["P","AP"],
+   presentation:["90mg tablets"],
+   administration:["Orally (PO)"],
+   indications:["STEMI if transporting to PPCI centre"],
+   contraindications:["Hypersensitivity to Ticagrelor","Active pathological bleeding","History of intracranial haemorrhage","Severe hepatic impairment"],
+   dosages:{adult:"Loading dose 180mg PO.",paediatric:"Not indicated."},
+   sideEffects:["Dyspnoea","Epistaxis","GI haemorrhage","Subcutaneous/dermal bleeding","Bruising","Intracranial bleeding (rare)"],
+   additionalInfo:"Special authorisation required. AP and Paramedics authorised following STEMI identification or PPCI practitioner instruction. If patient already loaded with non-Aspirin antiplatelet, do NOT administer.",
+   quizHints:{mechanism:"Reversible P2Y12 ADP receptor antagonist → prevents platelet aggregation (faster onset than Clopidogrel)",keyFact:"180mg loading dose for STEMI to PPCI — requires special authorisation. Do not give if already had another antiplatelet"}},
+
+  {id:46,name:"Tranexamic Acid",classification:"Antihaemorrhagic – Anti-fibrinolytic",scope:["AP"],
+   presentation:["Ampoule 500mg in 5mL"],
+   administration:["Intravenous (IV)","Intraosseous (IO)"],
+   indications:["Suspected significant internal or external haemorrhage associated with trauma","Post-partum haemorrhage"],
+   contraindications:["Hypersensitivity to active substance","Acute venous or arterial thrombosis","History of convulsions","Known severe renal impairment"],
+   dosages:{adult:"1g IV/IO (infusion in 100mL NaCl).",paediatric:"15mg/kg in 100mL NaCl (max 1g)."},
+   sideEffects:["Diarrhoea (common)","Nausea (common)","Vomiting (common)","Visual disturbance","Dizziness","Headache"],
+   additionalInfo:"Caution with head injury.",
+   quizHints:{mechanism:"Inhibits fibrinolysis by blocking plasminogen binding to fibrin → prevents clot breakdown → reduces haemorrhage",keyFact:"1g IV for trauma haemorrhage and PPH — caution with head injury; must be given as infusion in 100mL NaCl"}}
+];
+
+// ─── GAMIFICATION STATE ───────────────────────────────────────────────────────
+let G = {
+  xp: 0, streak: 0, lastQuizDate: null,
+  quizzes: 0, totalQ: 0, totalCorrect: 0,
+  mastery: {} // id -> 'unseen'|'learning'|'mastered'
+};
+
+function loadG() {
+  try { const s = localStorage.getItem('pheccG'); if(s) G = {...G,...JSON.parse(s)}; } catch(e){}
+  MEDS.forEach(m => { if(!G.mastery[m.id]) G.mastery[m.id] = 'unseen'; });
+}
+
+function saveG() {
+  try { localStorage.setItem('pheccG', JSON.stringify(G)); } catch(e){}
+}
+
+function addXP(amt, reason) {
+  G.xp += amt;
+  saveG();
+  updateHdr();
+  showToast(`+${amt} XP — ${reason}`);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('xpToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function updateHdr() {
+  document.getElementById('xpVal').textContent = G.xp;
+  document.getElementById('streakVal').textContent = G.streak;
+}
+
+function setMastery(id, level) {
+  const prev = G.mastery[id];
+  G.mastery[id] = level;
+  if(level === 'mastered' && prev !== 'mastered') addXP(20, 'Drug mastered!');
+  else if(level === 'learning' && prev === 'unseen') addXP(5, 'Started learning');
+  saveG();
+  renderDrugList();
+  updateStats();
+}
+
+function updateStats() {
+  const counts = {mastered:0, learning:0, unseen:0};
+  MEDS.forEach(m => counts[G.mastery[m.id] || 'unseen']++);
+  const total = MEDS.length;
+  document.getElementById('stXP').textContent = G.xp;
+  document.getElementById('stStreak').textContent = G.streak;
+  document.getElementById('stQuizzes').textContent = G.quizzes;
+  document.getElementById('stAccuracy').textContent = G.totalQ > 0 ? Math.round(G.totalCorrect/G.totalQ*100)+'%' : '—';
+  document.getElementById('cntMastered').textContent = counts.mastered;
+  document.getElementById('cntLearning').textContent = counts.learning;
+  document.getElementById('cntUnseen').textContent = counts.unseen;
+  document.getElementById('barMastered').style.width = (counts.mastered/total*100)+'%';
+  document.getElementById('barLearning').style.width = (counts.learning/total*100)+'%';
+  document.getElementById('barUnseen').style.width = (counts.unseen/total*100)+'%';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id === 'quiz') updateQuizCounts();
+  if(id === 'stats') updateStats();
+}
+
+// ─── REFERENCE ────────────────────────────────────────────────────────────────
+let refScope = 'all', refQ = '';
+
+function getFiltered() {
+  return MEDS.filter(m => {
+    const scopeOk = refScope === 'all' || m.scope.includes(refScope);
+    const qOk = !refQ || m.name.toLowerCase().includes(refQ) ||
+      m.classification.toLowerCase().includes(refQ) ||
+      m.indications.some(i => i.toLowerCase().includes(refQ));
+    return scopeOk && qOk;
+  });
+}
+
+function renderDrugList() {
+  const drugs = getFiltered();
+  const list = document.getElementById('drugList');
+  const lbl = document.getElementById('listLabel');
+  const names = {all:'All',EMT:'EMT',P:'Paramedic',AP:'Adv. Paramedic'};
+  lbl.textContent = refQ ? `Results for "${refQ}"` : `${names[refScope]} Medications (${drugs.length})`;
+
+  if(!drugs.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>No drugs match your search</p></div>';
+    return;
+  }
+  list.innerHTML = drugs.map(d => {
+    const ini = d.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const dots = d.scope.map(s=>`<div class="sdot sdot-${s}"></div>`).join('');
+    const m = G.mastery[d.id] || 'unseen';
+    const mpLabel = m === 'mastered' ? '★ Mastered' : m === 'learning' ? '~ Learning' : '· Unseen';
+    return `<div class="drug-card" onclick="openDet(${d.id})">
+      <div class="drug-init">${ini}</div>
+      <div class="drug-info">
+        <div class="drug-name">${d.name}</div>
+        <div class="drug-class">${d.classification}</div>
+      </div>
+      <div class="drug-meta">
+        <div class="scope-dots">${dots}</div>
+        <div class="mastery-pip mp-${m}">${mpLabel}</div>
+      </div>
+      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </div>`;
+  }).join('');
+}
+
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    refScope = c.dataset.scope;
+    renderDrugList();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  refQ = e.target.value.trim().toLowerCase();
+  renderDrugList();
+});
+
+// ─── DETAIL ───────────────────────────────────────────────────────────────────
+function openDet(id) {
+  const d = MEDS.find(m => m.id === id);
+  if(!d) return;
+  document.getElementById('detName').textContent = d.name;
+  document.getElementById('detClass').textContent = d.classification;
+  const smap = {EMT:'EMT',P:'Paramedic',AP:'Adv. Paramedic'};
+  document.getElementById('detScopes').innerHTML = d.scope.map(s => `<span class="sbadge sbadge-${s}">${smap[s]}</span>`).join('');
+  document.getElementById('detBody').innerHTML = buildDet(d);
+  document.getElementById('detOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Mark as at least learning
+  if(G.mastery[d.id] === 'unseen') { G.mastery[d.id] = 'learning'; saveG(); renderDrugList(); }
+}
+
+function closeDet() {
+  document.getElementById('detOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function buildDet(d) {
+  const pres = Array.isArray(d.presentation) ? d.presentation : [d.presentation];
+  const adm = Array.isArray(d.administration) ? d.administration : [d.administration];
+  const m = G.mastery[d.id] || 'unseen';
+  const btnClass = (lvl) => `m-btn m-btn-${lvl}${m===lvl?' active':''}`;
+
+  const doseHTML = (dose) => {
+    if(typeof dose === 'string') return `<div>${dose.replace(/\n/g,'<br>')}</div>`;
+    return Object.entries(dose).map(([k,v])=>`<div class="dose-sub"><div class="dose-sub-lbl">${k}</div><div>${v.replace(/\n/g,'<br>')}</div></div>`).join('');
+  };
+
+  return `
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:var(--b50)">💊</div><div class="det-sec-title">Presentation</div></div>
+    <div class="det-sec-body"><ul class="blist">${pres.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+  </div>
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:var(--b50)">🛤</div><div class="det-sec-title">Routes of Administration</div></div>
+    <div class="det-sec-body"><ul class="blist">${adm.map(a=>`<li>${a}</li>`).join('')}</ul></div>
+  </div>
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:#F0FBF4">✅</div><div class="det-sec-title">Indications</div></div>
+    <div class="det-sec-body"><ul class="blist">${d.indications.map(i=>`<li>${i}</li>`).join('')}</ul></div>
+  </div>
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:#FFF5F5">🚫</div><div class="det-sec-title">Contraindications</div></div>
+    <div class="det-sec-body"><div class="contra-list">${d.contraindications.map(c=>`<div class="ci"><div class="ci-icon">!</div><div>${c}</div></div>`).join('')}</div></div>
+  </div>
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:#FFFBEB">💉</div><div class="det-sec-title">Dosages</div></div>
+    <div class="det-sec-body"><div class="dose-block">
+      <div class="dose-grp"><div class="dose-lbl">👤 Adult</div>${doseHTML(d.dosages.adult)}</div>
+      <div class="dose-grp"><div class="dose-lbl">👶 Paediatric</div>${doseHTML(d.dosages.paediatric)}</div>
+    </div></div>
+  </div>
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:#FFF5F5">⚠️</div><div class="det-sec-title">Side Effects</div></div>
+    <div class="det-sec-body"><ul class="blist">${d.sideEffects.map(s=>`<li>${s}</li>`).join('')}</ul></div>
+  </div>
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:var(--b50)">ℹ️</div><div class="det-sec-title">Additional Information</div></div>
+    <div class="det-sec-body"><div class="info-box">${d.additionalInfo}</div></div>
+  </div>
+  <div class="det-sec">
+    <div class="det-sec-hdr"><div class="sec-icon" style="background:#F5F3FF">⭐</div><div class="det-sec-title">My Mastery</div></div>
+    <div class="det-sec-body">
+      <div style="font-size:12px;color:var(--s400);margin-bottom:8px">How well do you know this drug?</div>
+      <div class="mastery-row">
+        <button class="${btnClass('unseen')}" onclick="setMastery(${d.id},'unseen')">· Unseen</button>
+        <button class="${btnClass('learning')}" onclick="setMastery(${d.id},'learning')">~ Learning</button>
+        <button class="${btnClass('mastered')}" onclick="setMastery(${d.id},'mastered')">★ Mastered</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── QUIZ ENGINE ──────────────────────────────────────────────────────────────
+const QTYPES = [
+  {id:'ind', prompt:'Indications', q:d=>`What are the main indications for ${d.name}?`, a:d=>d.indications.slice(0,3).join('; ')},
+  {id:'dose', prompt:'Adult Dosage', q:d=>`What is the adult dose of ${d.name}?`, a:d=>typeof d.dosages.adult==='string'?d.dosages.adult:Object.values(d.dosages.adult).join(' | ')},
+  {id:'contra', prompt:'Contraindications', q:d=>`Name key contraindications for ${d.name}`, a:d=>d.contraindications.slice(0,3).join('; ')},
+  {id:'mech', prompt:'Mechanism', q:d=>`What is the mechanism of action of ${d.name}?`, a:d=>d.quizHints.mechanism},
+  {id:'fact', prompt:'Key Clinical Fact', q:d=>`What is the key clinical fact for ${d.name}?`, a:d=>d.quizHints.keyFact},
+  {id:'id', prompt:'Identify the Drug', q:d=>`"${d.quizHints.keyFact.split('—')[0].trim()}" — which drug?`, a:d=>`${d.name} (${d.classification})`}
+];
+
+let QZ = {scope:'all', mode:'fc', qs:[], idx:0, correct:0, flipped:false, answered:false};
+
+function updateQuizCounts() {
+  document.getElementById('cntAll').textContent = `${MEDS.length} medications`;
+  ['EMT','P','AP'].forEach(s => {
+    document.getElementById('cnt'+s).textContent = `${MEDS.filter(m=>m.scope.includes(s)).length} medications`;
+  });
+}
+
+function selScope(s, el) {
+  document.querySelectorAll('.scope-opt').forEach(o => o.className = 'scope-opt');
+  el.classList.add('sel-'+(s==='all'?'all':s==='EMT'?'emt':s==='P'?'p':'ap'));
+  QZ.scope = s;
+}
+
+function selMode(m, el) {
+  document.querySelectorAll('.mode-opt').forEach(o => o.classList.remove('on'));
+  el.classList.add('on');
+  QZ.mode = m;
+}
+
+function genQuestions(drugs, n=10) {
+  let pool = [];
+  drugs.forEach(d => QTYPES.forEach(qt => {
+    let q = {drug:d, qt, opts:[]};
+    const correct = qt.a(d);
+    const wrong = drugs.filter(x=>x.id!==d.id).sort(()=>Math.random()-.5).slice(0,3).map(x=>qt.a(x).split(';')[0].split('.')[0].trim().substring(0,90));
+    q.opts = [correct,...wrong].sort(()=>Math.random()-.5);
+    pool.push(q);
+  }));
+  return pool.sort(()=>Math.random()-.5).slice(0,Math.min(n,pool.length));
+}
+
+function startQuiz() {
+  const drugs = QZ.scope==='all' ? MEDS : MEDS.filter(m=>m.scope.includes(QZ.scope));
+  QZ.qs = genQuestions(drugs,10);
+  QZ.idx = 0; QZ.correct = 0; QZ.flipped = false; QZ.answered = false;
+  document.getElementById('quizSetup').style.display = 'none';
+  document.getElementById('quizActive').classList.add('open');
+  document.getElementById('qResults').classList.remove('show');
+  if(QZ.mode==='fc') { document.getElementById('fcMode').style.display='block'; document.getElementById('mcMode').style.display='none'; renderFC(); }
+  else { document.getElementById('fcMode').style.display='none'; document.getElementById('mcMode').style.display='block'; renderMC(); }
+}
+
+function resetQuiz() {
+  document.getElementById('quizSetup').style.display = 'block';
+  document.getElementById('quizActive').classList.remove('open');
+  document.getElementById('qResults').classList.remove('show');
+}
+
+// Flashcard
+function renderFC() {
+  const {qs, idx} = QZ;
+  if(idx >= qs.length) { showResults(); return; }
+  const q = qs[idx];
+  document.getElementById('fcProg').style.width = (idx/qs.length*100)+'%';
+  document.getElementById('fcCtr').textContent = `${idx+1} / ${qs.length}`;
+  document.getElementById('fcPrompt').textContent = q.qt.prompt;
+  document.getElementById('fcQ').textContent = q.qt.q(q.drug);
+  document.getElementById('fcAnsLbl').textContent = q.qt.prompt;
+  document.getElementById('fcAns').textContent = q.qt.a(q.drug);
+  const fc = document.getElementById('fc');
+  fc.classList.remove('flipped');
+  QZ.flipped = false;
+  document.getElementById('fcActions').style.display = 'none';
+}
+
+function flipCard() {
+  const fc = document.getElementById('fc');
+  fc.classList.toggle('flipped');
+  QZ.flipped = !QZ.flipped;
+  document.getElementById('fcActions').style.display = QZ.flipped ? 'grid' : 'none';
+}
+
+function markCard(correct) {
+  if(correct) { QZ.correct++; G.totalCorrect++; }
+  G.totalQ++;
+  QZ.idx++;
+  saveG();
+  renderFC();
+}
+
+function skipCard() { QZ.idx++; renderFC(); }
+
+// Multiple Choice
+function renderMC() {
+  const {qs, idx} = QZ;
+  if(idx >= qs.length) { showResults(); return; }
+  const q = qs[idx];
+  document.getElementById('mcProg').style.width = (idx/qs.length*100)+'%';
+  document.getElementById('mcCtr').textContent = `${idx+1} / ${qs.length}`;
+  document.getElementById('mcPrompt').textContent = q.qt.prompt;
+  document.getElementById('mcQ').textContent = q.qt.q(q.drug);
+  document.getElementById('mcNext').classList.remove('show');
+  QZ.answered = false;
+  const correct = q.qt.a(q.drug);
+  document.getElementById('mcOpts').innerHTML = q.opts.map(opt => {
+    const short = opt.length > 110 ? opt.substring(0,107)+'…' : opt;
+    return `<button class="mc-opt" onclick="answerMC(this,${opt===correct})">${short}</button>`;
+  }).join('');
+}
+
+function answerMC(btn, correct) {
+  if(QZ.answered) return;
+  QZ.answered = true;
+  if(correct) { btn.classList.add('correct'); QZ.correct++; G.totalCorrect++; }
+  else btn.classList.add('wrong');
+  G.totalQ++;
+  document.querySelectorAll('.mc-opt').forEach(o => o.classList.add('revealed'));
+  document.getElementById('mcNext').classList.add('show');
+  saveG();
+}
+
+function nextMC() { QZ.idx++; renderMC(); }
+
+function showResults() {
+  const {correct, qs} = QZ;
+  const total = qs.length;
+  const pct = Math.round(correct/total*100);
+  G.quizzes++;
+  // Streak logic
+  const today = new Date().toDateString();
+  if(G.lastQuizDate !== today) { G.streak++; G.lastQuizDate = today; }
+  const xpEarned = correct * 10;
+  G.xp += xpEarned;
+  saveG();
+  updateHdr();
+  document.getElementById('fcMode').style.display='none';
+  document.getElementById('mcMode').style.display='none';
+  document.getElementById('qResults').classList.add('show');
+  document.getElementById('resCorrect').textContent = correct;
+  document.getElementById('resTotal').textContent = total;
+  document.getElementById('resPct').textContent = pct+'%';
+  const emoji = pct>=90?'🏆':pct>=70?'🎯':pct>=50?'📚':'💪';
+  const title = pct>=90?'Outstanding!':pct>=70?'Great Work!':pct>=50?'Good Effort':'Keep Studying!';
+  const sub = pct>=90?'Excellent clinical knowledge.':pct>=70?'Solid performance — keep it up.':pct>=50?'A bit more revision will get you there.':'Review the formulary and try again.';
+  document.getElementById('resEmoji').textContent = emoji;
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('resSub').textContent = sub;
+  setTimeout(()=> showToast(`Quiz done! +${xpEarned} XP`), 500);
+}
+
+function confirmReset() {
+  if(confirm('Reset all progress? This cannot be undone.')) {
+    G = {xp:0,streak:0,lastQuizDate:null,quizzes:0,totalQ:0,totalCorrect:0,mastery:{}};
+    MEDS.forEach(m => G.mastery[m.id]='unseen');
+    saveG(); updateHdr(); updateStats(); renderDrugList();
+  }
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeDet(); });
+
+// PWA
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+// INIT
+loadG();
+updateHdr();
+renderDrugList();
+updateQuizCounts();
+updateStats();
+</script>
+</body>
+</html>
