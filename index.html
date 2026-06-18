@@ -3,353 +3,392 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#1B2838"/>
+<meta name="theme-color" content="#0F172A"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="PHECC Rx"/>
 <link rel="manifest" href="manifest.json"/>
 <title>PHECC Formulary 2026</title>
 <style>
-/* ── TOKENS ─────────────────────────────────────────────────────────── */
 :root {
-  /* Emerald greens */
-  --em-900:#064E3B;--em-800:#065F46;--em-700:#047857;
-  --em-600:#059669;--em-500:#10B981;--em-400:#34D399;
-  --em-200:#A7F3D0;--em-100:#D1FAE5;--em-50:#ECFDF5;
-  /* Slate */
-  --sl-900:#0F172A;--sl-800:#1E293B;--sl-700:#334155;
-  --sl-600:#475569;--sl-500:#64748B;--sl-400:#94A3B8;
-  --sl-300:#CBD5E1;--sl-200:#E2E8F0;--sl-100:#F1F5F9;--sl-50:#F8FAFC;
-  /* Accent */
-  --teal:#0D9488;--amber:#D97706;--red:#DC2626;
-  --amberl:#FEF3C7;--redl:#FEE2E2;--greenl:#D1FAE5;
-  /* Scope */
-  --emt:#059669;--par:#0D9488;--ap:#7C3AED;
-  /* Mastery */
-  --unseen:#94A3B8;--novice:#D97706;--learning:#0D9488;
-  --proficient:#059669;--mastered:#047857;
-  /* Layout */
-  --nav-h:66px;--hdr-h:58px;--safe:env(safe-area-inset-bottom,0px);
-  --r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;
-  /* Light theme surfaces */
-  --bg:var(--sl-50);--surface:#fff;--surface2:var(--sl-100);
-  --border:var(--sl-200);--text:var(--sl-900);--text2:var(--sl-600);
-  --text3:var(--sl-400);--hdr-bg:var(--sl-900);--hdr-text:#fff;
-  --card-shadow:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
-  --card-shadow-hover:0 4px 16px rgba(0,0,0,.1);
+  --em-900:#064E3B;--em-800:#065F46;--em-700:#047857;--em-600:#059669;
+  --em-500:#10B981;--em-400:#34D399;--em-200:#A7F3D0;--em-100:#D1FAE5;--em-50:#ECFDF5;
+  --sl-900:#0F172A;--sl-800:#1E293B;--sl-700:#334155;--sl-600:#475569;
+  --sl-500:#64748B;--sl-400:#94A3B8;--sl-300:#CBD5E1;--sl-200:#E2E8F0;--sl-100:#F1F5F9;--sl-50:#F8FAFC;
+  --emt:#059669;--par:#2563EB;--ap:#D97706;
+  --emt-l:#D1FAE5;--par-l:#DBEAFE;--ap-l:#FEF3C7;
+  --red:#DC2626;--redl:#FEE2E2;--amber:#D97706;--amberl:#FEF3C7;--greenl:#D1FAE5;
+  --mild:#059669;--mildl:#D1FAE5;--moderate:#D97706;--moderatel:#FEF3C7;--severe:#DC2626;--severel:#FEE2E2;
+  --nav-h:62px;--hdr-h:56px;--safe:env(safe-area-inset-bottom,0px);
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;
+  --bg:var(--sl-50);--surf:#fff;--surf2:var(--sl-100);--border:var(--sl-200);
+  --text:var(--sl-900);--text2:var(--sl-600);--text3:var(--sl-400);
+  --hdr-bg:var(--sl-900);--shadow:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.1);
 }
-[data-theme="dark"] {
-  --bg:var(--sl-900);--surface:var(--sl-800);--surface2:var(--sl-700);
-  --border:var(--sl-700);--text:#F1F5F9;--text2:var(--sl-400);
-  --text3:var(--sl-500);--hdr-bg:#0A1628;--hdr-text:#F1F5F9;
-  --card-shadow:0 2px 8px rgba(0,0,0,.3);
-  --card-shadow-hover:0 6px 20px rgba(0,0,0,.4);
+[data-theme="dark"]{
+  --bg:var(--sl-900);--surf:var(--sl-800);--surf2:var(--sl-700);--border:var(--sl-700);
+  --text:#F1F5F9;--text2:var(--sl-400);--text3:var(--sl-500);--hdr-bg:#0A1628;
+  --shadow:0 2px 8px rgba(0,0,0,.3);--shadow-lg:0 6px 20px rgba(0,0,0,.4);
 }
-
-/* ── RESET ──────────────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased;color:var(--text);background:var(--bg);transition:background .25s,color .25s}
 body{min-height:100dvh;overflow-x:hidden;padding-bottom:calc(var(--nav-h) + var(--safe))}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input,textarea{font-family:inherit;color:inherit}
+input,textarea,select{font-family:inherit;color:inherit}
 ul{list-style:none}
-a{color:inherit;text-decoration:none}
 
-/* ── HEADER ─────────────────────────────────────────────────────────── */
-.hdr{position:sticky;top:0;z-index:100;height:var(--hdr-h);background:var(--hdr-bg);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 12px rgba(0,0,0,.2)}
-.hdr-left{display:flex;flex-direction:column}
-.hdr-title{font-size:16px;font-weight:700;color:var(--hdr-text);letter-spacing:-.3px}
-.hdr-level{font-size:10px;color:var(--em-400);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:1px}
-.hdr-right{display:flex;align-items:center;gap:8px}
-.hdr-stat{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);padding:5px 10px;border-radius:20px;font-size:12px;font-weight:700;color:var(--hdr-text)}
-.hdr-stat.streak{background:rgba(217,119,6,.2);color:#FCD34D}
-.hdr-stat.xp{background:rgba(5,150,105,.2);color:var(--em-400)}
-.dark-toggle{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s}
-.dark-toggle:active{background:rgba(255,255,255,.2)}
+/* OFFLINE BANNER */
+.offline-bar{display:none;position:fixed;top:var(--hdr-h);left:0;right:0;z-index:150;background:#92400E;color:#FEF3C7;font-size:12px;font-weight:600;text-align:center;padding:6px;letter-spacing:.3px}
+.offline-bar.show{display:block}
 
-/* ── BOTTOM NAV ─────────────────────────────────────────────────────── */
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:calc(var(--nav-h) + var(--safe));padding-bottom:var(--safe);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:stretch;box-shadow:0 -4px 20px rgba(0,0,0,.08);transition:background .25s}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text3);font-size:10px;font-weight:600;transition:color .2s;padding:10px 0 0;position:relative;-webkit-tap-highlight-color:transparent}
-.bnav-btn.active{color:var(--em-600)}
-.bnav-btn svg{width:22px;height:22px;stroke-width:1.8;transition:stroke-width .2s}
-.bnav-btn.active svg{stroke-width:2.4}
-.bnav-btn.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:3px;background:var(--em-600);border-radius:3px 3px 0 0}
-.bnav-indicator{position:absolute;top:8px;right:calc(50% - 18px);width:6px;height:6px;background:var(--em-500);border-radius:50%;display:none}
-.bnav-btn.active .bnav-indicator{display:none}
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;height:var(--hdr-h);background:var(--hdr-bg);display:flex;align-items:center;justify-content:space-between;padding:0 14px;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.hdr-brand{display:flex;flex-direction:column;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hdr-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.hdr-level{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:7px}
+.hdr-btn{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s}
+.hdr-btn:active{background:rgba(255,255,255,.2)}
+.hdr-btn.streak{background:rgba(255,255,255,.1);color:#FCD34D}
+.dark-btn{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 
-/* ── PAGE TRANSITIONS ────────────────────────────────────────────────── */
-.page-wrap{position:relative;overflow:hidden}
-.page{display:none;padding:16px;min-height:calc(100dvh - var(--hdr-h) - var(--nav-h))}
-.page.active{display:block;animation:pageIn .3s cubic-bezier(.25,.46,.45,.94) both}
-.page.exit{animation:pageOut .2s ease forwards}
-@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pageOut{from{opacity:1}to{opacity:0}}
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:calc(var(--nav-h) + var(--safe));padding-bottom:var(--safe);background:var(--surf);border-top:1px solid var(--border);display:flex;align-items:stretch;box-shadow:0 -4px 20px rgba(0,0,0,.08);transition:background .25s}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text3);font-size:10px;font-weight:600;transition:color .2s;padding:10px 0 0;position:relative;-webkit-tap-highlight-color:transparent}
+.nb.active{color:var(--em-600)}
+.nb svg{width:22px;height:22px;stroke-width:1.8;transition:stroke-width .2s}
+.nb.active svg{stroke-width:2.4}
+.nb.active::after{content:'';position:absolute;bottom:0;left:18%;right:18%;height:3px;background:var(--em-600);border-radius:3px 3px 0 0}
 
-/* ── SEARCH ─────────────────────────────────────────────────────────── */
-.search-wrap{position:relative;margin-bottom:12px}
-.search-wrap input{width:100%;padding:11px 16px 11px 42px;border:1.5px solid var(--border);border-radius:var(--r16);font-size:15px;background:var(--surface);color:var(--text);transition:border-color .15s,box-shadow .15s,background .25s}
-.search-wrap input:focus{outline:none;border-color:var(--em-500);box-shadow:0 0 0 3px rgba(16,185,129,.15)}
-.search-wrap input::placeholder{color:var(--text3)}
+/* PAGES */
+.page{display:none;padding:14px;min-height:calc(100dvh - var(--hdr-h) - var(--nav-h));animation:pgIn .28s cubic-bezier(.25,.46,.45,.94) both}
+.page.active{display:block}
+@keyframes pgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* GLOBAL SEARCH */
+.gsearch-wrap{position:relative;margin-bottom:12px}
+.gsearch-wrap input{width:100%;padding:11px 16px 11px 42px;border:1.5px solid var(--border);border-radius:var(--r16);font-size:15px;background:var(--surf);color:var(--text);transition:border-color .15s,box-shadow .15s,background .25s}
+.gsearch-wrap input:focus{outline:none;border-color:var(--em-500);box-shadow:0 0 0 3px rgba(16,185,129,.15)}
+.gsearch-wrap input::placeholder{color:var(--text3)}
 .si{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.gsearch-results{display:none;background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);box-shadow:var(--shadow-lg);overflow:hidden;margin-bottom:12px}
+.gsearch-results.show{display:block}
+.gsr-item{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.gsr-item:last-child{border-bottom:none}
+.gsr-item:active{background:var(--surf2)}
+.gsr-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:10px;flex-shrink:0}
+.gsr-drug{background:var(--em-100);color:var(--em-800)}
+.gsr-term{background:var(--par-l);color:var(--par)}
+.gsr-hospital{background:var(--ap-l);color:var(--ap)}
+[data-theme="dark"] .gsr-drug{background:rgba(5,150,105,.2);color:var(--em-400)}
+[data-theme="dark"] .gsr-term{background:rgba(37,99,235,.2);color:#93C5FD}
+[data-theme="dark"] .gsr-hospital{background:rgba(217,119,6,.2);color:#FCD34D}
+.gsr-name{font-size:14px;font-weight:600;color:var(--text)}
+.gsr-sub{font-size:11px;color:var(--text3)}
 
-/* ── CHIPS ──────────────────────────────────────────────────────────── */
-.chips{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+/* CHIPS */
+.chips{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex-shrink:0;padding:7px 15px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);transition:all .18s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.chip{flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--surf);color:var(--text2);transition:all .15s;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .chip-all.on{background:var(--sl-800);color:#fff;border-color:var(--sl-800)}
 .chip-emt.on{background:var(--emt);color:#fff;border-color:var(--emt)}
 .chip-p.on{background:var(--par);color:#fff;border-color:var(--par)}
 .chip-ap.on{background:var(--ap);color:#fff;border-color:var(--ap)}
-.chip-learning.on{background:var(--learning);color:#fff;border-color:var(--learning)}
 
-/* ── DRUG LIST ──────────────────────────────────────────────────────── */
-.drug-list{display:flex;flex-direction:column;gap:9px}
-.drug-card{background:var(--surface);border-radius:var(--r12);padding:14px 16px;box-shadow:var(--card-shadow);border:1px solid var(--border);display:flex;align-items:center;gap:0;cursor:pointer;transition:box-shadow .2s,border-color .2s,transform .12s,background .25s;-webkit-tap-highlight-color:transparent;animation:cardIn .3s ease both}
-@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.drug-card:active{transform:scale(.97);box-shadow:none}
-.drug-card:hover{box-shadow:var(--card-shadow-hover);border-color:var(--em-200)}
+/* DRUG LIST */
+.drug-list{display:flex;flex-direction:column;gap:8px;animation:pgIn .28s ease both}
+.drug-card{background:var(--surf);border-radius:var(--r12);padding:13px 15px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:0;cursor:pointer;transition:box-shadow .2s,border-color .2s,transform .1s,background .25s;-webkit-tap-highlight-color:transparent}
+.drug-card:active{transform:scale(.97)}
+.drug-card:hover{box-shadow:var(--shadow-lg);border-color:var(--em-200)}
 .drug-info{flex:1;min-width:0}
 .drug-name{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .drug-class{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.drug-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;margin-left:12px}
+.drug-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;margin-left:12px}
 .scope-dots{display:flex;gap:3px}
 .sdot{width:7px;height:7px;border-radius:50%}
 .sdot-EMT{background:var(--emt)}
 .sdot-P{background:var(--par)}
 .sdot-AP{background:var(--ap)}
-.mastery-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.3px;white-space:nowrap}
+.mtag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
 .mt-unseen{background:var(--sl-100);color:var(--text3)}
 .mt-novice{background:var(--amberl);color:var(--amber)}
-.mt-learning{background:#CFFAFE;color:var(--teal)}
+.mt-learning{background:#CFFAFE;color:#0E7490}
 .mt-proficient{background:var(--em-100);color:var(--em-700)}
 .mt-mastered{background:var(--em-200);color:var(--em-800)}
 [data-theme="dark"] .mt-unseen{background:var(--sl-700);color:var(--sl-400)}
 [data-theme="dark"] .mt-novice{background:rgba(217,119,6,.2);color:#FCD34D}
-[data-theme="dark"] .mt-learning{background:rgba(13,148,136,.2);color:#2DD4BF}
+[data-theme="dark"] .mt-learning{background:rgba(14,116,144,.2);color:#67E8F9}
 [data-theme="dark"] .mt-proficient{background:rgba(5,150,105,.2);color:var(--em-400)}
-[data-theme="dark"] .mt-mastered{background:rgba(4,120,87,.25);color:var(--em-400)}
+[data-theme="dark"] .mt-mastered{background:rgba(4,120,87,.25);color:var(--em-300,#6EE7B7)}
 .chev{color:var(--border);flex-shrink:0;margin-left:8px}
+.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text3);margin-bottom:9px;padding-left:2px}
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-ico{font-size:38px;margin-bottom:10px}
 
-/* ── DETAIL OVERLAY ─────────────────────────────────────────────────── */
+/* DETAIL OVERLAY */
 .overlay{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;transition:background .25s}
 .overlay.open{display:block;animation:slideUp .3s cubic-bezier(.25,.46,.45,.94) both}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.det-hdr{position:sticky;top:0;z-index:10;background:var(--sl-900);padding:14px 16px 18px}
+.det-hdr{position:sticky;top:0;z-index:10;background:var(--sl-900);padding:12px 15px 16px}
 [data-theme="dark"] .det-hdr{background:#0A1628}
-.det-back{display:flex;align-items:center;gap:6px;color:var(--em-400);font-size:14px;font-weight:500;margin-bottom:10px;cursor:pointer}
-.det-name{font-size:22px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.4px}
-.det-class{font-size:12px;color:#94A3B8;margin-top:3px}
-.det-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;align-items:center}
-.sbadge{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.det-back{display:flex;align-items:center;gap:6px;color:var(--em-400);font-size:14px;font-weight:500;margin-bottom:8px;cursor:pointer}
+.det-name{font-size:21px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.3px}
+.det-class{font-size:12px;color:#94A3B8;margin-top:2px}
+.det-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.sbadge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .sbadge-EMT{background:rgba(5,150,105,.25);color:#6EE7B7}
-.sbadge-P{background:rgba(13,148,136,.25);color:#5EEAD4}
-.sbadge-AP{background:rgba(124,58,237,.25);color:#C4B5FD}
-.det-mastery-badge{padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.4px;border:1px solid rgba(255,255,255,.1)}
-.det-body{padding:14px;display:flex;flex-direction:column;gap:11px;padding-bottom:30px}
-.det-sec{background:var(--surface);border-radius:var(--r12);border:1px solid var(--border);overflow:hidden;transition:background .25s}
-.det-sh{padding:11px 14px 9px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.sec-ico{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.det-st{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text2)}
-.det-sb{padding:12px 14px;font-size:14px;color:var(--text2);line-height:1.6}
-.blist{display:flex;flex-direction:column;gap:6px}
-.blist li{position:relative;padding-left:14px;color:var(--text2)}
+.sbadge-P{background:rgba(37,99,235,.25);color:#93C5FD}
+.sbadge-AP{background:rgba(217,119,6,.25);color:#FCD34D}
+.det-mbadge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,.1)}
+.det-body{padding:13px;display:flex;flex-direction:column;gap:10px;padding-bottom:28px}
+.dsec{background:var(--surf);border-radius:var(--r12);border:1px solid var(--border);overflow:hidden;transition:background .25s}
+.dsh{padding:10px 13px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.sico{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.dst{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text2)}
+.dsb{padding:11px 13px;font-size:14px;color:var(--text2);line-height:1.6}
+.blist{display:flex;flex-direction:column;gap:5px}
+.blist li{position:relative;padding-left:13px;color:var(--text2)}
 .blist li::before{content:'•';position:absolute;left:0;color:var(--em-600);font-weight:700}
 .ci-list{display:flex;flex-direction:column}
-.ci{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.ci{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
 .ci:last-child{border-bottom:none;padding-bottom:0}
 .ci-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px}
 .ci-text{font-size:14px;color:var(--text2);line-height:1.5}
-.dose-block{display:flex;flex-direction:column;gap:9px}
-.dose-grp{background:var(--surface2);border-radius:8px;padding:10px 12px;transition:background .25s}
-.dose-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:5px}
+.dose-block{display:flex;flex-direction:column;gap:8px}
+.dose-grp{background:var(--surf2);border-radius:7px;padding:9px 11px;transition:background .25s}
+.dose-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:4px}
 .dose-text{font-size:14px;color:var(--text);line-height:1.55}
-.info-box{background:var(--em-50);border-left:3px solid var(--em-500);border-radius:0 8px 8px 0;padding:12px 13px;font-size:13.5px;color:var(--em-900);line-height:1.6}
+.info-box{background:var(--em-50);border-left:3px solid var(--em-500);border-radius:0 7px 7px 0;padding:11px 12px;font-size:13.5px;color:var(--em-900);line-height:1.6}
 [data-theme="dark"] .info-box{background:rgba(5,150,105,.1);color:var(--em-200)}
-.prog-bar-wrap{background:var(--surface2);border-radius:6px;height:8px;overflow:hidden;margin:8px 0 4px}
-.prog-bar-fill{height:100%;border-radius:6px;transition:width .6s cubic-bezier(.25,.46,.45,.94)}
-.prog-label{font-size:11px;color:var(--text3);display:flex;justify-content:space-between}
-/* Notes */
-.notes-area{width:100%;min-height:100px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r8);padding:10px 12px;font-size:14px;color:var(--text);line-height:1.6;resize:vertical;transition:border-color .15s,background .25s}
+.prog-wrap{background:var(--surf2);border-radius:5px;height:8px;overflow:hidden;margin:7px 0 3px}
+.prog-fill{height:100%;border-radius:5px;transition:width .6s ease}
+.prog-lbl{font-size:11px;color:var(--text3);display:flex;justify-content:space-between}
+.notes-area{width:100%;min-height:90px;background:var(--surf2);border:1.5px solid var(--border);border-radius:var(--r8);padding:9px 11px;font-size:14px;color:var(--text);line-height:1.6;resize:vertical;transition:border-color .15s,background .25s}
 .notes-area:focus{outline:none;border-color:var(--em-500);box-shadow:0 0 0 3px rgba(16,185,129,.12)}
 .notes-area::placeholder{color:var(--text3)}
-.notes-save-hint{font-size:11px;color:var(--text3);margin-top:5px}
+.notes-hint{font-size:11px;color:var(--text3);margin-top:4px}
 
-/* ── QUIZ ────────────────────────────────────────────────────────────── */
+/* QUIZ */
 .qsetup{max-width:480px;margin:0 auto}
-.pg-title{font-size:21px;font-weight:700;color:var(--text);margin-bottom:3px;letter-spacing:-.3px}
-.pg-sub{font-size:13px;color:var(--text3);margin-bottom:22px}
-.og-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text2);margin-bottom:9px;display:block}
-.og{margin-bottom:20px}
+.pg-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:3px;letter-spacing:-.3px}
+.pg-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.og{margin-bottom:18px}
+.og-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text2);margin-bottom:8px;display:block}
 .scope-opts{display:flex;flex-direction:column;gap:7px}
-.sopt{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent}
-.sopt.on-all{border-color:var(--sl-700);background:var(--surface2)}
+.sopt{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.sopt.on-all{border-color:var(--sl-600);background:var(--surf2)}
 .sopt.on-emt{border-color:var(--emt);background:var(--em-50)}
-.sopt.on-p{border-color:var(--par);background:#F0FFFE}
-.sopt.on-ap{border-color:var(--ap);background:#F5F3FF}
-.sopt.on-learn{border-color:var(--learning);background:#F0FFFE}
-[data-theme="dark"] .sopt.on-all{background:var(--sl-700)}
-[data-theme="dark"] .sopt.on-emt,[data-theme="dark"] .sopt.on-p,[data-theme="dark"] .sopt.on-ap,[data-theme="dark"] .sopt.on-learn{background:var(--sl-700)}
+.sopt.on-p{border-color:var(--par);background:#EFF6FF}
+.sopt.on-ap{border-color:var(--ap);background:#FFFBEB}
+.sopt.on-terms{border-color:#7C3AED;background:#F5F3FF}
+[data-theme="dark"] .sopt.on-all,[data-theme="dark"] .sopt.on-emt,[data-theme="dark"] .sopt.on-p,[data-theme="dark"] .sopt.on-ap,[data-theme="dark"] .sopt.on-terms{background:var(--sl-700)}
 .sdot-sm{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .sopt-txt{flex:1}
-.sopt-name{font-size:15px;font-weight:600;color:var(--text)}
-.sopt-cnt{font-size:12px;color:var(--text3)}
-.sopt-chk{width:20px;height:20px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all .18s;flex-shrink:0}
-.sopt.on-all .sopt-chk{background:var(--sl-800);border-color:var(--sl-800);color:#fff}
+.sopt-name{font-size:14px;font-weight:600;color:var(--text)}
+.sopt-cnt{font-size:11px;color:var(--text3)}
+.sopt-chk{width:20px;height:20px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all .15s;flex-shrink:0}
+.sopt.on-all .sopt-chk{background:var(--sl-700);border-color:var(--sl-700);color:#fff}
 .sopt.on-emt .sopt-chk{background:var(--emt);border-color:var(--emt);color:#fff}
 .sopt.on-p .sopt-chk{background:var(--par);border-color:var(--par);color:#fff}
 .sopt.on-ap .sopt-chk{background:var(--ap);border-color:var(--ap);color:#fff}
-.sopt.on-learn .sopt-chk{background:var(--learning);border-color:var(--learning);color:#fff}
+.sopt.on-terms .sopt-chk{background:#7C3AED;border-color:#7C3AED;color:#fff}
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.mode-card{display:flex;flex-direction:column;align-items:center;gap:7px;padding:16px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);cursor:pointer;text-align:center;transition:all .18s;-webkit-tap-highlight-color:transparent}
+.mode-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r12);cursor:pointer;text-align:center;transition:all .15s;-webkit-tap-highlight-color:transparent}
 .mode-card.on{border-color:var(--em-500);background:var(--em-50)}
 [data-theme="dark"] .mode-card.on{background:rgba(5,150,105,.1)}
-.mode-ico{font-size:22px}
+.mode-ico{font-size:20px}
 .mode-name{font-size:13px;font-weight:600;color:var(--text)}
 .mode-desc{font-size:11px;color:var(--text3);line-height:1.4}
-.btn-pri{width:100%;padding:15px;background:var(--em-700);color:#fff;border-radius:var(--r12);font-size:16px;font-weight:700;letter-spacing:.1px;transition:background .15s,transform .1s,box-shadow .15s;-webkit-tap-highlight-color:transparent;cursor:pointer;box-shadow:0 4px 14px rgba(4,120,87,.35)}
+.btn-pri{width:100%;padding:14px;background:var(--em-700);color:#fff;border-radius:var(--r12);font-size:16px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent}
 .btn-pri:active{transform:scale(.97);background:var(--em-800)}
-.btn-pri:hover{background:var(--em-600)}
 
-/* ── QUIZ ACTIVE ─────────────────────────────────────────────────────── */
+/* QUIZ ACTIVE */
 .qactive{display:none}
 .qactive.open{display:block}
-.qbar{height:4px;background:var(--border);border-radius:2px;margin-bottom:16px;overflow:hidden}
-.qbar-fill{height:100%;background:var(--em-500);border-radius:2px;transition:width .4s cubic-bezier(.25,.46,.45,.94)}
-.qctr{text-align:center;font-size:11px;color:var(--text3);font-weight:600;margin-bottom:16px;letter-spacing:.4px}
+.qbar{height:4px;background:var(--border);border-radius:2px;margin-bottom:14px;overflow:hidden}
+.qbar-fill{height:100%;background:var(--em-500);border-radius:2px;transition:width .4s ease}
+.qctr{text-align:center;font-size:11px;color:var(--text3);font-weight:600;margin-bottom:14px;letter-spacing:.4px}
+.qreset-btn{position:absolute;top:14px;right:14px;background:var(--redl);color:var(--red);border:1.5px solid #FCA5A5;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+[data-theme="dark"] .qreset-btn{background:rgba(220,38,38,.15);border-color:#EF4444}
+.quiz-header-row{position:relative;margin-bottom:4px}
 
-/* Flashcard */
-.fc-wrap{perspective:1200px;margin-bottom:20px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.fc{position:relative;width:100%;min-height:200px;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.25,.46,.45,.94)}
+/* FLASHCARD */
+.fc-wrap{perspective:1200px;margin-bottom:18px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fc{position:relative;width:100%;min-height:195px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.46,.45,.94)}
 .fc.flipped{transform:rotateY(180deg)}
-.fc-face{position:absolute;width:100%;min-height:200px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r20);padding:26px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.fc-front{background:linear-gradient(135deg,var(--sl-900) 0%,var(--em-900) 100%);color:#fff;box-shadow:0 8px 28px rgba(0,0,0,.25)}
-.fc-back{background:var(--surface);border:1.5px solid var(--border);color:var(--text);transform:rotateY(180deg);box-shadow:var(--card-shadow-hover)}
-.fc-prompt{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--em-400);margin-bottom:10px}
-.fc-q{font-size:18px;font-weight:700;line-height:1.35;color:#fff}
-.fc-hint{font-size:11px;color:rgba(255,255,255,.3);margin-top:16px;display:flex;align-items:center;gap:4px}
-.fc-back-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--em-600);margin-bottom:8px}
+.fc-face{position:absolute;width:100%;min-height:195px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r20);padding:24px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.fc-front{background:linear-gradient(135deg,var(--sl-900) 0%,var(--em-900) 100%);color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+.fc-back{background:var(--surf);border:1.5px solid var(--border);color:var(--text);transform:rotateY(180deg);box-shadow:var(--shadow-lg)}
+.fc-prompt{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--em-400);margin-bottom:9px}
+.fc-q{font-size:17px;font-weight:700;line-height:1.35;color:#fff}
+.fc-hint{font-size:11px;color:rgba(255,255,255,.3);margin-top:14px}
+.fc-back-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--em-600);margin-bottom:7px}
 .fc-ans{font-size:14px;line-height:1.6;color:var(--text)}
-.fc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.btn-wrong{padding:13px;background:var(--redl);color:var(--red);border-radius:var(--r12);font-size:14px;font-weight:700;border:1.5px solid #FCA5A5;transition:all .15s;cursor:pointer}
-.btn-correct{padding:13px;background:var(--greenl);color:var(--em-700);border-radius:var(--r12);font-size:14px;font-weight:700;border:1.5px solid var(--em-300,#6EE7B7);transition:all .15s;cursor:pointer}
-.btn-wrong:active{transform:scale(.95)}
-.btn-correct:active{transform:scale(.95)}
+.fc-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.btn-wrong{padding:12px;background:var(--redl);color:var(--red);border-radius:var(--r12);font-size:14px;font-weight:700;border:1.5px solid #FCA5A5;cursor:pointer;transition:all .15s}
+.btn-correct{padding:12px;background:var(--greenl);color:var(--em-700);border-radius:var(--r12);font-size:14px;font-weight:700;border:1.5px solid var(--em-400);cursor:pointer;transition:all .15s}
+.btn-wrong:active,.btn-correct:active{transform:scale(.95)}
 [data-theme="dark"] .btn-wrong{background:rgba(220,38,38,.15);border-color:#EF4444}
 [data-theme="dark"] .btn-correct{background:rgba(5,150,105,.15);border-color:var(--em-500);color:var(--em-400)}
-.btn-skip{width:100%;padding:10px;color:var(--text3);font-size:13px;cursor:pointer}
+.btn-skip{width:100%;padding:9px;color:var(--text3);font-size:13px;cursor:pointer}
 
 /* MC */
-.mc-qcard{background:linear-gradient(135deg,var(--sl-900) 0%,var(--em-900) 100%);border-radius:var(--r20);padding:22px;margin-bottom:16px;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.2)}
-.mc-prompt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--em-400);margin-bottom:8px}
-.mc-q{font-size:16px;font-weight:600;line-height:1.45;color:#fff}
-.mc-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.mc-opt{padding:13px 15px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);font-size:13px;color:var(--text);text-align:left;transition:all .18s;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;animation:optIn .2s ease both}
-@keyframes optIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.mc-qcard{background:linear-gradient(135deg,var(--sl-900) 0%,var(--em-900) 100%);border-radius:var(--r20);padding:20px;margin-bottom:14px;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.mc-prompt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--em-400);margin-bottom:7px}
+.mc-q{font-size:15px;font-weight:600;line-height:1.45;color:#fff}
+.mc-opts{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.mc-opt{padding:12px 14px;background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r12);font-size:13px;color:var(--text);text-align:left;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .18s}
 .mc-opt:active{transform:scale(.97)}
 .mc-opt.correct{background:var(--greenl);border-color:var(--em-400);color:var(--em-800);font-weight:700}
 .mc-opt.wrong{background:var(--redl);border-color:#FCA5A5;color:var(--red)}
 .mc-opt.revealed{pointer-events:none}
-[data-theme="dark"] .mc-opt.correct{background:rgba(5,150,105,.2);border-color:var(--em-500);color:var(--em-300)}
+[data-theme="dark"] .mc-opt.correct{background:rgba(5,150,105,.2);border-color:var(--em-500);color:var(--em-300,#6EE7B7)}
 [data-theme="dark"] .mc-opt.wrong{background:rgba(220,38,38,.15);border-color:#EF4444;color:#FCA5A5}
-.mc-next{display:none;width:100%;padding:14px;background:var(--em-700);color:#fff;border-radius:var(--r12);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(4,120,87,.3)}
-.mc-next.show{display:block;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.mc-next{display:none;width:100%;padding:13px;background:var(--em-700);color:#fff;border-radius:var(--r12);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.mc-next.show{display:block;animation:pgIn .2s ease}
 
-/* Results */
-.qres{display:none;text-align:center;padding:24px 16px}
-.qres.show{display:block;animation:pageIn .3s ease}
-.res-ring{width:100px;height:100px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(135deg,var(--em-600),var(--teal))}
-.res-title{font-size:24px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.4px}
-.res-sub{font-size:13px;color:var(--text3);margin-bottom:24px}
-.res-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:24px}
-.res-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:15px 8px;transition:background .25s}
-.res-num{font-size:26px;font-weight:800;color:var(--em-600);line-height:1}
+/* RESULTS */
+.qres{display:none;text-align:center;padding:20px 14px}
+.qres.show{display:block;animation:pgIn .3s ease}
+.res-ring{width:90px;height:90px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(135deg,var(--em-600),#0891B2)}
+.res-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:3px;letter-spacing:-.3px}
+.res-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.res-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.res-stat{background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);padding:14px 8px;transition:background .25s}
+.res-num{font-size:24px;font-weight:800;color:var(--em-600);line-height:1}
 .res-lbl{font-size:10px;color:var(--text3);margin-top:3px;font-weight:500}
-.xp-earned{background:var(--em-50);border:1px solid var(--em-200);border-radius:var(--r12);padding:12px;margin-bottom:20px;font-size:14px;font-weight:700;color:var(--em-700)}
-[data-theme="dark"] .xp-earned{background:rgba(5,150,105,.1);border-color:var(--em-800);color:var(--em-400)}
+.xp-earned-btn{width:100%;background:var(--em-50);border:1px solid var(--em-200);border-radius:var(--r12);padding:12px;margin-bottom:16px;font-size:14px;font-weight:700;color:var(--em-700);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.xp-earned-btn:active{background:var(--em-100)}
+[data-theme="dark"] .xp-earned-btn{background:rgba(5,150,105,.1);border-color:var(--em-800);color:var(--em-400)}
 
-/* XP Toast */
-.toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--sl-900);color:#fff;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:all .35s cubic-bezier(.25,.46,.45,.94);z-index:400;white-space:nowrap;pointer-events:none;border:1px solid var(--em-700)}
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe) + 10px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--sl-900);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:all .32s cubic-bezier(.25,.46,.45,.94);z-index:400;white-space:nowrap;pointer-events:none;border:1px solid var(--em-700)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── STATS ──────────────────────────────────────────────────────────── */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:16px;text-align:center;transition:background .25s}
-.stat-num{font-size:28px;font-weight:800;color:var(--em-600)}
-.stat-lbl{font-size:10px;color:var(--text3);margin-top:3px;font-weight:500;text-transform:uppercase;letter-spacing:.4px}
-.mastery-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:16px;margin-bottom:14px;transition:background .25s}
-.mc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px}
-.mb-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.mb-label{font-size:11px;font-weight:700;width:72px;flex-shrink:0}
-.mb-bw{flex:1;height:9px;background:var(--surface2);border-radius:5px;overflow:hidden}
-.mb-bf{height:100%;border-radius:5px;transition:width .7s cubic-bezier(.25,.46,.45,.94)}
-.mb-cnt{font-size:11px;color:var(--text3);width:24px;text-align:right;flex-shrink:0}
-.level-card{background:linear-gradient(135deg,var(--sl-900),var(--em-900));border-radius:var(--r12);padding:18px;margin-bottom:14px;color:#fff}
-.lc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--em-400);margin-bottom:6px}
-.lc-level{font-size:22px;font-weight:800;color:#fff;margin-bottom:10px}
-.lc-bar-wrap{background:rgba(255,255,255,.15);border-radius:4px;height:6px;overflow:hidden}
-.lc-bar{height:100%;background:var(--em-400);border-radius:4px;transition:width .7s ease}
-.lc-next{font-size:11px;color:var(--em-200);margin-top:6px}
-.reset-btn{width:100%;padding:13px;background:var(--redl);color:var(--red);border-radius:var(--r12);font-size:14px;font-weight:700;border:1.5px solid #FCA5A5;cursor:pointer;transition:all .15s}
+/* PROGRESS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;animation:pgIn .28s ease both}
+.stat-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);padding:14px;text-align:center;transition:background .25s}
+.stat-num{font-size:26px;font-weight:800;color:var(--em-600)}
+.stat-lbl{font-size:10px;color:var(--text3);margin-top:2px;font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.level-card{border-radius:var(--r12);padding:16px;margin-bottom:14px;color:#fff;animation:pgIn .28s ease both}
+.lc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;opacity:.7;margin-bottom:5px}
+.lc-name{font-size:20px;font-weight:800;margin-bottom:9px}
+.lc-bar-wrap{background:rgba(255,255,255,.15);border-radius:4px;height:5px;overflow:hidden}
+.lc-bar{height:100%;border-radius:4px;background:rgba(255,255,255,.8);transition:width .7s ease}
+.lc-next{font-size:11px;opacity:.6;margin-top:5px}
+.mastery-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);padding:14px;margin-bottom:14px;animation:pgIn .28s ease .05s both;transition:background .25s}
+.mc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px}
+/* Donut chart */
+.donut-wrap{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.donut-svg{flex-shrink:0}
+.donut-legend{display:flex;flex-direction:column;gap:5px;flex:1}
+.dl-row{display:flex;align-items:center;gap:7px;font-size:12px}
+.dl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dl-label{color:var(--text2);flex:1}
+.dl-count{font-weight:700;color:var(--text)}
+.tally-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);padding:14px;margin-bottom:14px;animation:pgIn .28s ease .08s both;transition:background .25s}
+.tally-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.tally-item{background:var(--surf2);border-radius:var(--r8);padding:12px;text-align:center;transition:background .25s}
+.tally-num{font-size:22px;font-weight:800}
+.tally-lbl{font-size:10px;color:var(--text3);margin-top:2px;font-weight:500}
+.tally-correct .tally-num{color:var(--em-600)}
+.tally-wrong .tally-num{color:var(--red)}
+.reset-btn{width:100%;padding:12px;background:var(--redl);color:var(--red);border-radius:var(--r12);font-size:14px;font-weight:700;border:1.5px solid #FCA5A5;cursor:pointer;transition:all .15s;animation:pgIn .28s ease .12s both}
 [data-theme="dark"] .reset-btn{background:rgba(220,38,38,.15);border-color:#EF4444}
 
-/* ── EMPTY ──────────────────────────────────────────────────────────── */
-.empty{text-align:center;padding:48px 20px;color:var(--text3)}
-.empty-ico{font-size:40px;margin-bottom:12px}
-.empty p{font-size:14px}
-
-/* ── SECTION LABEL ──────────────────────────────────────────────────── */
-.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text3);margin-bottom:10px;padding-left:2px}
+/* LEARN TAB */
+.learn-chips{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.learn-chips::-webkit-scrollbar{display:none}
+.lchip{flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--surf);color:var(--text2);transition:all .15s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lchip.on{background:var(--sl-800);color:#fff;border-color:var(--sl-800)}
+/* PCI */
+.pci-card{background:linear-gradient(135deg,var(--sl-900),var(--em-900));border-radius:var(--r12);padding:16px;margin-bottom:12px;color:#fff;animation:pgIn .28s ease both}
+.pci-number{font-size:24px;font-weight:800;letter-spacing:.5px;margin:6px 0 12px}
+.pci-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.pci-row:last-child{border-bottom:none}
+.pci-num{width:24px;height:24px;border-radius:50%;background:var(--em-600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.pci-hospital{font-size:14px;color:rgba(255,255,255,.9)}
+/* Hospital list */
+.hosp-county{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin:14px 0 6px;padding-left:2px}
+.hosp-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);margin-bottom:8px;overflow:hidden;transition:background .25s;animation:pgIn .28s ease both}
+.hosp-name{font-size:14px;font-weight:600;color:var(--text);padding:12px 13px 4px}
+.hosp-code{display:inline-block;background:var(--ap-l);color:var(--ap);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin:0 13px 8px;letter-spacing:.4px}
+[data-theme="dark"] .hosp-code{background:rgba(217,119,6,.2);color:#FCD34D}
+.hosp-nums{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border)}
+.hosp-num{padding:9px 13px}
+.hosp-num-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:2px}
+.hosp-num-val{font-size:13px;font-weight:600;color:var(--em-600);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hosp-num-val:active{opacity:.7}
+.hosp-num-val.na{color:var(--text3);font-weight:400;font-size:12px}
+/* Medical terms */
+.term-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);padding:13px;margin-bottom:8px;transition:background .25s;animation:pgIn .28s ease both}
+.term-word{font-size:15px;font-weight:700;color:var(--text)}
+.term-def{font-size:13px;color:var(--text2);margin-top:4px;line-height:1.5}
+/* Paed calculator */
+.paed-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r12);padding:16px;margin-bottom:12px;animation:pgIn .28s ease both;transition:background .25s}
+.paed-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px}
+.paed-input-row{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.paed-input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r8);font-size:16px;font-weight:700;background:var(--surf2);color:var(--text);transition:border-color .15s,background .25s;text-align:center}
+.paed-input:focus{outline:none;border-color:var(--em-500)}
+.paed-unit{font-size:14px;color:var(--text2);font-weight:600;white-space:nowrap}
+.paed-result{background:linear-gradient(135deg,var(--sl-900),var(--em-900));border-radius:var(--r12);padding:14px;color:#fff}
+.paed-weight{font-size:28px;font-weight:800;color:var(--em-400);margin:4px 0 12px}
+.paed-formula-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.paed-f-item{background:rgba(255,255,255,.08);border-radius:var(--r8);padding:10px}
+.paed-f-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--em-400);margin-bottom:3px}
+.paed-f-val{font-size:13px;font-weight:600;color:#fff;line-height:1.4}
+.paed-table{width:100%;margin-top:14px;border-collapse:collapse}
+.paed-table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);padding:6px 4px;text-align:left;border-bottom:1px solid var(--border)}
+.paed-table td{font-size:12px;color:var(--text2);padding:7px 4px;border-bottom:1px solid var(--border)}
+.paed-table tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
 
+<div class="offline-bar" id="offlineBar">⚠️ No internet connection — app running offline</div>
+
 <!-- HEADER -->
 <header class="hdr">
-  <div class="hdr-left">
+  <div class="hdr-brand" onclick="goHome()">
     <div class="hdr-title">PHECC Formulary 2026</div>
-    <div class="hdr-level" id="levelLabel">Rookie</div>
+    <div class="hdr-level" id="levelLabel" style="color:var(--em-400)">Rookie</div>
   </div>
   <div class="hdr-right">
-    <div class="hdr-stat streak">🔥 <span id="streakVal">0</span></div>
-    <div class="hdr-stat xp">⚡<span id="xpVal">0</span></div>
-    <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙</button>
+    <div class="hdr-btn streak" onclick="goProgress()" id="streakBtn"><span id="streakVal">0</span> day streak</div>
+    <div class="hdr-btn" onclick="goProgress()">⚡<span id="xpVal">0</span></div>
+    <div class="dark-btn" onclick="toggleDark()" id="darkBtn">🌙</div>
   </div>
 </header>
 
-<!-- REFERENCE -->
+<!-- REFERENCE PAGE -->
 <div class="page active" id="page-ref">
-  <div class="search-wrap">
+  <div class="gsearch-wrap">
     <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input type="search" id="searchInput" placeholder="Search drugs, indications…" autocomplete="off" spellcheck="false"/>
+    <input type="search" id="searchInput" placeholder="Search drugs, terms, hospitals…" autocomplete="off" spellcheck="false" oninput="handleGlobalSearch(this.value)"/>
   </div>
+  <div class="gsearch-results" id="gsearchResults"></div>
   <div class="chips" id="scopeChips">
     <button class="chip chip-all on" data-scope="all">All</button>
     <button class="chip chip-emt" data-scope="EMT">EMT</button>
     <button class="chip chip-p" data-scope="P">Paramedic</button>
     <button class="chip chip-ap" data-scope="AP">Adv. Paramedic</button>
-    <button class="chip chip-learning" data-scope="learning">📚 Learning</button>
   </div>
   <div class="sec-lbl" id="listLabel">All Medications (46)</div>
   <div class="drug-list" id="drugList"></div>
 </div>
 
-<!-- QUIZ -->
+<!-- QUIZ PAGE -->
 <div class="page" id="page-quiz">
   <div class="qsetup" id="quizSetup">
     <div class="pg-title">Quiz Mode</div>
     <div class="pg-sub">Test your knowledge — earn XP and level up</div>
     <div class="og">
-      <span class="og-lbl">Scope / Filter</span>
+      <span class="og-lbl">Quiz Type</span>
       <div class="scope-opts">
         <div class="sopt on-all" onclick="selScope('all',this)">
-          <div class="sdot-sm" style="background:var(--sl-600)"></div>
+          <div class="sdot-sm" style="background:var(--sl-500)"></div>
           <div class="sopt-txt"><div class="sopt-name">All Drugs</div><div class="sopt-cnt" id="cntAll">46 drugs</div></div>
-          <div class="sopt-chk">✓</div>
-        </div>
-        <div class="sopt" onclick="selScope('learning',this)">
-          <div class="sdot-sm" style="background:var(--learning)"></div>
-          <div class="sopt-txt"><div class="sopt-name">Learning &amp; below</div><div class="sopt-cnt" id="cntLearn">— drugs</div></div>
           <div class="sopt-chk">✓</div>
         </div>
         <div class="sopt" onclick="selScope('EMT',this)">
@@ -367,6 +406,11 @@ a{color:inherit;text-decoration:none}
           <div class="sopt-txt"><div class="sopt-name">Advanced Paramedic</div><div class="sopt-cnt" id="cntAP">— drugs</div></div>
           <div class="sopt-chk">✓</div>
         </div>
+        <div class="sopt" onclick="selScope('terms',this)">
+          <div class="sdot-sm" style="background:#7C3AED"></div>
+          <div class="sopt-txt"><div class="sopt-name">Medical Terms</div><div class="sopt-cnt" id="cntTerms">— terms</div></div>
+          <div class="sopt-chk">✓</div>
+        </div>
       </div>
     </div>
     <div class="og">
@@ -380,19 +424,23 @@ a{color:inherit;text-decoration:none}
         </div>
       </div>
     </div>
-    <button class="btn-pri" onclick="startQuiz()">Start Quiz →</button>
+    <button class="btn-pri" onclick="startQuiz()">Start Quiz</button>
   </div>
 
   <div class="qactive" id="quizActive">
+    <!-- Flashcard -->
     <div id="fcMode">
-      <div class="qbar"><div class="qbar-fill" id="fcProg" style="width:0%"></div></div>
+      <div class="quiz-header-row">
+        <div class="qbar"><div class="qbar-fill" id="fcProg" style="width:0%"></div></div>
+        <button class="qreset-btn" onclick="confirmResetQuiz()">End Quiz</button>
+      </div>
       <div class="qctr" id="fcCtr">1 / 10</div>
       <div class="fc-wrap" onclick="flipCard()">
         <div class="fc" id="fc">
           <div class="fc-face fc-front">
             <div class="fc-prompt" id="fcPrompt">—</div>
             <div class="fc-q" id="fcQ">Loading…</div>
-            <div class="fc-hint">👆 Tap to reveal answer</div>
+            <div class="fc-hint">👆 Tap to reveal</div>
           </div>
           <div class="fc-face fc-back">
             <div class="fc-back-lbl" id="fcAnsLbl">Answer</div>
@@ -407,14 +455,19 @@ a{color:inherit;text-decoration:none}
       <button class="btn-skip" onclick="skipCard()">Skip →</button>
     </div>
 
+    <!-- MC -->
     <div id="mcMode" style="display:none">
-      <div class="qbar"><div class="qbar-fill" id="mcProg" style="width:0%"></div></div>
+      <div class="quiz-header-row">
+        <div class="qbar"><div class="qbar-fill" id="mcProg" style="width:0%"></div></div>
+        <button class="qreset-btn" onclick="confirmResetQuiz()">End Quiz</button>
+      </div>
       <div class="qctr" id="mcCtr">1 / 10</div>
       <div class="mc-qcard"><div class="mc-prompt" id="mcPrompt">—</div><div class="mc-q" id="mcQ">Loading…</div></div>
       <div class="mc-opts" id="mcOpts"></div>
       <button class="mc-next" id="mcNext" onclick="nextMC()">Next Question →</button>
     </div>
 
+    <!-- Results -->
     <div class="qres" id="qResults">
       <div class="res-ring" id="resRing">🎉</div>
       <div class="res-title" id="resTitle">Quiz Complete!</div>
@@ -424,36 +477,70 @@ a{color:inherit;text-decoration:none}
         <div class="res-stat"><div class="res-num" id="resTotal">0</div><div class="res-lbl">Questions</div></div>
         <div class="res-stat"><div class="res-num" id="resPct">0%</div><div class="res-lbl">Score</div></div>
       </div>
-      <div class="xp-earned" id="xpEarned">⚡ +0 XP earned</div>
+      <button class="xp-earned-btn" id="xpEarnedBtn" onclick="goProgress()">⚡ +0 XP earned — tap to see progress</button>
       <button class="btn-pri" onclick="resetQuiz()" style="margin-bottom:10px">Try Again</button>
       <button class="btn-skip" onclick="resetQuiz()">Back to Setup</button>
     </div>
   </div>
 </div>
 
-<!-- PROGRESS -->
+<!-- LEARN PAGE -->
+<div class="page" id="page-learn">
+  <div class="gsearch-wrap">
+    <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="search" id="learnSearch" placeholder="Search terms, hospitals…" autocomplete="off" spellcheck="false" oninput="handleLearnSearch(this.value)"/>
+  </div>
+  <div class="learn-chips">
+    <button class="lchip on" data-lsec="pcr" onclick="selLearn('pcr',this)">PCR Codes</button>
+    <button class="lchip" data-lsec="pci" onclick="selLearn('pci',this)">PCI Line</button>
+    <button class="lchip" data-lsec="terms" onclick="selLearn('terms',this)">Medical Terms</button>
+    <button class="lchip" data-lsec="paed" onclick="selLearn('paed',this)">Paed Calculator</button>
+  </div>
+  <div id="learnContent"></div>
+</div>
+
+<!-- PROGRESS PAGE -->
 <div class="page" id="page-stats">
   <div class="pg-title">Progress</div>
-  <div class="pg-sub">Your learning journey</div>
-  <div class="level-card">
-    <div class="lc-title">Current Level</div>
-    <div class="lc-level" id="lcLevel">Rookie</div>
+  <div class="pg-sub" style="margin-bottom:16px">Your learning journey</div>
+  <div class="level-card" id="levelCard">
+    <div class="lc-label">Current Level</div>
+    <div class="lc-name" id="lcName">Rookie</div>
     <div class="lc-bar-wrap"><div class="lc-bar" id="lcBar" style="width:0%"></div></div>
-    <div class="lc-next" id="lcNext">0 XP to next level</div>
+    <div class="lc-next" id="lcNext">100 XP to next level</div>
   </div>
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-num" id="stXP">0</div><div class="stat-lbl">Total XP</div></div>
-    <div class="stat-card"><div class="stat-num" id="stStreak">0</div><div class="stat-lbl">Day Streak 🔥</div></div>
+    <div class="stat-card"><div class="stat-num" id="stStreak">0</div><div class="stat-lbl">Day Streak</div></div>
     <div class="stat-card"><div class="stat-num" id="stQuizzes">0</div><div class="stat-lbl">Quizzes Done</div></div>
     <div class="stat-card"><div class="stat-num" id="stAccuracy">—</div><div class="stat-lbl">Accuracy</div></div>
   </div>
+  <div class="tally-card">
+    <div class="mc-title">Quiz Tally</div>
+    <div class="tally-grid">
+      <div class="tally-item tally-correct"><div class="tally-num" id="tCorrect">0</div><div class="tally-lbl">Correct</div></div>
+      <div class="tally-item tally-wrong"><div class="tally-num" id="tWrong" style="color:var(--red)">0</div><div class="tally-lbl">Incorrect</div></div>
+    </div>
+  </div>
   <div class="mastery-card">
-    <div class="mc-title">Drug Mastery Breakdown</div>
-    <div class="mb-row"><div class="mb-label" style="color:var(--mastered)">★ Mastered</div><div class="mb-bw"><div class="mb-bf" id="bMastered" style="background:var(--mastered);width:0%"></div></div><div class="mb-cnt" id="nMastered">0</div></div>
-    <div class="mb-row"><div class="mb-label" style="color:var(--proficient)">✦ Proficient</div><div class="mb-bw"><div class="mb-bf" id="bProficient" style="background:var(--proficient);width:0%"></div></div><div class="mb-cnt" id="nProficient">0</div></div>
-    <div class="mb-row"><div class="mb-label" style="color:var(--learning)">~ Learning</div><div class="mb-bw"><div class="mb-bf" id="bLearning" style="background:var(--learning);width:0%"></div></div><div class="mb-cnt" id="nLearning">0</div></div>
-    <div class="mb-row"><div class="mb-label" style="color:var(--novice)">◎ Novice</div><div class="mb-bw"><div class="mb-bf" id="bNovice" style="background:var(--novice);width:0%"></div></div><div class="mb-cnt" id="nNovice">0</div></div>
-    <div class="mb-row"><div class="mb-label" style="color:var(--text3)">· Unseen</div><div class="mb-bw"><div class="mb-bf" id="bUnseen" style="background:var(--sl-300);width:0%"></div></div><div class="mb-cnt" id="nUnseen">46</div></div>
+    <div class="mc-title">Drug Mastery</div>
+    <div class="donut-wrap">
+      <svg class="donut-svg" width="90" height="90" viewBox="0 0 90 90" id="donutSvg">
+        <circle cx="45" cy="45" r="35" fill="none" stroke="var(--surf2)" stroke-width="14"/>
+        <circle id="dMastered" cx="45" cy="45" r="35" fill="none" stroke="#047857" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
+        <circle id="dProficient" cx="45" cy="45" r="35" fill="none" stroke="#059669" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
+        <circle id="dLearning" cx="45" cy="45" r="35" fill="none" stroke="#0E7490" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
+        <circle id="dNovice" cx="45" cy="45" r="35" fill="none" stroke="#D97706" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
+      </svg>
+      <div class="donut-legend">
+        <div class="dl-row"><div class="dl-dot" style="background:#047857"></div><div class="dl-label">★ Mastered</div><div class="dl-count" id="dlMastered">0</div></div>
+        <div class="dl-row"><div class="dl-dot" style="background:#059669"></div><div class="dl-label">✦ Proficient</div><div class="dl-count" id="dlProficient">0</div></div>
+        <div class="dl-row"><div class="dl-dot" style="background:#0E7490"></div><div class="dl-label">~ Learning</div><div class="dl-count" id="dlLearning">0</div></div>
+        <div class="dl-row"><div class="dl-dot" style="background:#D97706"></div><div class="dl-label">◎ Novice</div><div class="dl-count" id="dlNovice">0</div></div>
+        <div class="dl-row"><div class="dl-dot" style="background:var(--sl-300)"></div><div class="dl-label">· Unseen</div><div class="dl-count" id="dlUnseen">46</div></div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:4px">Answer 10 questions correctly per drug to master it</div>
   </div>
   <button class="reset-btn" onclick="confirmReset()">Reset All Progress</button>
 </div>
@@ -462,8 +549,7 @@ a{color:inherit;text-decoration:none}
 <div class="overlay" id="detOverlay">
   <div class="det-hdr">
     <div class="det-back" onclick="closeDet()">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Back
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back
     </div>
     <div class="det-name" id="detName">—</div>
     <div class="det-class" id="detClass">—</div>
@@ -474,15 +560,19 @@ a{color:inherit;text-decoration:none}
 
 <!-- BOTTOM NAV -->
 <nav class="bnav">
-  <button class="bnav-btn active" id="btn-ref" onclick="showPage('ref',this)">
+  <button class="nb active" id="btn-ref" onclick="showPage('ref',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
     Reference
   </button>
-  <button class="bnav-btn" id="btn-quiz" onclick="showPage('quiz',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+  <button class="nb" id="btn-quiz" onclick="showPage('quiz',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-linecap="round" stroke-width="2.5"/></svg>
     Quiz
   </button>
-  <button class="bnav-btn" id="btn-stats" onclick="showPage('stats',this)">
+  <button class="nb" id="btn-learn" onclick="showPage('learn',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    Learn
+  </button>
+  <button class="nb" id="btn-stats" onclick="showPage('stats',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     Progress
   </button>
@@ -491,15 +581,15 @@ a{color:inherit;text-decoration:none}
 <div class="toast" id="toast">+10 XP</div>
 
 <script>
-// ─── MEDICATIONS DATA (46 drugs) ──────────────────────────────────────────────
-const MEDS=[{id:1,name:"Activated Charcoal",classification:"Antidotes & Chelators – Intestinal Adsorbent",scope:["EMT","P","AP"],presentation:["Activated Charcoal granules for suspension"],administration:["Oral suspension (PO)"],indications:["Emergency treatment of acute oral poisoning or drug overdose"],contraindications:["Limited value for strong acids, alkalis and corrosives","Poor binding of cyanide, iron salts, methanol, ethanol, ethylene glycol"],dosages:{adult:"50g PO. Reconstitute with water. Take immediately. Repeat as necessary.",paediatric:"Not indicated."},sideEffects:["Bezoar","Constipation","Diarrhoea","GI disorders","Black stools","Aspiration risk — airway obstruction"],additionalInfo:"May be mixed with soft drinks or fruit juice. Absorbs: Aspirin, Barbiturates, Benzodiazepines, Paracetamol, Digoxin, Ibuprofen, Theophylline and many others.",quizHints:{mechanism:"Adsorbs toxins in GI tract, reducing systemic absorption",keyFact:"50g adult dose — ineffective for cyanide, iron salts, methanol, ethanol"}},
-{id:2,name:"Adenosine",classification:"Cardiovascular: Antiarrhythmic",scope:["AP"],presentation:["6mg in 2mL solution","3mg per 1mL (30mg/10mL) infusion vials"],administration:["Intravenous (IV)"],indications:["Paroxysmal SVT (>150bpm) with signs of poor perfusion"],contraindications:["Asthma","COPD","Wolff-Parkinson-White Syndrome","Decompensated heart failure","Long QT syndrome","2nd or 3rd degree AV block","Severe hypotension","Sick sinus syndrome (unless pacemaker)"],dosages:{adult:"6mg IV over 2 sec into large peripheral vein + rapid 10mL NaCl flush. If unsuccessful after 1–2 min: 12mg IV.",paediatric:"Not indicated."},sideEffects:["Angina","Arrhythmia","AV block","Dizziness","Dyspnoea","Flushing","Headache","Nausea","Sinus pause"],additionalInfo:"Administer over 2 seconds into large peripheral vein followed by rapid 10mL NaCl flush. Monitor ECG. Repeat 12mg dose also given over 2 seconds.",quizHints:{mechanism:"Slows AV node conduction via adenosine receptor activation — terminates re-entrant SVT",keyFact:"6mg FAST into large vein + immediate 10mL NaCl flush — speed of injection is critical"}},
+// ─── MEDICATIONS (46) ─────────────────────────────────────────────────────────
+const MEDS=[{id:1,name:"Activated Charcoal",classification:"Antidotes & Chelators – Intestinal Adsorbent",scope:["EMT","P","AP"],presentation:["Activated Charcoal granules for suspension"],administration:["Oral suspension (PO)"],indications:["Emergency treatment of acute oral poisoning or drug overdose"],contraindications:["Limited value for strong acids, alkalis and corrosives","Poor binding of cyanide, iron salts, methanol, ethanol, ethylene glycol"],dosages:{adult:"50g PO. Reconstitute with water. Take immediately. Repeat as necessary.",paediatric:"Not indicated."},sideEffects:["Bezoar","Constipation","Diarrhoea","GI disorders","Black stools","Aspiration risk"],additionalInfo:"May be mixed with soft drinks or fruit juice. Absorbs: Aspirin, Barbiturates, Benzodiazepines, Paracetamol, Digoxin, Ibuprofen, Theophylline and many others.",quizHints:{mechanism:"Adsorbs toxins in GI tract reducing systemic absorption",keyFact:"50g adult dose — ineffective for cyanide, iron, methanol, ethanol"}},
+{id:2,name:"Adenosine",classification:"Cardiovascular: Antiarrhythmic",scope:["AP"],presentation:["6mg in 2mL solution","3mg/1mL (30mg/10mL) infusion vials"],administration:["Intravenous (IV)"],indications:["Paroxysmal SVT (>150bpm) with signs of poor perfusion"],contraindications:["Asthma","COPD","Wolff-Parkinson-White Syndrome","Decompensated heart failure","Long QT syndrome","2nd or 3rd degree AV block","Severe hypotension","Sick sinus syndrome (unless pacemaker)"],dosages:{adult:"6mg IV over 2 sec into large peripheral vein + rapid 10mL NaCl flush. If unsuccessful after 1–2 min: 12mg IV.",paediatric:"Not indicated."},sideEffects:["Angina","Arrhythmia","AV block","Dizziness","Dyspnoea","Flushing","Headache","Nausea","Sinus pause"],additionalInfo:"Administer over 2 seconds into large peripheral vein followed by rapid 10mL NaCl flush. Monitor ECG.",quizHints:{mechanism:"Slows AV node conduction via adenosine receptor activation — terminates re-entrant SVT",keyFact:"6mg FAST into large vein + immediate 10mL NaCl flush — speed of injection is critical"}},
 {id:3,name:"Adrenaline 1:1,000",classification:"Sympathomimetic – Vasoconstrictor",scope:["EMT","P","AP"],presentation:["Pre-filled syringe / ampoule / auto-injector 1mg/1mL (1:1,000)"],administration:["Intramuscular (IM)","Nebulisation (NEB)"],indications:["Severe allergic reaction / Anaphylaxis","Stridor (P/AP)","Refractory severe bronchospasm (P/AP)","Symptomatic bradycardia / cardiogenic shock (AP)","Sepsis (AP)"],contraindications:["Hypersensitivity to excipients","No absolute contraindications in life-threatening emergencies"],dosages:{adult:"Anaphylaxis: 500mcg IM (0.5mL of 1:1,000). Repeat every 5 min PRN.\nBronchospasm (P/AP): 500mcg IM.\nBradycardia/shock (AP): 10mcg IV/IO.",paediatric:"<6m: 10mcg/kg IM\n6m–<6yr: 150mcg IM\n≥6yr–<12yr: 300mcg IM\n≥12yr: 300–500mcg IM\nStridor: <1yr: 2.5mg NEB; ≥1yr: 5mg NEB"},sideEffects:["Palpitations","Tachyarrhythmias","Hypertension","Angina-like symptoms"],additionalInfo:"Double check concentration on pack before use. 1:1,000 = IM only. Never give 1:1,000 IV.",quizHints:{mechanism:"Non-selective adrenoceptor agonist: α1 vasoconstriction, β1 ↑HR/contractility, β2 bronchodilation",keyFact:"Anaphylaxis: 500mcg IM (1:1,000) — 1:1,000 is IM ONLY, NEVER IV"}},
 {id:4,name:"Adrenaline 1:10,000",classification:"Sympathomimetic – Cardiac Arrest",scope:["AP"],presentation:["Pre-filled syringe 1mg/10mL (1:10,000) = 0.1mg/mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["Cardiac arrest","Paediatric bradycardia unresponsive to other measures"],contraindications:["Known severe adverse reaction"],dosages:{adult:"Cardiac arrest: 1mg IV/IO. Repeat every 3–5 min.",paediatric:"Cardiac arrest: 10mcg/kg IV/IO. Repeat every 3–5 min.\nBradycardia: 10mcg/kg IV/IO."},sideEffects:["Palpitations (non-arrest)","Tachyarrhythmias","Hypertension"],additionalInfo:"Double check concentration before use. 1:10,000 = IV/IO only.",quizHints:{mechanism:"Adrenoceptor agonist: increases coronary perfusion pressure and cardiac output during CPR",keyFact:"1mg IV/IO every 3–5 min in cardiac arrest — 1:10,000 = IV/IO ONLY"}},
-{id:5,name:"Amiodarone",classification:"Cardiovascular: Antiarrhythmic Class III",scope:["AP"],presentation:["150mg in 3mL","Pre-filled 300mg/10mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["VF / Pulseless VT","Symptomatic tachycardia (>150bpm)"],contraindications:["Hypersensitivity to Iodine","KSAR"],dosages:{adult:"VF/pVT arrest: 300mg IV/IO undiluted; supplemental 150mg if VF persists after 15 min.\nSymptomatic tachycardia: 150mg IV in 100mL Glucose 5% over 10–20 min.",paediatric:"VF/pVT: 5mg/kg IV/IO post-adrenaline and 3rd shock."},sideEffects:["Peripheral vein inflammation","Bradycardia","AV conduction abnormalities","Hypotension (rapid injection)"],additionalInfo:"Cardiac arrest: give undiluted, then flush. If diluting, use Glucose 5% only. May flush with NaCl 0.9%.",quizHints:{mechanism:"Prolongs refractory period in atria and ventricles; decreases SA automaticity and AV conduction",keyFact:"300mg IV/IO undiluted for VF/pVT arrest — dilute ONLY for tachycardia (Glucose 5%)"}},
-{id:6,name:"Aspirin",classification:"Antithrombotic – Antiplatelet",scope:["EMT","P","AP"],presentation:["300mg dispersible tablet","300mg Enteric Coated (EC) tablet"],administration:["Orally (PO) — chewed or dispersed in water"],indications:["Cardiac chest pain / suspected MI","Unstable angina / NSTEMI","STEMI"],contraindications:["Active symptomatic GI ulcer","Bleeding disorder","Known severe adverse reaction","Patients <16 years (Reye's Syndrome)"],dosages:{adult:"300mg PO.",paediatric:"Contraindicated."},sideEffects:["Epigastric pain","Bronchospasm","GI haemorrhage","Increased bleeding times"],additionalInfo:"Give for cardiac chest pain regardless of anticoagulant use. If patient swallowed EC tablet without chewing, regard as not taken — administer 300mg PO.",quizHints:{mechanism:"Irreversibly inhibits COX-1/COX-2 → prevents thromboxane A2 formation → platelet aggregation inhibition",keyFact:"300mg for cardiac chest pain — EC tablets must be chewed. Give even if already on anticoagulants"}},
+{id:5,name:"Amiodarone",classification:"Cardiovascular: Antiarrhythmic Class III",scope:["AP"],presentation:["150mg in 3mL","Pre-filled 300mg/10mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["VF / Pulseless VT","Symptomatic tachycardia (>150bpm)"],contraindications:["Hypersensitivity to Iodine","KSAR"],dosages:{adult:"VF/pVT arrest: 300mg IV/IO undiluted; supplemental 150mg if VF persists after 15 min.\nSymptomatic tachycardia: 150mg IV in 100mL Glucose 5% over 10–20 min.",paediatric:"VF/pVT: 5mg/kg IV/IO post-adrenaline and 3rd shock."},sideEffects:["Peripheral vein inflammation","Bradycardia","AV conduction abnormalities","Hypotension (rapid injection)"],additionalInfo:"Cardiac arrest: give undiluted, then flush. If diluting, use Glucose 5% only.",quizHints:{mechanism:"Prolongs refractory period in atria and ventricles; decreases SA automaticity and AV conduction",keyFact:"300mg IV/IO undiluted for VF/pVT arrest — dilute ONLY for tachycardia (Glucose 5%)"}},
+{id:6,name:"Aspirin",classification:"Antithrombotic – Antiplatelet",scope:["EMT","P","AP"],presentation:["300mg dispersible tablet","300mg Enteric Coated (EC) tablet"],administration:["Orally (PO) — chewed or dispersed in water"],indications:["Cardiac chest pain / suspected MI","Unstable angina / NSTEMI","STEMI"],contraindications:["Active symptomatic GI ulcer","Bleeding disorder","Known severe adverse reaction","Patients <16 years (Reye's Syndrome)"],dosages:{adult:"300mg PO.",paediatric:"Contraindicated."},sideEffects:["Epigastric pain","Bronchospasm","GI haemorrhage","Increased bleeding times"],additionalInfo:"Give for cardiac chest pain regardless of anticoagulant use. If patient swallowed EC tablet without chewing, regard as not taken — administer 300mg PO.",quizHints:{mechanism:"Irreversibly inhibits COX-1/COX-2 → prevents thromboxane A2 formation → platelet aggregation inhibition",keyFact:"300mg for cardiac chest pain — EC tablets must be chewed. Give even if on anticoagulants"}},
 {id:7,name:"Atropine",classification:"Systemic Antimuscarinic",scope:["AP"],presentation:["Pre-filled syringe 1mg/10mL","Pre-filled syringe 0.5mg/0.5mL","Ampoule 600mcg/1mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["Symptomatic bradycardia","Cholinergic poisoning (organophosphorus) with bradycardia and salivation"],contraindications:["Post-cardiac transplantation","Hypersensitivity","Closed angle glaucoma","Do NOT give for 2nd degree type II or 3rd degree AV block with wide QRS"],dosages:{adult:"Cholinergic poison: 1mg IV. Repeat at 3–5 min to ensure minimal salivation.\nSymptomatic bradycardia: 0.5–1mg IV. Repeat at 3–5 min to max 3mg.",paediatric:"Not indicated."},sideEffects:["Tachycardia","Dry mouth","Dilated pupils"],additionalInfo:"Do not administer if temperature <34°C. Ineffective and may worsen 2nd degree type II / 3rd degree AV block.",quizHints:{mechanism:"Blocks muscarinic receptors — reverses vagal overdrive, increases AV conduction and heart rate",keyFact:"AVOID in 2nd degree type II / 3rd degree AV block with wide QRS — worsens block"}},
-{id:8,name:"Ceftriaxone",classification:"Antibacterial – Cephalosporin",scope:["P","AP"],presentation:["Powder vials: 250mg / 1g / 2g for IV","Powder and solvent for IM injection"],administration:["IV/IO","Intravenous infusion","Intramuscular (IM) with Lidocaine"],indications:["Severe sepsis","Open fractures"],contraindications:["Age <1 month","KSAR","Severe hypersensitivity to beta-lactams","Ceftriaxone-Lidocaine NEVER IV"],dosages:{adult:"2g IV/IO/IM.",paediatric:"1m–11yr: 50mg/kg IV/IO/IM (max 2g).\n>11yr or >50kg: 2g IV/IO/IM."},sideEffects:["Rash","Anaemia","Coagulation disorder"],additionalInfo:"NEVER mix with calcium-containing IV solutions. IM: reconstitute with 3.5mL 1% Lidocaine — this IM mixture NEVER IV. Preferred route for >1g is IV infusion.",quizHints:{mechanism:"3rd generation cephalosporin — inhibits bacterial cell wall synthesis, bactericidal broad spectrum",keyFact:"NEVER mix with calcium solutions. IM Lidocaine diluent NEVER given IV — fatal precipitate risk"}},
+{id:8,name:"Ceftriaxone",classification:"Antibacterial – Cephalosporin",scope:["AP"],presentation:["Powder vials: 250mg / 1g / 2g for IV","Powder and solvent for IM injection"],administration:["IV/IO","Intravenous infusion","Intramuscular (IM) with Lidocaine"],indications:["Severe sepsis","Open fractures"],contraindications:["Age <1 month","KSAR","Severe hypersensitivity to beta-lactams","Ceftriaxone-Lidocaine NEVER IV"],dosages:{adult:"2g IV/IO/IM.",paediatric:"1m–11yr: 50mg/kg IV/IO/IM (max 2g).\n>11yr or >50kg: 2g IV/IO/IM."},sideEffects:["Rash","Anaemia","Coagulation disorder"],additionalInfo:"NEVER mix with calcium-containing IV solutions. IM: reconstitute with 3.5mL 1% Lidocaine — this IM mixture NEVER IV. Preferred route for >1g is IV infusion.",quizHints:{mechanism:"3rd generation cephalosporin — inhibits bacterial cell wall synthesis, bactericidal broad spectrum",keyFact:"NEVER mix with calcium solutions. IM Lidocaine diluent NEVER given IV — fatal precipitate risk"}},
 {id:9,name:"Chlorphenamine",classification:"Sedating Antihistamine – H1 Antagonist",scope:["EMT","P","AP"],presentation:["10mg in 1mL ampoule","4mg tablet"],administration:["Intravenous (IV)","Intramuscular (IM)","Orally (PO)"],indications:["Anaphylaxis or allergic reaction"],contraindications:["Known severe adverse reaction","Pre-coma states"],dosages:{adult:"Mild: 4mg PO.\nModerate: 4mg PO or 10mg IM (EMT/P) or 10mg IV (AP).\nSevere/Anaphylaxis: 10mg IM (EMT/P) or 10mg IV (AP).",paediatric:"Mild 6–11yr: 2mg PO. ≥12yr: 4mg PO.\nModerate/Severe: 1m–6m: 0.25mg/kg IM/IV; >6m–<6yr: 2.5mg IM/IV; 6–<12yr: 5mg IM/IV; ≥12yr: 10mg IM/IV."},sideEffects:["Drowsiness — do not drive"],additionalInfo:"Causes drowsiness. IV route AP only, given over 1 minute. Caution in epilepsy, glaucoma, hepatic disease.",quizHints:{mechanism:"H1 receptor antagonist — blocks histamine-mediated allergic response",keyFact:"Causes drowsiness — warn patient. IV over 1 minute (AP only). EMT/P: IM route only"}},
 {id:10,name:"Clopidogrel",classification:"Antiplatelet – Platelet Aggregation Inhibitor",scope:["P","AP"],presentation:["300mg tablet","75mg tablet"],administration:["Orally (PO)"],indications:["STEMI not suitable for PCI"],contraindications:["KSAR","Active pathological bleeding","Severe liver impairment"],dosages:{adult:"300mg PO. (≥75 years: 75mg PO.)",paediatric:"Not indicated."},sideEffects:["Abdominal pain","Dyspepsia","Diarrhoea","Bleeding"],additionalInfo:"If patient already loaded with non-Aspirin antiplatelet prior to arrival — do NOT administer Clopidogrel.",quizHints:{mechanism:"Irreversibly inhibits P2Y12 ADP receptor → prevents platelet aggregation",keyFact:"300mg PO for STEMI not going to PCI — reduce to 75mg if ≥75 years"}},
 {id:11,name:"Cyclizine",classification:"Antiemetic – Antihistamine / Antimuscarinic",scope:["EMT","P","AP"],presentation:["Ampoule 50mg in 1mL"],administration:["Intravenous (IV)","Intraosseous (IO)","Intramuscular (IM)","Subcutaneous (SC)"],indications:["Management, prevention and treatment of nausea and vomiting"],contraindications:["Known severe adverse reaction"],dosages:{adult:"50mg slow IV/IO or IM. Palliative: 50mg SC.",paediatric:"Not indicated."},sideEffects:["Tachycardia","Dry mouth","Sedation","Site blistering (IV)","Hypotension with rapid IV"],additionalInfo:"IM only if IV/IO unavailable. Rapid IV causes overdose-like symptoms. Give slowly.",quizHints:{mechanism:"H1 antagonist with antimuscarinic properties — inhibits vestibular and chemoreceptor trigger zone",keyFact:"50mg SLOW IV — rapid injection causes overdose-like reaction. IM only if no IV access"}},
@@ -522,12 +612,12 @@ const MEDS=[{id:1,name:"Activated Charcoal",classification:"Antidotes & Chelator
 {id:28,name:"Ketamine",classification:"Anaesthetic – NMDA Receptor Antagonist",scope:["AP"],presentation:["Aqueous solution vial 10mg/mL"],administration:["Intravenous (IV)","Intramuscular (IM)"],indications:["Severe pain","Procedural sedation"],contraindications:["Acute porphyrias","Pre-eclampsia / Eclampsia","Hypertension","Severe cardiac disease","Stroke","KSAR","Caution: head trauma"],dosages:{adult:"Pain: 0.1–0.3mg/kg IV over 60–120 sec (repeat PRN, not <10 min).\nProcedural: 0.5–1mg/kg IV over 60–120 sec; 5mg/kg IM.",paediatric:">12 months: Pain: 0.1–0.3mg/kg IV (repeat once ≥10 min).\nProcedural: 0.5–1mg/kg IV/IO over 60–120 sec; 4–5mg/kg IM."},sideEffects:["Hallucinations","Hypertension","Nausea/vomiting","Tachycardia","Psychotic effects","Laryngospasm (uncommon)"],additionalInfo:"Dilute if <1mL using NaCl 0.9%. Hallucinations reduced by concurrent benzodiazepine. Patient maintains airway reflexes. Classified CD2 by PHECC.",quizHints:{mechanism:"NMDA receptor antagonist → dissociative anaesthesia: sedation, amnesia, analgesia while maintaining airway reflexes",keyFact:"Dilute if <1mL. Maintains own airway — add benzodiazepine to reduce hallucinations. PHECC CD2 drug"}},
 {id:29,name:"Lidocaine",classification:"Antiarrhythmic Class 1B",scope:["AP"],presentation:["Minijet 1% 100mg/10mL","Ampoule 1% 50mg/5mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["VF/pVT cardiac arrest","IO pain management","Solvent for Ceftriaxone IM"],contraindications:["No contraindications in cardiac arrest","KSAR as Ceftriaxone diluent"],dosages:{adult:"VF/pVT: 100mg IV/IO (2nd dose 50mg if required).\nIO pain: 40mg 1% IO over 2 min; wait 1 min; 20mg over 1 min. Supplementary 20mg x1 PRN (≥45 min).\nCeftriaxone IM: 3.5mL.",paediatric:"VF/pVT: 1mg/kg IV/IO.\nIO pain: 500mcg/kg (max 40mg) IO over 2 min; 2nd 250mcg/kg (max 20mg). Total max 60mg."},sideEffects:["Drowsiness","Dizziness","Twitching","Paraesthesia","Convulsions","Bradycardia"],additionalInfo:"Three distinct uses — do not confuse doses between indications.",quizHints:{mechanism:"Sodium channel blocker → stabilises cardiac membrane, suppresses ventricular arrhythmias",keyFact:"Three uses: VF/pVT (100mg IV), IO pain (40mg slow IO), Ceftriaxone diluent — different doses each"}},
 {id:30,name:"Lorazepam",classification:"Benzodiazepine – Anxiolytic",scope:["AP"],presentation:["1mg tablet"],administration:["Orally (PO)"],indications:["Behavioural emergency — combative with hallucinations/paranoia","Procedural sedation"],contraindications:["Benzodiazepine sensitivity","Severe hepatic/pulmonary insufficiency","Significant alcohol/sedatives ingested","KSAR"],dosages:{adult:"2mg PO (repeat x1 PRN).",paediatric:"Not indicated."},sideEffects:["Drowsiness","Confusion","Headache","Dizziness","Blurred vision","Nausea/vomiting"],additionalInfo:"Must seek medical advice prior to administration.",quizHints:{mechanism:"GABA-A positive allosteric modulator → anxiolytic, sedative, amnesic",keyFact:"Requires medical advice before administering — 2mg PO, repeat x1 only"}},
-{id:31,name:"Magnesium Sulphate",classification:"Electrolyte – Tocolytic / Anticonvulsant",scope:["AP"],presentation:["Ampoule 5g in 10mL","Ampoule 1g in 2mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["Life-threatening asthma","Torsades de pointes","Persistent bronchospasm","Eclampsia seizures"],contraindications:["None in cardiac arrest","KSAR"],dosages:{adult:"Life-threatening asthma: 2g IV (100mL NaCl) over 20 min.\nTorsades de pointes: 2g IV (100mL NaCl) over 15 min.\nPersistent bronchospasm: 2g IV (100mL NaCl) over 20 min.\nEclampsia: 4g IV (100mL NaCl) over 30 min.",paediatric:"Not indicated."},sideEffects:["Bradycardia (slow infusion)","Overdose: arrhythmias, coma, hypotension, respiratory depression"],additionalInfo:"Must be diluted — max concentration 20%. Monitor BP, RR, urinary output and signs of overdose. Compatible with Glucose 5% or NaCl 0.9%.",quizHints:{mechanism:"Calcium antagonist → smooth muscle relaxation (bronchodilation), membrane stabilisation, inhibits motor neurone activity",keyFact:"4 indications, 4 different doses — must be diluted. Monitor for respiratory depression"}},
-{id:32,name:"Methoxyflurane",classification:"Volatile Anaesthetic – Analgesic (Penthrox)",scope:["EMT","P","AP"],presentation:["3mL vial via carbon inhalation vaporiser"],administration:["Inhaled (INH) — self-administered, activated carbon chamber"],indications:["Moderate to severe pain"],contraindications:["<5 years old","Altered LOC","Cardiovascular instability","Respiratory depression","Renal failure","KSAR","Malignant hyperthermia"],dosages:{adult:"3mL INH (repeat x1 only PRN).",paediatric:"3mL INH (repeat x1 only PRN). Age ≥5 years."},sideEffects:["Amnesia","Dizziness","Euphoria","Headache","Somnolence","Hypotension","Nausea","Dry mouth"],additionalInfo:"Not suitable for ACS or migraine. Crosses placenta — consider foetal risk. In confined space: patient inhales and exhales through inhaler with carbon chamber attached.",quizHints:{mechanism:"Volatile anaesthetic — rapid onset inhalational analgesia via ion channel modulation",keyFact:"Max 2 doses total — contraindicated in renal impairment, <5 years, and cardiovascular instability"}},
+{id:31,name:"Magnesium Sulphate",classification:"Electrolyte – Tocolytic / Anticonvulsant",scope:["AP"],presentation:["Ampoule 5g in 10mL","Ampoule 1g in 2mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["Life-threatening asthma","Torsades de pointes","Persistent bronchospasm","Eclampsia seizures"],contraindications:["None in cardiac arrest","KSAR"],dosages:{adult:"Life-threatening asthma: 2g IV (100mL NaCl) over 20 min.\nTorsades de pointes: 2g IV (100mL NaCl) over 15 min.\nPersistent bronchospasm: 2g IV (100mL NaCl) over 20 min.\nEclampsia: 4g IV (100mL NaCl) over 30 min.",paediatric:"Not indicated."},sideEffects:["Bradycardia (slow infusion)","Overdose: arrhythmias, coma, hypotension, respiratory depression"],additionalInfo:"Must be diluted — max concentration 20%. Monitor BP, RR, urinary output and signs of overdose.",quizHints:{mechanism:"Calcium antagonist → smooth muscle relaxation (bronchodilation), membrane stabilisation, inhibits motor neurone activity",keyFact:"4 indications, 4 different doses — must be diluted. Monitor for respiratory depression"}},
+{id:32,name:"Methoxyflurane",classification:"Volatile Anaesthetic – Analgesic",scope:["EMT","P","AP"],presentation:["3mL vial via carbon inhalation vaporiser"],administration:["Inhaled (INH) — self-administered, activated carbon chamber"],indications:["Moderate to severe pain"],contraindications:["<5 years old","Altered LOC","Cardiovascular instability","Respiratory depression","Renal failure","KSAR","Malignant hyperthermia"],dosages:{adult:"3mL INH (repeat x1 only PRN).",paediatric:"3mL INH (repeat x1 only PRN). Age ≥5 years."},sideEffects:["Amnesia","Dizziness","Euphoria","Headache","Somnolence","Hypotension","Nausea","Dry mouth"],additionalInfo:"Not suitable for ACS or migraine. Crosses placenta — consider foetal risk. In confined space: patient inhales and exhales through inhaler with carbon chamber attached.",quizHints:{mechanism:"Volatile anaesthetic — rapid onset inhalational analgesia via ion channel modulation",keyFact:"Max 2 doses total — contraindicated in renal impairment, <5 years, and cardiovascular instability"}},
 {id:33,name:"Midazolam",classification:"Benzodiazepine – Anticonvulsant / Sedative",scope:["P","AP"],presentation:["Ampoule 10mg in 2mL or 5mL","Pre-filled buccal syringe: 2.5mg/5mg/7.5mg/10mg"],administration:["Buccal","Intranasal (IN) — 50% each nostril","IM","IV","IO","SC"],indications:["Seizures","Combative behavioural emergency (AP)","Procedural sedation","Palliative care"],contraindications:["Shock","Respiratory depression","KSAR","Depressed vital signs or alcohol-related altered LOC"],dosages:{adult:"Seizure: 10mg buccal, 5mg IN or 5mg IM (P/AP); 2.5mg IV/IO (AP).\nPalliative: 2.5mg SC (AP) or 2.5–5mg buccal (P/AP).\nBehavioural: 5mg IN/IM (AP, seek medical advice).\nProcedural: 1–2.5mg IV (>5 min); 5mg IM/IN (>15 min).",paediatric:"Seizure buccal: <3m: 0.3mg/kg (max 2.5mg); 3m–1yr: 2.5mg; 1–5yr: 5mg; 5–10yr: 7.5mg; 10–18yr: 10mg.\nOr: 0.2mg/kg IN (P/AP) or 0.1mg/kg IV/IO (AP). Max 4 total benzodiazepine doses."},sideEffects:["Respiratory depression","Hypotension","Drowsiness","Headache"],additionalInfo:"Titrate IV to effect. Ensure O₂ and resuscitation available. Account for carer-administered doses. Reseizure = new event.",quizHints:{mechanism:"GABA-A positive allosteric modulator → anticonvulsant, sedative, anxiolytic, amnesic",keyFact:"Buccal route key for paediatric seizures without IV — include carer doses in max 4 benzodiazepine count"}},
 {id:34,name:"Morphine Sulphate",classification:"Opioid Analgesic",scope:["AP"],presentation:["Ampoule 10mg/1mL (dilute in 9mL NaCl)","Oral suspension 10mg/5mL"],administration:["IV","IO","PO","IM"],indications:["Severe pain","Palliative care","Procedural sedation"],contraindications:["PO: <1 year","Labour pains","Acute respiratory depression","Acute intoxication","SBP <90mmHg","KSAR"],dosages:{adult:"Pain: 4mg IV initial. Repeat 2mg at ≥2 min PRN (max 16mg; musculoskeletal max 20mg).\nProcedural: 2–4mg IV (>5 min); 5mg IM (>10 min).\nPalliative: 2.5–5mg SC (repeat x1) or 5–10mg PO (repeat x1).",paediatric:"Pain: 300mcg/kg PO (max 10mg, >1yr); 50mcg/kg IV over ≥5 min (max 0.1mg/kg).\nProcedural: 100mcg/kg IV/IO (>5 min) or IM (>10 min)."},sideEffects:["Respiratory depression","Drowsiness","Nausea and vomiting","Constipation"],additionalInfo:"Extreme caution in elderly and young. Caution with reduced GCS and respiratory distress. Controlled Drug Schedule 2.",quizHints:{mechanism:"μ-opioid receptor agonist → analgesia, sedation, respiratory depression, decreased GI motility",keyFact:"4mg IV initial, then 2mg at ≥2 min — dilute to 1mg/mL. CD Schedule 2"}},
-{id:35,name:"Naloxone",classification:"Opioid Antagonist",scope:["EMT","P","AP"],presentation:["Ampoule 400mcg/mL (0.4mg/1mL)","Minijet syringe"],administration:["IV","IO","IM","SC","Intranasal (IN)"],indications:["Inadequate respiration / altered LOC following narcotic overdose"],contraindications:["KSAR"],dosages:{adult:"400mcg IV/IO (AP) — repeat after 3 min PRN.\n400mcg IM/SC (P) — repeat after 3 min PRN.\n800mcg IN (EMT) — repeat after 3 min PRN.",paediatric:"AP: 10mcg/kg IV/IO.\nP: 10mcg/kg IM/SC.\nEMT: 20mcg/kg IN.\nRepeat PRN to max 0.1mg/kg or 2mg."},sideEffects:["Acute opioid withdrawal — nausea, vomiting, agitation, seizures"],additionalInfo:"Shorter half-life than most opioids — patient may re-sedate. Rapid reversal precipitates withdrawal. Be prepared for aggressive patients. If 10mg total fails, consider other causes.",quizHints:{mechanism:"Competitive antagonist at all opioid receptors (μ, κ, δ) → reverses opioid CNS and respiratory depression",keyFact:"EMT: 800mcg IN. P: 400mcg IM. AP: 400mcg IV — shorter half-life, may re-sedate. Titrate to breathing not consciousness"}},
-{id:36,name:"Nitrous Oxide / Oxygen (Entonox)",classification:"Analgesic – Volatile Gas",scope:["EMT","P","AP"],presentation:["Cylinder: blue with white/blue triangles. 50% N₂O + 50% O₂"],administration:["Self-administered inhalation — demand valve with mask or mouthpiece"],indications:["Moderate to severe pain"],contraindications:["Altered LOC","Chest injury","Pneumothorax","Shock","Recent scuba dive / decompression sickness","Intestinal obstruction","CO poisoning","Bullous emphysema","Head injury","Maxillo-facial injuries","Sedation/intoxication","Recent eye surgery with bubble gas"],dosages:{adult:"Self-administered until pain tolerable.",paediatric:"Self-administered until pain tolerable."},sideEffects:["Disinhibition","Decreased LOC","Light headedness"],additionalInfo:"Caution with COPD — may ↑PaCO₂. Do not use if patient cannot understand instructions. Cold temperatures: warm and invert cylinder ≥3 times. Addictive potential. Prolonged use: megaloblastic marrow changes.",quizHints:{mechanism:"CNS depressant via ion channel modulation → rapid onset inhalational analgesia",keyFact:"Many contraindications — key: pneumothorax, head injury, CO poisoning, recent dive. Cold: invert cylinder 3 times"}},
+{id:35,name:"Naloxone",classification:"Opioid Antagonist",scope:["EMT","P","AP"],presentation:["Ampoule 400mcg/mL (0.4mg/1mL)","Minijet syringe"],administration:["IV","IO","IM","SC","Intranasal (IN)"],indications:["Inadequate respiration / altered LOC following narcotic overdose"],contraindications:["KSAR"],dosages:{adult:"400mcg IV/IO (AP) — repeat after 3 min PRN.\n400mcg IM/SC (P) — repeat after 3 min PRN.\n800mcg IN (EMT) — repeat after 3 min PRN.",paediatric:"AP: 10mcg/kg IV/IO.\nP: 10mcg/kg IM/SC.\nEMT: 20mcg/kg IN.\nRepeat PRN to max 0.1mg/kg or 2mg."},sideEffects:["Acute opioid withdrawal — nausea, vomiting, agitation, seizures"],additionalInfo:"Shorter half-life than most opioids — patient may re-sedate. Rapid reversal precipitates withdrawal. Be prepared for aggressive patients.",quizHints:{mechanism:"Competitive antagonist at all opioid receptors (μ, κ, δ) → reverses opioid CNS and respiratory depression",keyFact:"EMT: 800mcg IN. P: 400mcg IM. AP: 400mcg IV — shorter half-life, may re-sedate. Titrate to breathing not consciousness"}},
+{id:36,name:"Nitrous Oxide / Oxygen (Entonox)",classification:"Analgesic – Volatile Gas",scope:["EMT","P","AP"],presentation:["Cylinder: blue with white/blue triangles. 50% N₂O + 50% O₂"],administration:["Self-administered inhalation — demand valve with mask or mouthpiece"],indications:["Moderate to severe pain"],contraindications:["Altered LOC","Chest injury","Pneumothorax","Shock","Recent scuba dive / decompression sickness","Intestinal obstruction","CO poisoning","Bullous emphysema","Head injury","Maxillo-facial injuries","Sedation/intoxication","Recent eye surgery with bubble gas"],dosages:{adult:"Self-administered until pain tolerable.",paediatric:"Self-administered until pain tolerable."},sideEffects:["Disinhibition","Decreased LOC","Light headedness"],additionalInfo:"Caution with COPD — may ↑PaCO₂. Do not use if patient cannot understand instructions. Cold temperatures: warm and invert cylinder ≥3 times. Addictive potential.",quizHints:{mechanism:"CNS depressant via ion channel modulation → rapid onset inhalational analgesia",keyFact:"Many contraindications — key: pneumothorax, head injury, CO poisoning, recent dive. Cold: invert cylinder 3 times"}},
 {id:37,name:"Ondansetron",classification:"Antiemetic – 5HT3 Receptor Antagonist",scope:["P","AP"],presentation:["Ampoule 2mL (4mg in 2mL)"],administration:["Intramuscular (IM)","Intravenous (IV)"],indications:["Significant nausea and vomiting"],contraindications:["KSAR","Congenital long QT syndrome"],dosages:{adult:"4mg IM (P/AP) or slow IV (AP).",paediatric:"100mcg/kg slow IV (AP) or IM (P/AP) to max 4mg."},sideEffects:["Flushing","Headache","Bradycardia (uncommon)","QT prolongation (rare — monitor)"],additionalInfo:"Caution with history of QT prolongation or electrolyte imbalance.",quizHints:{mechanism:"Selective 5HT3 antagonist — blocks serotonin-mediated vagal afferents and chemoreceptor trigger zone",keyFact:"Contraindicated in congenital long QT — QT prolongation risk. Monitor ECG in susceptible patients"}},
 {id:38,name:"Oxygen",classification:"Medical Gas",scope:["EMT","P","AP"],presentation:["Cylinders: black with white shoulders (transitioning to all-white)"],administration:["Non-rebreather mask","Simple face mask","Venturi mask","Nasal cannulae","CPAP","BVM","Tracheostomy mask"],indications:["SpO₂ <94% adults, <96% paediatrics","SpO₂ <92% for COPD exacerbation","SpO₂ <90% for pulmonary oedema","Cardiac/respiratory arrest"],contraindications:["Bleomycin lung injury"],dosages:{adult:"Arrest/sickle cell: 100%.\nLife threats: 100% until SpO₂ reliable, then titrate to 94–98%.\nCOPD: titrate to SpO₂ 92% (or per COPD Alert Card).\nAll other: 94–98%.",paediatric:"Arrest/sickle cell: 100%.\nLife threats: 100% until SpO₂, then 96–98%.\nNeonatal resuscitation (<4 wks): consider ≤30%.\nAll other: 96–98%."},sideEffects:["Prolonged use in COPD may reduce ventilatory drive"],additionalInfo:"Avoid paraffin-based emollients — fire risk. Document O₂ therapy and SpO₂ for every patient. Humidifier if paediatric >30 min. Avoid naked flames.",quizHints:{mechanism:"Increases alveolar/arterial oxygen tension → reverses hypoxia, supports cellular metabolism",keyFact:"COPD target: 92% NOT 94–98% — high flow O₂ suppresses hypoxic drive. Always document"}},
 {id:39,name:"Oxytocin",classification:"Oxytocic – Prostaglandin",scope:["P","AP"],presentation:["5 international units in 1mL ampoule"],administration:["Intramuscular (IM)"],indications:["Pre-hospital emergency childbirth","Control of post-partum haemorrhage"],contraindications:["Severe cardiac dysfunction","KSAR"],dosages:{adult:"10 international units IM.",paediatric:"Not indicated."},sideEffects:["Cardiac arrhythmias","Headache","Nausea/vomiting","Hypotension","Abdominal pain","Dizziness"],additionalInfo:"MUST confirm single foetus before administering. Check storage conditions.",quizHints:{mechanism:"Synthetic oxytocin → uterine contractions and vasoconstriction → controls post-partum haemorrhage",keyFact:"MUST exclude second foetus before giving — 10 units IM for PPH"}},
@@ -539,254 +629,380 @@ const MEDS=[{id:1,name:"Activated Charcoal",classification:"Antidotes & Chelator
 {id:45,name:"Ticagrelor",classification:"Antithrombotic – Antiplatelet",scope:["P","AP"],presentation:["90mg tablets"],administration:["Orally (PO)"],indications:["STEMI — transporting to PPCI centre"],contraindications:["Hypersensitivity to Ticagrelor","Active pathological bleeding","History of intracranial haemorrhage","Severe hepatic impairment"],dosages:{adult:"Loading dose 180mg PO.",paediatric:"Not indicated."},sideEffects:["Dyspnoea","Epistaxis","GI haemorrhage","Subcutaneous/dermal bleeding","Intracranial bleeding (rare)"],additionalInfo:"Special authorisation required. AP and Paramedics authorised following STEMI identification or PPCI instruction. Do NOT give if already loaded with non-Aspirin antiplatelet.",quizHints:{mechanism:"Reversible P2Y12 ADP receptor antagonist → faster onset than Clopidogrel, prevents platelet aggregation",keyFact:"180mg PO for STEMI to PPCI — requires special authorisation. Do not give if already had another antiplatelet"}},
 {id:46,name:"Tranexamic Acid",classification:"Antihaemorrhagic – Anti-fibrinolytic",scope:["AP"],presentation:["Ampoule 500mg in 5mL"],administration:["Intravenous (IV)","Intraosseous (IO)"],indications:["Suspected significant haemorrhage from trauma","Post-partum haemorrhage"],contraindications:["Hypersensitivity","Acute venous or arterial thrombosis","History of convulsions","Severe renal impairment"],dosages:{adult:"1g IV/IO in 100mL NaCl.",paediatric:"15mg/kg in 100mL NaCl (max 1g)."},sideEffects:["Diarrhoea","Nausea","Vomiting","Visual disturbance","Dizziness","Headache"],additionalInfo:"Caution with head injury.",quizHints:{mechanism:"Inhibits fibrinolysis by blocking plasminogen binding to fibrin → prevents clot breakdown → reduces haemorrhage",keyFact:"1g IV for trauma/PPH — infuse in 100mL NaCl. Caution with head injury"}}];
 
-// ─── XP LEVELS ────────────────────────────────────────────────────────────────
-const LEVELS=[
-  {name:"Rookie",xp:0,next:100},
-  {name:"Student",xp:100,next:300},
-  {name:"Responder",xp:300,next:600},
-  {name:"Clinician",xp:600,next:1000},
-  {name:"Expert",xp:1000,next:1500},
-  {name:"Senior Clinician",xp:1500,next:2200},
-  {name:"Master Clinician",xp:2200,next:Infinity}
+// ─── HOSPITAL PCR CODES ───────────────────────────────────────────────────────
+const HOSPITALS=[
+  {county:"Armagh",name:"Craigavon Area Hospital",main:"(048) 38334444",ed:"(048) 37561750",pcr:"CAH"},
+  {county:"Cavan",name:"Cavan Monaghan Hospital",main:"(049) 4376000",ed:"(049) 4376607",pcr:"CGH"},
+  {county:"Clare",name:"Ennis Hospital",main:"(065) 6824464",ed:"Local Injury Unit (065) 6863121",pcr:"ERH"},
+  {county:"Cork",name:"Bantry General Hospital",main:"(027) 50133",ed:"Local Injury Unit (027) 52929",pcr:"BGH"},
+  {county:"Cork",name:"Cork University Hospital",main:"(021) 4546400",ed:"(021) 4920222",pcr:"CUH"},
+  {county:"Cork",name:"Cork University Maternity Hospital",main:"(021) 4920500",ed:"(021) 4920598",pcr:"CUMH"},
+  {county:"Cork",name:"Mallow General Hospital",main:"(022) 21251",ed:"(022) 52506",pcr:"MLGH"},
+  {county:"Cork",name:"Mercy University Hospital",main:"(021) 4271971",ed:"(021) 4935241",pcr:"MUH"},
+  {county:"Cork",name:"South Infirmary Victoria Hospital Cork",main:"(021) 4926100",ed:"n/a",pcr:"SIVH"},
+  {county:"Derry",name:"Altnagelvin Hospital",main:"(048) 71345171",ed:"(048) 71611379",pcr:"AHD"},
+  {county:"Donegal",name:"Letterkenny University Hospital",main:"(074) 9125888",ed:"(074) 9123595",pcr:"LGH"},
+  {county:"Down",name:"Daisy Hill Hospital, Newry",main:"(048) 30835000",ed:"(048) 30832406 / (048) 37562092",pcr:"DHH"},
+  {county:"Dublin",name:"AMNCH (Tallaght) – Adult",main:"(01) 4142000",ed:"(01) 4143536",pcr:"AMNA"},
+  {county:"Dublin",name:"AMNCH (Tallaght) – Paediatric",main:"(01) 4142000",ed:"(01) 4143510",pcr:"AMNC"},
+  {county:"Dublin",name:"Beaumont Hospital",main:"(01) 8093000",ed:"(01) 8092714",pcr:"BHD"},
+  {county:"Dublin",name:"Connolly Hospital Blanchardstown",main:"(01) 6465000",ed:"(01) 6466250 / (01) 6466251 / (01) 6466191",pcr:"CHD"},
+  {county:"Dublin",name:"Coombe Women's Hospital",main:"(01) 4085200",ed:"(01) 4085531",pcr:"CWH"},
+  {county:"Dublin",name:"Mater Misericordiae Hospital",main:"(01) 8032000",ed:"(01) 8032651 / (01) 8032223",pcr:"MMH"},
+  {county:"Dublin",name:"National Children's Hospital (Temple St)",main:"(01) 8784200",ed:"(01) 8784829",pcr:"TCH"},
+  {county:"Dublin",name:"National Maternity Hospital, Holles St",main:"(01) 6373100",ed:"n/a",pcr:"NMH"},
+  {county:"Dublin",name:"Our Lady's Hospital for Sick Children, Crumlin",main:"(01) 4096100",ed:"(01) 4096346 / (01) 4096326",pcr:"OLHC"},
+  {county:"Dublin",name:"Rotunda Hospital",main:"(01) 8171700",ed:"n/a",pcr:"RMH"},
+  {county:"Dublin",name:"Royal Victoria Eye and Ear Hospital",main:"(01) 6644600",ed:"(01) 6343648",pcr:"RVH"},
+  {county:"Dublin",name:"St James's Hospital",main:"(01) 4103000",ed:"(01) 4162774 / (01) 4162775 / (01) 4162776",pcr:"SJH"},
+  {county:"Dublin",name:"St Michael's, Dun Laoghaire",main:"(01) 2806901",ed:"(01) 6639815",pcr:"SMH"},
+  {county:"Dublin",name:"St Vincent's University Hospital",main:"(01) 2214000",ed:"(01) 2214358",pcr:"SVH"},
+  {county:"Fermanagh",name:"Erne Hospital, Enniskillen",main:"(048) 66382000",ed:"n/a",pcr:"EHE"},
+  {county:"Galway",name:"Portiuncula Hospital, Ballinasloe",main:"(0909) 648200",ed:"(0909) 648248",pcr:"PHB"},
+  {county:"Galway",name:"University Hospital Galway",main:"(091) 524222",ed:"(091) 544556",pcr:"UHG"},
+  {county:"Kerry",name:"University Hospital Kerry",main:"(066) 7184000",ed:"n/a",pcr:"KgH"},
+  {county:"Kildare",name:"Naas General Hospital",main:"(045) 849500",ed:"(045) 849909",pcr:"NGH"},
+  {county:"Kilkenny",name:"St Luke's General Hospital",main:"(056) 7785000",ed:"(056) 7717008",pcr:"SLK"},
+  {county:"Laois",name:"Midland Regional Hospital, Portlaoise",main:"(057) 8621364",ed:"(057) 8696028",pcr:"PMR"},
+  {county:"Limerick",name:"University Maternity Hospital Limerick",main:"(061) 327455",ed:"n/a",pcr:"LRMH"},
+  {county:"Limerick",name:"University Hospital Limerick",main:"(061) 301111 / (061) 482219",ed:"(061) 482120",pcr:"LRH"},
+  {county:"Limerick",name:"St John's Hospital Limerick",main:"(061) 462222",ed:"Local Injury Unit (061) 462134",pcr:"SJHL"},
+  {county:"Louth",name:"Our Lady of Lourdes Hospital",main:"(041) 9837601",ed:"(041) 9832321",pcr:"OLOL"},
+  {county:"Mayo",name:"Mayo General Hospital",main:"(094) 9021733",ed:"(094) 9042377",pcr:"MOGH"},
+  {county:"Offaly",name:"Midland Regional Hospital Tullamore",main:"(057) 9321501",ed:"(057) 9358021",pcr:"TMR"},
+  {county:"Sligo",name:"Sligo University Hospital",main:"(071) 9171111",ed:"(071) 9174506",pcr:"SGH"},
+  {county:"Tipperary",name:"Nenagh Hospital",main:"(067) 31491",ed:"n/a",pcr:"NRH"},
+  {county:"Tipperary",name:"South Tipperary General Hospital, Clonmel",main:"(052) 6177000",ed:"(052) 6177042",pcr:"STGH"},
+  {county:"Waterford",name:"University Hospital Waterford",main:"(051) 848000",ed:"(051) 842444 / (051) 842445 / (051) 842582",pcr:"WRH"},
+  {county:"Westmeath",name:"Midland Regional Hospital – Mullingar",main:"(044) 9340221",ed:"(044) 9394129",pcr:"MMR"},
+  {county:"Wexford",name:"Wexford General Hospital",main:"(053) 9153000",ed:"(053) 9153313",pcr:"WGH"}
 ];
 
-function getLevel(xp) {
-  for(let i=LEVELS.length-1;i>=0;i--) if(xp>=LEVELS[i].xp) return LEVELS[i];
-  return LEVELS[0];
-}
+// ─── PRIMARY PCI ──────────────────────────────────────────────────────────────
+const PCI_NUMBER="1800 74 22 22";
+const PCI_LABS=[
+  {n:1,hospital:"University Hospital Galway"},
+  {n:2,hospital:"University Hospital Limerick"},
+  {n:3,hospital:"Cork University Hospital"},
+  {n:4,hospital:"University Hospital Waterford"},
+  {n:5,hospital:"Mater Misericordiae Hospital, Dublin"},
+  {n:6,hospital:"St Vincent's University Hospital, Dublin"},
+  {n:7,hospital:"St James's Hospital, Dublin"},
+  {n:8,hospital:"Altnagelvin Hospital, Derry"}
+];
 
-// ─── MASTERY (5 tiers based on correct answers per drug) ──────────────────────
-// 0 correct = unseen, 1-2 = novice, 3-5 = learning, 6-9 = proficient, 10+ = mastered
-function getMasteryTier(correct) {
-  if(correct>=10) return 'mastered';
-  if(correct>=6) return 'proficient';
-  if(correct>=3) return 'learning';
-  if(correct>=1) return 'novice';
-  return 'unseen';
-}
+// ─── MEDICAL TERMS ────────────────────────────────────────────────────────────
+const TERMS=[
+  {term:"Acidosis",def:"A condition where the blood becomes too acidic (pH <7.35), often due to respiratory failure or metabolic causes such as diabetic ketoacidosis."},
+  {term:"Acute",def:"A condition that comes on rapidly and is severe or urgent in nature, as opposed to chronic (long-standing)."},
+  {term:"Aetiology",def:"The cause or origin of a disease or condition."},
+  {term:"Alkalosis",def:"A condition where the blood becomes too alkaline (pH >7.45), which can result from hyperventilation or loss of stomach acid."},
+  {term:"Anaemia",def:"A deficiency of red blood cells or haemoglobin in the blood, resulting in pallor, fatigue and reduced oxygen-carrying capacity."},
+  {term:"Analgesia",def:"The relief of pain without loss of consciousness."},
+  {term:"Anaphylaxis",def:"A severe, potentially life-threatening allergic reaction causing systemic effects including airway compromise, cardiovascular collapse and urticaria."},
+  {term:"Angina",def:"Chest pain or discomfort caused by reduced blood flow to the heart muscle, typically triggered by exertion."},
+  {term:"Anoxia",def:"Complete absence of oxygen supply to the body's tissues."},
+  {term:"Antipyretic",def:"A drug or treatment that reduces fever (e.g. Paracetamol, Ibuprofen)."},
+  {term:"Apnoea",def:"Cessation of breathing, either temporary (as in sleep apnoea) or as part of respiratory arrest."},
+  {term:"Arrhythmia",def:"An abnormal heart rhythm — may be too fast, too slow or irregular."},
+  {term:"Asphyxia",def:"Severe deficiency of oxygen leading to loss of consciousness and potentially death, often caused by airway obstruction."},
+  {term:"Asystole",def:"Complete absence of electrical activity in the heart — a flatline rhythm representing cardiac arrest."},
+  {term:"Ataxia",def:"Lack of voluntary coordination of muscle movements, often causing an unsteady gait."},
+  {term:"Auscultation",def:"Listening to internal sounds of the body using a stethoscope, typically to assess heart and breath sounds."},
+  {term:"Bradycardia",def:"A heart rate slower than 60 beats per minute. In prehospital care, symptomatic bradycardia (with haemodynamic compromise) requires treatment."},
+  {term:"Bronchospasm",def:"Sudden constriction of the muscles in the walls of the bronchioles, causing difficulty breathing. Common in asthma and anaphylaxis."},
+  {term:"Capillary Refill Time (CRT)",def:"The time it takes for colour to return to a fingernail bed after pressure is applied. Normal is <2 seconds; prolonged indicates poor perfusion."},
+  {term:"Cardiac Tamponade",def:"Compression of the heart caused by fluid accumulation in the pericardial sac, impairing cardiac filling and output."},
+  {term:"Cardiogenic Shock",def:"A state of reduced cardiac output due to primary heart failure, resulting in hypoperfusion of vital organs."},
+  {term:"Cellulitis",def:"A bacterial skin infection causing redness, swelling, warmth and pain, typically requiring antibiotics."},
+  {term:"Cerebrovascular Accident (CVA)",def:"A stroke — sudden interruption of blood supply to part of the brain, causing neurological deficits."},
+  {term:"Chronic",def:"A condition persisting over a long period, as opposed to acute."},
+  {term:"Coma",def:"A prolonged state of unconsciousness in which a person cannot be awakened and does not respond to stimulation."},
+  {term:"Constriction",def:"Narrowing of a blood vessel or airway, reducing flow through it."},
+  {term:"Contraindication",def:"A specific situation in which a drug, procedure or treatment should NOT be used because it may be harmful."},
+  {term:"Convulsion",def:"Involuntary muscle contractions and relaxations, typically associated with seizures."},
+  {term:"Crepitus",def:"A crackling or popping sound/sensation produced by bone rubbing on bone, or air in soft tissue."},
+  {term:"Croup",def:"A viral respiratory infection in children causing a characteristic barking cough, stridor and respiratory distress due to subglottic oedema."},
+  {term:"Cyanosis",def:"A bluish discolouration of the skin and mucous membranes caused by reduced oxygen in the blood."},
+  {term:"Decompensation",def:"The failure of the body to maintain homeostasis, resulting in progressive deterioration of organ function."},
+  {term:"Defibrillation",def:"Delivery of a therapeutic dose of electrical energy to the heart to terminate a shockable cardiac rhythm (VF/pVT)."},
+  {term:"Dehydration",def:"An excessive loss of body fluid, causing reduced blood volume, electrolyte imbalance and potential haemodynamic compromise."},
+  {term:"Diaphoresis",def:"Excessive sweating, often associated with shock, myocardial infarction or hypoglycaemia."},
+  {term:"Diastole",def:"The phase of the cardiac cycle when the heart relaxes and fills with blood. Diastolic pressure is the lower number in a BP reading."},
+  {term:"Dilatation",def:"Widening or expansion of a hollow structure such as a blood vessel or pupil."},
+  {term:"Dissociation",def:"In pharmacology, dissociative anaesthesia is a state induced by drugs like Ketamine causing analgesia and sedation while maintaining airway reflexes."},
+  {term:"Diuresis",def:"Increased production and excretion of urine, often stimulated by diuretic drugs like Furosemide."},
+  {term:"Dysphagia",def:"Difficulty swallowing."},
+  {term:"Dyspnoea",def:"Difficulty breathing or shortness of breath."},
+  {term:"Dysrhythmia",def:"An abnormal heart rhythm. Used interchangeably with arrhythmia."},
+  {term:"Dystonia",def:"A movement disorder causing involuntary muscle contractions, resulting in repetitive or twisting movements. Can be a side effect of antipsychotic drugs."},
+  {term:"Eclampsia",def:"Seizures occurring in a pregnant woman with pre-eclampsia (hypertension and proteinuria), constituting a medical emergency."},
+  {term:"Embolism",def:"Obstruction of a blood vessel by a clot, air bubble, fat droplet or other material carried in the bloodstream."},
+  {term:"Epistaxis",def:"A nosebleed — bleeding from the nasal mucosa."},
+  {term:"Exacerbation",def:"A worsening or flare-up of a chronic condition such as COPD or asthma."},
+  {term:"Extravasation",def:"Leakage of IV fluid or drugs out of the vein and into surrounding tissue, which can cause tissue damage."},
+  {term:"Fibrillation",def:"Rapid, chaotic electrical activity in the heart. Ventricular fibrillation (VF) is immediately life-threatening."},
+  {term:"Haematoma",def:"A localised collection of blood outside blood vessels, often clotted, forming a lump under the skin."},
+  {term:"Haematuria",def:"The presence of blood in the urine."},
+  {term:"Haemolysis",def:"The destruction of red blood cells, leading to the release of haemoglobin into the plasma."},
+  {term:"Haemoptysis",def:"Coughing up blood from the respiratory tract."},
+  {term:"Haemorrhage",def:"Abnormal or uncontrolled bleeding, either internal or external."},
+  {term:"Haemostasis",def:"The process by which bleeding is stopped through platelet aggregation and clot formation."},
+  {term:"Hyperglycaemia",def:"Abnormally high blood glucose level (typically >7 mmol/L fasting or >11.1 mmol/L after meals)."},
+  {term:"Hyperkalaemia",def:"An abnormally high level of potassium in the blood, which can cause life-threatening cardiac arrhythmias."},
+  {term:"Hyperthermia",def:"Abnormally high body temperature, typically above 38.5°C. Severe hyperthermia (heat stroke) is life-threatening."},
+  {term:"Hypertension",def:"High blood pressure — consistently elevated systolic BP above 140mmHg or diastolic above 90mmHg."},
+  {term:"Hypertensive Crisis",def:"A severe increase in blood pressure (systolic >180mmHg) that can lead to end-organ damage including stroke and cardiac events."},
+  {term:"Hyperventilation",def:"Abnormally rapid or deep breathing, causing a decrease in CO₂ levels (hypocapnia), which can cause dizziness and tingling."},
+  {term:"Hypoglycaemia",def:"Abnormally low blood glucose level (typically <4 mmol/L), causing neurological symptoms including confusion, sweating and seizures."},
+  {term:"Hypokalaemia",def:"Abnormally low potassium level in the blood, which can cause muscle weakness and cardiac arrhythmias."},
+  {term:"Hypotension",def:"Low blood pressure — typically systolic BP below 90mmHg. Can indicate shock, dehydration or drug side effects."},
+  {term:"Hypothermia",def:"A dangerously low body temperature, below 35°C, impairing physiological functions and potentially causing cardiac arrest."},
+  {term:"Hypovolaemia",def:"A decreased volume of blood plasma in the body, leading to reduced cardiac output and shock."},
+  {term:"Hypoxia",def:"An inadequate supply of oxygen to body tissues, causing cellular dysfunction and potentially organ failure."},
+  {term:"Idiopathic",def:"A disease or condition arising spontaneously with no identifiable cause."},
+  {term:"Infarction",def:"Tissue death caused by an obstruction of the blood supply, as in myocardial infarction (heart attack)."},
+  {term:"Ischaemia",def:"Insufficient blood supply to a tissue or organ, causing a shortage of oxygen and nutrients."},
+  {term:"Jaundice",def:"Yellowing of the skin and whites of the eyes due to a build-up of bilirubin, indicating liver or biliary disease."},
+  {term:"Laryngospasm",def:"Sudden involuntary constriction of the vocal cords causing partial or complete airway obstruction."},
+  {term:"Lethargy",def:"A state of sluggishness, fatigue or lack of energy; may indicate reduced level of consciousness."},
+  {term:"Malaise",def:"A general feeling of discomfort, illness or unease — a non-specific symptom of many conditions."},
+  {term:"Meningism",def:"Signs and symptoms suggestive of meningeal irritation — neck stiffness, photophobia and headache — without confirmed meningitis."},
+  {term:"Meningitis",def:"Inflammation of the meninges (membranes surrounding the brain and spinal cord), often caused by bacterial or viral infection."},
+  {term:"Myocardial Infarction (MI)",def:"A heart attack — death of heart muscle tissue due to prolonged ischaemia from coronary artery occlusion."},
+  {term:"Nausea",def:"A sensation of discomfort in the stomach with an urge to vomit."},
+  {term:"Necrosis",def:"Death of body tissue, typically due to loss of blood supply, infection or trauma."},
+  {term:"Neurogenic Shock",def:"A distributive shock caused by loss of sympathetic nervous system tone following spinal cord injury, resulting in hypotension and bradycardia."},
+  {term:"Oedema",def:"Swelling caused by excess fluid trapped in the body's tissues. Pulmonary oedema involves fluid in the lungs."},
+  {term:"Oliguria",def:"Reduced urine output, typically defined as less than 0.5mL/kg/hr, indicating poor renal perfusion."},
+  {term:"Orthopnoea",def:"Difficulty breathing when lying flat, relieved by sitting upright. A symptom of pulmonary oedema or heart failure."},
+  {term:"Orthostatic Hypotension",def:"A fall in blood pressure when standing from a lying or sitting position, causing dizziness or fainting."},
+  {term:"Pallor",def:"Abnormal paleness of the skin or mucous membranes, indicating anaemia, shock or poor perfusion."},
+  {term:"Palpitation",def:"An awareness of the heartbeat — often described as racing, fluttering or pounding."},
+  {term:"Paraesthesia",def:"Abnormal sensations such as tingling, numbness or 'pins and needles', often indicating nerve compression or toxicity."},
+  {term:"Perfusion",def:"The passage of blood through the circulatory system to supply organs and tissues with oxygen and nutrients."},
+  {term:"Pericarditis",def:"Inflammation of the pericardium (the sac surrounding the heart), causing sharp chest pain that may be relieved by leaning forward."},
+  {term:"Periorbital",def:"Relating to or situated around the eye socket."},
+  {term:"Pneumothorax",def:"A collection of air in the pleural space, causing lung collapse. Tension pneumothorax is a life-threatening emergency."},
+  {term:"Polydipsia",def:"Excessive thirst, often a symptom of hyperglycaemia or diabetes insipidus."},
+  {term:"Polyuria",def:"Excessive urine production, often associated with hyperglycaemia or diabetes."},
+  {term:"Pre-eclampsia",def:"A pregnancy complication characterised by hypertension and proteinuria after 20 weeks, which can progress to eclampsia."},
+  {term:"Pruritus",def:"Itching of the skin, which can be a side effect of opioid medications."},
+  {term:"Pulmonary Embolism (PE)",def:"A blockage of a pulmonary artery, usually by a blood clot from the legs (DVT), causing sudden dyspnoea and hypoxia."},
+  {term:"Pulmonary Oedema",def:"Excess fluid in the lungs causing difficulty breathing. Often a consequence of heart failure. Treated with GTN, Furosemide and CPAP."},
+  {term:"Pyrexia",def:"An elevated body temperature (fever) — adult threshold for treatment is typically >38.3°C, paediatric >38.5°C."},
+  {term:"Rhabdomyolysis",def:"Breakdown of skeletal muscle tissue releasing myoglobin into the bloodstream, which can cause acute kidney injury."},
+  {term:"Seizure",def:"A sudden, uncontrolled electrical disturbance in the brain causing changes in behaviour, movements or consciousness."},
+  {term:"Sepsis",def:"A life-threatening organ dysfunction caused by a dysregulated host response to infection. Characterised by fever, hypotension and altered consciousness."},
+  {term:"Shock",def:"A state of circulatory failure causing inadequate oxygen delivery to tissues. Types include hypovolaemic, cardiogenic, distributive and obstructive."},
+  {term:"Sinus Rhythm",def:"Normal heart rhythm originating from the sinoatrial (SA) node at 60–100 bpm."},
+  {term:"Stridor",def:"A high-pitched breathing sound caused by upper airway obstruction. Can indicate croup, anaphylaxis or foreign body obstruction."},
+  {term:"Subcutaneous",def:"Beneath the skin. Some drugs (e.g. Glucagon, Cyclizine) can be administered via subcutaneous (SC) injection."},
+  {term:"Syncope",def:"A temporary loss of consciousness caused by reduced blood flow to the brain — a faint."},
+  {term:"Systole",def:"The phase of the cardiac cycle when the heart contracts and pumps blood. Systolic pressure is the upper number in a BP reading."},
+  {term:"Tachycardia",def:"A heart rate faster than 100 beats per minute. Symptomatic tachycardia (>150bpm) with haemodynamic compromise may require intervention."},
+  {term:"Tachypnoea",def:"An abnormally rapid breathing rate, typically defined as >20 breaths per minute in adults."},
+  {term:"Tension Pneumothorax",def:"A life-threatening condition where air accumulates under pressure in the pleural space, causing mediastinal shift and cardiovascular collapse."},
+  {term:"Thrombosis",def:"Formation of a blood clot inside a blood vessel, which can obstruct blood flow."},
+  {term:"Tinnitus",def:"A ringing or buzzing sound in the ears, which can be a sign of ototoxicity or a symptom of certain drug side effects."},
+  {term:"Torsades de Pointes",def:"A type of ventricular tachycardia associated with prolonged QT interval — treated with IV Magnesium Sulphate."},
+  {term:"Transient Ischaemic Attack (TIA)",def:"A temporary neurological dysfunction caused by brief interruption of blood supply to part of the brain — a 'mini-stroke'."},
+  {term:"Trauma",def:"Physical injury caused by external force, which may be blunt, penetrating or a combination."},
+  {term:"Triage",def:"The process of sorting patients based on the urgency of their need for care to optimise outcomes."},
+  {term:"Urticaria",def:"Hives — raised, itchy welts on the skin often caused by an allergic reaction."},
+  {term:"Vasoconstriction",def:"Narrowing of blood vessels, increasing blood pressure and reducing blood flow to peripheral tissues."},
+  {term:"Vasodilation",def:"Widening of blood vessels, decreasing blood pressure and increasing blood flow to tissues."},
+  {term:"Ventricular Fibrillation (VF)",def:"Chaotic, rapid electrical activity in the ventricles causing no effective cardiac output — a shockable cardiac arrest rhythm."},
+  {term:"Ventricular Tachycardia (VT)",def:"A fast heart rhythm originating in the ventricles. Pulseless VT is treated the same as VF."},
+  {term:"Vertigo",def:"A sensation of spinning or dizziness, often caused by inner ear disorders."},
+  {term:"Wheeze",def:"A high-pitched whistling sound made during breathing, caused by narrowed airways. Common in asthma and COPD."}
+];
 
-const MASTERY_LABELS = {
-  unseen:'· Unseen', novice:'◎ Novice', learning:'~ Learning',
-  proficient:'✦ Proficient', mastered:'★ Mastered'
-};
+// ─── XP LEVELS ────────────────────────────────────────────────────────────────
+const LEVELS=[
+  {name:"Rookie",xp:0,next:100,color:"#059669",gradient:"linear-gradient(135deg,#064E3B,#059669)"},
+  {name:"Student",xp:100,next:300,color:"#0891B2",gradient:"linear-gradient(135deg,#0C4A6E,#0891B2)"},
+  {name:"Responder",xp:300,next:600,color:"#2563EB",gradient:"linear-gradient(135deg,#1E3A8A,#2563EB)"},
+  {name:"Clinician",xp:600,next:1000,color:"#7C3AED",gradient:"linear-gradient(135deg,#4C1D95,#7C3AED)"},
+  {name:"Expert",xp:1000,next:1500,color:"#D97706",gradient:"linear-gradient(135deg,#78350F,#D97706)"},
+  {name:"Senior Clinician",xp:1500,next:2200,color:"#EA580C",gradient:"linear-gradient(135deg,#7C2D12,#EA580C)"},
+  {name:"Master Clinician",xp:2200,next:Infinity,color:"#DC2626",gradient:"linear-gradient(135deg,#7F1D1D,#DC2626)"}
+];
+function getLevel(xp){for(let i=LEVELS.length-1;i>=0;i--)if(xp>=LEVELS[i].xp)return LEVELS[i];return LEVELS[0];}
+
+// ─── MASTERY ──────────────────────────────────────────────────────────────────
+function getMastery(correct){
+  if(correct>=10)return'mastered';
+  if(correct>=6)return'proficient';
+  if(correct>=3)return'learning';
+  if(correct>=1)return'novice';
+  return'unseen';
+}
+const ML={unseen:'· Unseen',novice:'◎ Novice',learning:'~ Learning',proficient:'✦ Proficient',mastered:'★ Mastered'};
+const MC_COLORS={unseen:'#94A3B8',novice:'#D97706',learning:'#0E7490',proficient:'#059669',mastered:'#047857'};
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let G = {
-  xp:0, streak:0, lastDate:null, quizzes:0,
-  totalQ:0, totalCorrect:0,
-  drugCorrect:{},   // id -> count of correct answers
-  notes:{}          // id -> string
-};
-
-function loadG() {
-  try { const s = localStorage.getItem('pheccG3'); if(s) G={...G,...JSON.parse(s)}; } catch(e){}
-  MEDS.forEach(m=>{ if(!G.drugCorrect[m.id]) G.drugCorrect[m.id]=0; if(G.notes[m.id]===undefined) G.notes[m.id]=''; });
+let G={xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,drugCorrect:{},notes:{}};
+function loadG(){
+  try{const s=localStorage.getItem('pheccG4');if(s)G={...G,...JSON.parse(s)};}catch(e){}
+  MEDS.forEach(m=>{if(!G.drugCorrect[m.id])G.drugCorrect[m.id]=0;if(G.notes[m.id]===undefined)G.notes[m.id]='';});
 }
+function saveG(){try{localStorage.setItem('pheccG4',JSON.stringify(G));}catch(e){}}
+function getDM(id){return getMastery(G.drugCorrect[id]||0);}
 
-function saveG() { try{ localStorage.setItem('pheccG3',JSON.stringify(G)); }catch(e){} }
+function addXP(amt,msg){G.xp+=amt;saveG();updateHdr();showToast(`⚡ +${amt} XP — ${msg}`);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+function haptic(t='light'){if(navigator.vibrate){if(t==='success')navigator.vibrate([10,20,10]);else if(t==='error')navigator.vibrate([30]);else navigator.vibrate([10]);}}
 
-function getDrugMastery(id) { return getMasteryTier(G.drugCorrect[id]||0); }
-
-function addXP(amt, msg) {
-  G.xp+=amt; saveG(); updateHdr();
-  showToast(`⚡ +${amt} XP — ${msg}`);
-}
-
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer=setTimeout(()=>t.classList.remove('show'),2400);
-}
-
-function haptic(type='light') {
-  if(navigator.vibrate) {
-    if(type==='success') navigator.vibrate([10,20,10]);
-    else if(type==='error') navigator.vibrate([30]);
-    else navigator.vibrate([10]);
-  }
-}
-
-function updateHdr() {
+function updateHdr(){
   document.getElementById('xpVal').textContent=G.xp;
   document.getElementById('streakVal').textContent=G.streak;
   const lv=getLevel(G.xp);
   document.getElementById('levelLabel').textContent=lv.name;
+  document.getElementById('levelLabel').style.color=lv.color;
 }
 
 // ─── DARK MODE ────────────────────────────────────────────────────────────────
-function toggleDark() {
-  const html=document.documentElement;
-  const isDark=html.getAttribute('data-theme')==='dark';
-  html.setAttribute('data-theme',isDark?'light':'dark');
-  document.getElementById('darkBtn').textContent=isDark?'🌙':'☀️';
-  try{ localStorage.setItem('pheccTheme',isDark?'light':'dark'); }catch(e){}
+function toggleDark(){
+  const h=document.documentElement,dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('darkBtn').textContent=dark?'🌙':'☀️';
+  try{localStorage.setItem('pheccTheme',dark?'light':'dark');}catch(e){}
   haptic();
 }
-
-function loadTheme() {
-  try {
-    const t=localStorage.getItem('pheccTheme');
-    if(t==='dark'){ document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent='☀️'; }
-  }catch(e){}
+function loadTheme(){
+  try{const t=localStorage.getItem('pheccTheme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('darkBtn').textContent='☀️';}}catch(e){}
 }
+
+// ─── OFFLINE ──────────────────────────────────────────────────────────────────
+function checkOnline(){document.getElementById('offlineBar').classList.toggle('show',!navigator.onLine);}
+window.addEventListener('online',checkOnline);
+window.addEventListener('offline',checkOnline);
 
 // ─── NAV ──────────────────────────────────────────────────────────────────────
-function showPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p=>{ if(p.classList.contains('active')){ p.classList.remove('active'); } });
-  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
-  const pg=document.getElementById('page-'+id);
-  pg.classList.add('active');
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
   haptic();
-  if(id==='quiz') updateQuizCounts();
-  if(id==='stats') updateStats();
+  if(id==='quiz')updateQuizCounts();
+  if(id==='stats'){updateStats();renderDonut();}
+  if(id==='learn')renderLearn();
+}
+function goHome(){showPage('ref',document.getElementById('btn-ref'));}
+function goProgress(){showPage('stats',document.getElementById('btn-stats'));}
+
+// ─── GLOBAL SEARCH ────────────────────────────────────────────────────────────
+let gSearchTimer=null;
+function handleGlobalSearch(q){
+  clearTimeout(gSearchTimer);
+  const el=document.getElementById('gsearchResults');
+  if(!q.trim()){el.classList.remove('show');el.innerHTML='';renderDrugList();return;}
+  gSearchTimer=setTimeout(()=>{
+    const ql=q.toLowerCase();
+    const results=[];
+    MEDS.filter(m=>m.name.toLowerCase().includes(ql)||m.classification.toLowerCase().includes(ql)||m.indications.some(i=>i.toLowerCase().includes(ql))).slice(0,5).forEach(m=>results.push({type:'drug',name:m.name,sub:m.classification,action:()=>openDet(m.id)}));
+    TERMS.filter(t=>t.term.toLowerCase().includes(ql)||t.def.toLowerCase().includes(ql)).slice(0,4).forEach(t=>results.push({type:'term',name:t.term,sub:t.def.substring(0,60)+'…',action:()=>{showPage('learn',document.getElementById('btn-learn'));selLearn('terms',document.querySelector('[data-lsec="terms"]'));setTimeout(()=>document.getElementById('learnSearch').value=t.term,100);}}));
+    HOSPITALS.filter(h=>h.name.toLowerCase().includes(ql)||h.pcr.toLowerCase().includes(ql)||h.county.toLowerCase().includes(ql)).slice(0,4).forEach(h=>results.push({type:'hospital',name:h.name,sub:`${h.county} — PCR: ${h.pcr}`,action:()=>{showPage('learn',document.getElementById('btn-learn'));}}));
+    if(!results.length){el.innerHTML='<div class="gsr-item"><div style="color:var(--text3);font-size:13px">No results found</div></div>';el.classList.add('show');return;}
+    el.innerHTML=results.map((r,i)=>`<div class="gsr-item" onclick="gsrClick(${i})"><span class="gsr-type gsr-${r.type}">${r.type}</span><div><div class="gsr-name">${r.name}</div><div class="gsr-sub">${r.sub}</div></div></div>`).join('');
+    el.classList.add('show');
+    el._actions=results.map(r=>r.action);
+  },200);
+}
+function gsrClick(i){
+  const el=document.getElementById('gsearchResults');
+  if(el._actions&&el._actions[i])el._actions[i]();
+  el.classList.remove('show');
+  document.getElementById('searchInput').value='';
 }
 
 // ─── REFERENCE ────────────────────────────────────────────────────────────────
-let refScope='all', refQ='';
-
-function getFiltered() {
+let refScope='all',refQ='';
+function getFiltered(){
   return MEDS.filter(m=>{
-    let scopeOk=true;
-    if(refScope==='learning') scopeOk=['unseen','novice','learning'].includes(getDrugMastery(m.id));
-    else if(refScope!=='all') scopeOk=m.scope.includes(refScope);
+    const scopeOk=refScope==='all'||m.scope.includes(refScope);
     const qOk=!refQ||m.name.toLowerCase().includes(refQ)||m.classification.toLowerCase().includes(refQ)||m.indications.some(i=>i.toLowerCase().includes(refQ));
     return scopeOk&&qOk;
   });
 }
-
-function renderDrugList() {
+function renderDrugList(){
   const drugs=getFiltered();
-  const lbl=document.getElementById('listLabel');
-  const names={all:'All',EMT:'EMT',P:'Paramedic',AP:'Adv. Paramedic',learning:'Learning'};
-  lbl.textContent=refQ?`Results for "${refQ}"`:`${names[refScope]||'All'} Medications (${drugs.length})`;
+  const names={all:'All',EMT:'EMT',P:'Paramedic',AP:'Adv. Paramedic'};
+  document.getElementById('listLabel').textContent=refQ?`Results for "${refQ}"`:`${names[refScope]||'All'} Medications (${drugs.length})`;
   const list=document.getElementById('drugList');
-  if(!drugs.length){ list.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><p>No drugs match your search</p></div>'; return; }
-  list.innerHTML=drugs.map((d,i)=>{
-    const m=getDrugMastery(d.id);
+  if(!drugs.length){list.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><p>No drugs match your search</p></div>';return;}
+  list.innerHTML=drugs.map(d=>{
+    const m=getDM(d.id);
     const dots=d.scope.map(s=>`<div class="sdot sdot-${s}"></div>`).join('');
-    return `<div class="drug-card" style="animation-delay:${i*0.04}s" onclick="openDet(${d.id})">
-      <div class="drug-info">
-        <div class="drug-name">${d.name}</div>
-        <div class="drug-class">${d.classification}</div>
-      </div>
-      <div class="drug-right">
-        <div class="scope-dots">${dots}</div>
-        <div class="mastery-tag mt-${m}">${MASTERY_LABELS[m]}</div>
-      </div>
-      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    return `<div class="drug-card" onclick="openDet(${d.id})">
+      <div class="drug-info"><div class="drug-name">${d.name}</div><div class="drug-class">${d.classification}</div></div>
+      <div class="drug-right"><div class="scope-dots">${dots}</div><div class="mtag mt-${m}">${ML[m]}</div></div>
+      <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </div>`;
   }).join('');
 }
-
 document.querySelectorAll('.chip').forEach(c=>{
   c.addEventListener('click',()=>{
     document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
-    c.classList.add('on'); refScope=c.dataset.scope; haptic(); renderDrugList();
+    c.classList.add('on');refScope=c.dataset.scope;haptic();renderDrugList();
   });
 });
-
-document.getElementById('searchInput').addEventListener('input',e=>{ refQ=e.target.value.trim().toLowerCase(); renderDrugList(); });
+document.getElementById('searchInput').addEventListener('input',e=>{
+  refQ=e.target.value.trim().toLowerCase();
+  if(!refQ)renderDrugList();
+});
 
 // ─── DETAIL ───────────────────────────────────────────────────────────────────
-function openDet(id) {
-  const d=MEDS.find(m=>m.id===id); if(!d) return;
+function openDet(id){
+  const d=MEDS.find(m=>m.id===id);if(!d)return;
   document.getElementById('detName').textContent=d.name;
   document.getElementById('detClass').textContent=d.classification;
   const smap={EMT:'EMT',P:'Paramedic',AP:'Adv. Paramedic'};
-  const m=getDrugMastery(id);
-  const correct=G.drugCorrect[id]||0;
-  const mColors={unseen:'#94A3B8',novice:'#D97706',learning:'#0D9488',proficient:'#059669',mastered:'#047857'};
+  const m=getDM(id),correct=G.drugCorrect[id]||0;
   document.getElementById('detBadges').innerHTML=
     d.scope.map(s=>`<span class="sbadge sbadge-${s}">${smap[s]}</span>`).join('')+
-    `<span class="det-mastery-badge" style="background:${mColors[m]}22;color:${mColors[m]}">${MASTERY_LABELS[m]} (${correct} correct)</span>`;
+    `<span class="det-mbadge" style="background:${MC_COLORS[m]}22;color:${MC_COLORS[m]}">${ML[m]} (${correct}/10)</span>`;
   document.getElementById('detBody').innerHTML=buildDet(d);
   document.getElementById('detOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   haptic();
 }
-
-function closeDet() {
+function closeDet(){
   document.getElementById('detOverlay').classList.remove('open');
   document.body.style.overflow='';
-  saveG();
-  renderDrugList();
+  saveG();renderDrugList();
 }
-
-function buildDet(d) {
+function buildDet(d){
   const pres=Array.isArray(d.presentation)?d.presentation:[d.presentation];
   const adm=Array.isArray(d.administration)?d.administration:[d.administration];
   const correct=G.drugCorrect[d.id]||0;
-  const maxQ=MEDS.length*6;
   const pct=Math.min(correct/10*100,100);
-  const mColors={unseen:'#94A3B8',novice:'#D97706',learning:'#0D9488',proficient:'#059669',mastered:'#047857'};
-  const m=getDrugMastery(d.id);
-
-  function doseHtml(dose){
-    if(!dose) return '<div style="color:var(--text3)">Not indicated.</div>';
-    if(typeof dose==='string') return `<div class="dose-text">${dose.replace(/\n/g,'<br>')}</div>`;
+  const m=getDM(d.id);
+  function dh(dose){
+    if(!dose)return'<div style="color:var(--text3);font-size:14px">Not indicated.</div>';
+    if(typeof dose==='string')return`<div class="dose-text">${dose.replace(/\n/g,'<br>')}</div>`;
     return Object.entries(dose).map(([k,v])=>`<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:var(--em-700);margin-bottom:3px">${k}</div><div class="dose-text">${v.replace(/\n/g,'<br>')}</div></div>`).join('');
   }
-
-  const noteVal=(G.notes[d.id]||'').replace(/"/g,'&quot;');
-
-  return `
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:var(--em-50)">📈</div><div class="det-st">Mastery Progress</div></div>
-    <div class="det-sb">
-      <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${pct}%;background:${mColors[m]}"></div></div>
-      <div class="prog-label"><span>${MASTERY_LABELS[m]}</span><span>${correct}/10 correct answers</span></div>
-    </div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:var(--em-50)">💊</div><div class="det-st">Presentation</div></div>
-    <div class="det-sb"><ul class="blist">${pres.map(p=>`<li>${p}</li>`).join('')}</ul></div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:var(--em-50)">🛤</div><div class="det-st">Routes of Administration</div></div>
-    <div class="det-sb"><ul class="blist">${adm.map(a=>`<li>${a}</li>`).join('')}</ul></div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:#F0FDF4">✅</div><div class="det-st">Indications</div></div>
-    <div class="det-sb"><ul class="blist">${d.indications.map(i=>`<li>${i}</li>`).join('')}</ul></div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:#FFF5F5">🚫</div><div class="det-st">Contraindications</div></div>
-    <div class="det-sb"><div class="ci-list">${d.contraindications.map(c=>`<div class="ci"><div class="ci-dot"></div><div class="ci-text">${c}</div></div>`).join('')}</div></div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:#FFFBEB">💉</div><div class="det-st">Dosages</div></div>
-    <div class="det-sb"><div class="dose-block">
-      <div class="dose-grp"><div class="dose-lbl">👤 Adult</div>${doseHtml(d.dosages.adult)}</div>
-      <div class="dose-grp"><div class="dose-lbl">👶 Paediatric</div>${doseHtml(d.dosages.paediatric)}</div>
-    </div></div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:#FFF5F5">⚠️</div><div class="det-st">Side Effects</div></div>
-    <div class="det-sb"><ul class="blist">${d.sideEffects.map(s=>`<li>${s}</li>`).join('')}</ul></div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:var(--em-50)">ℹ️</div><div class="det-st">Additional Information</div></div>
-    <div class="det-sb"><div class="info-box">${d.additionalInfo}</div></div>
-  </div>
-  <div class="det-sec">
-    <div class="det-sh"><div class="sec-ico" style="background:#F5F3FF">📝</div><div class="det-st">My Notes</div></div>
-    <div class="det-sb">
-      <textarea class="notes-area" id="note-${d.id}" placeholder="Add your own notes, mnemonics, clinical pearls…" oninput="saveNote(${d.id},this.value)">${noteVal}</textarea>
-      <div class="notes-save-hint">Notes save automatically</div>
-    </div>
-  </div>`;
+  const nv=(G.notes[d.id]||'').replace(/"/g,'&quot;');
+  return`
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:var(--em-50)">📈</div><div class="dst">Mastery Progress</div></div>
+  <div class="dsb"><div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:${MC_COLORS[m]}"></div></div><div class="prog-lbl"><span>${ML[m]}</span><span>${correct}/10 correct</span></div></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:var(--em-50)">💊</div><div class="dst">Presentation</div></div><div class="dsb"><ul class="blist">${pres.map(p=>`<li>${p}</li>`).join('')}</ul></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:var(--em-50)">🛤</div><div class="dst">Routes of Administration</div></div><div class="dsb"><ul class="blist">${adm.map(a=>`<li>${a}</li>`).join('')}</ul></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:#F0FDF4">✅</div><div class="dst">Indications</div></div><div class="dsb"><ul class="blist">${d.indications.map(i=>`<li>${i}</li>`).join('')}</ul></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:#FFF5F5">🚫</div><div class="dst">Contraindications</div></div><div class="dsb"><div class="ci-list">${d.contraindications.map(c=>`<div class="ci"><div class="ci-dot"></div><div class="ci-text">${c}</div></div>`).join('')}</div></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:#FFFBEB">💉</div><div class="dst">Dosages</div></div><div class="dsb"><div class="dose-block"><div class="dose-grp"><div class="dose-lbl">👤 Adult</div>${dh(d.dosages.adult)}</div><div class="dose-grp"><div class="dose-lbl">👶 Paediatric</div>${dh(d.dosages.paediatric)}</div></div></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:#FFF5F5">⚠️</div><div class="dst">Side Effects</div></div><div class="dsb"><ul class="blist">${d.sideEffects.map(s=>`<li>${s}</li>`).join('')}</ul></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:var(--em-50)">ℹ️</div><div class="dst">Additional Information</div></div><div class="dsb"><div class="info-box">${d.additionalInfo}</div></div></div>
+  <div class="dsec"><div class="dsh"><div class="sico" style="background:#F5F3FF">📝</div><div class="dst">My Notes</div></div><div class="dsb">
+  <textarea class="notes-area" id="note-${d.id}" placeholder="Add your own notes, mnemonics, clinical pearls…" oninput="G.notes[${d.id}]=this.value;saveG()">${nv}</textarea>
+  <div class="notes-hint">Notes save automatically</div></div></div>`;
 }
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDet();});
 
-function saveNote(id, val) {
-  G.notes[id]=val;
-  saveG();
-}
-
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDet(); });
-
-// ─── QUIZ ENGINE ──────────────────────────────────────────────────────────────
+// ─── QUIZ ─────────────────────────────────────────────────────────────────────
 const QTYPES=[
   {id:'ind',prompt:'Indications',q:d=>`What are the main indications for ${d.name}?`,a:d=>d.indications.slice(0,3).join('; ')},
   {id:'dose',prompt:'Adult Dosage',q:d=>`What is the adult dose of ${d.name}?`,a:d=>typeof d.dosages.adult==='string'?d.dosages.adult:Object.values(d.dosages.adult).join(' | ')},
@@ -795,38 +1011,34 @@ const QTYPES=[
   {id:'fact',prompt:'Key Clinical Fact',q:d=>`What is the key clinical fact for ${d.name}?`,a:d=>d.quizHints.keyFact},
   {id:'id',prompt:'Identify the Drug',q:d=>`"${d.quizHints.keyFact.split('—')[0].trim()}" — which drug?`,a:d=>`${d.name} (${d.classification})`}
 ];
+const TERM_QTYPES=[
+  {prompt:'Define the Term',q:t=>`What does "${t.term}" mean?`,a:t=>t.def},
+  {prompt:'Identify the Term',q:t=>`"${t.def.substring(0,80)}…" — what term is this?`,a:t=>t.term}
+];
 
-let QZ={scope:'all',mode:'fc',qs:[],idx:0,correct:0,flipped:false,answered:false,xpThisQuiz:0};
+let QZ={scope:'all',mode:'fc',qs:[],idx:0,correct:0,flipped:false,answered:false,xpThis:0,isTerms:false};
 
-function updateQuizCounts() {
+function updateQuizCounts(){
   document.getElementById('cntAll').textContent=`${MEDS.length} drugs`;
-  const learningDrugs=MEDS.filter(m=>['unseen','novice','learning'].includes(getDrugMastery(m.id)));
-  document.getElementById('cntLearn').textContent=`${learningDrugs.length} drugs`;
-  ['EMT','P','AP'].forEach(s=>{ document.getElementById('cnt'+s).textContent=`${MEDS.filter(m=>m.scope.includes(s)).length} drugs`; });
+  ['EMT','P','AP'].forEach(s=>document.getElementById('cnt'+s).textContent=`${MEDS.filter(m=>m.scope.includes(s)).length} drugs`);
+  document.getElementById('cntTerms').textContent=`${TERMS.length} terms`;
 }
 
-function selScope(s,el) {
+function selScope(s,el){
   document.querySelectorAll('.sopt').forEach(o=>o.className='sopt');
-  const cls={all:'on-all',learning:'on-learn',EMT:'on-emt',P:'on-p',AP:'on-ap'};
+  const cls={all:'on-all',EMT:'on-emt',P:'on-p',AP:'on-ap',terms:'on-terms'};
   el.classList.add(cls[s]||'on-all');
-  QZ.scope=s; haptic();
+  QZ.scope=s;haptic();
 }
-
-function selMode(m,el) {
+function selMode(m,el){
   document.querySelectorAll('.mode-card').forEach(o=>o.classList.remove('on'));
-  el.classList.add('on'); QZ.mode=m; haptic();
+  el.classList.add('on');QZ.mode=m;haptic();
 }
 
-function getDrugsForScope(scope) {
-  if(scope==='all') return MEDS;
-  if(scope==='learning') return MEDS.filter(m=>['unseen','novice','learning'].includes(getDrugMastery(m.id)));
-  return MEDS.filter(m=>m.scope.includes(scope));
-}
-
-function genQuestions(drugs,n=10) {
+function genDrugQuestions(drugs,n=10){
   let pool=[];
   drugs.forEach(d=>QTYPES.forEach(qt=>{
-    let q={drug:d,qt,opts:[]};
+    let q={drug:d,qt,opts:[],isTerm:false};
     const correct=qt.a(d);
     const wrong=drugs.filter(x=>x.id!==d.id).sort(()=>Math.random()-.5).slice(0,3).map(x=>qt.a(x).split(';')[0].split('.')[0].trim().substring(0,90));
     q.opts=[correct,...wrong].sort(()=>Math.random()-.5);
@@ -835,158 +1047,334 @@ function genQuestions(drugs,n=10) {
   return pool.sort(()=>Math.random()-.5).slice(0,Math.min(n,pool.length));
 }
 
-function startQuiz() {
-  const drugs=getDrugsForScope(QZ.scope);
-  if(!drugs.length){ showToast('No drugs match this filter!'); return; }
-  QZ.qs=genQuestions(drugs,10); QZ.idx=0; QZ.correct=0; QZ.flipped=false; QZ.answered=false; QZ.xpThisQuiz=0;
+function genTermQuestions(n=10){
+  let pool=[];
+  TERMS.forEach(t=>TERM_QTYPES.forEach(qt=>{
+    let q={term:t,qt,opts:[],isTerm:true};
+    const correct=qt.a(t);
+    const wrong=TERMS.filter(x=>x.term!==t.term).sort(()=>Math.random()-.5).slice(0,3).map(x=>qt.a(x).substring(0,90));
+    q.opts=[correct,...wrong].sort(()=>Math.random()-.5);
+    pool.push(q);
+  }));
+  return pool.sort(()=>Math.random()-.5).slice(0,Math.min(n,pool.length));
+}
+
+function startQuiz(){
+  let qs=[];
+  const isTerms=QZ.scope==='terms';
+  if(isTerms){qs=genTermQuestions(10);}
+  else{
+    const drugs=QZ.scope==='all'?MEDS:MEDS.filter(m=>m.scope.includes(QZ.scope));
+    if(!drugs.length){showToast('No drugs for this filter');return;}
+    qs=genDrugQuestions(drugs,10);
+  }
+  QZ.qs=qs;QZ.idx=0;QZ.correct=0;QZ.flipped=false;QZ.answered=false;QZ.xpThis=0;QZ.isTerms=isTerms;
   document.getElementById('quizSetup').style.display='none';
   document.getElementById('quizActive').classList.add('open');
   document.getElementById('qResults').classList.remove('show');
-  if(QZ.mode==='fc'){ document.getElementById('fcMode').style.display='block'; document.getElementById('mcMode').style.display='none'; renderFC(); }
-  else { document.getElementById('fcMode').style.display='none'; document.getElementById('mcMode').style.display='block'; renderMC(); }
+  if(QZ.mode==='fc'){document.getElementById('fcMode').style.display='block';document.getElementById('mcMode').style.display='none';renderFC();}
+  else{document.getElementById('fcMode').style.display='none';document.getElementById('mcMode').style.display='block';renderMC();}
 }
 
-function resetQuiz() {
+function resetQuiz(){
   document.getElementById('quizSetup').style.display='block';
   document.getElementById('quizActive').classList.remove('open');
   document.getElementById('qResults').classList.remove('show');
   updateQuizCounts();
 }
 
-// Flashcard
-function renderFC() {
+function confirmResetQuiz(){if(confirm('End this quiz?'))resetQuiz();}
+
+function getQText(q){return q.isTerm?q.qt.q(q.term):q.qt.q(q.drug);}
+function getQAns(q){return q.isTerm?q.qt.a(q.term):q.qt.a(q.drug);}
+function getQPrompt(q){return q.qt.prompt;}
+
+function renderFC(){
   const {qs,idx}=QZ;
-  if(idx>=qs.length){ showResults(); return; }
+  if(idx>=qs.length){showResults();return;}
   const q=qs[idx];
   document.getElementById('fcProg').style.width=(idx/qs.length*100)+'%';
   document.getElementById('fcCtr').textContent=`${idx+1} / ${qs.length}`;
-  document.getElementById('fcPrompt').textContent=q.qt.prompt;
-  document.getElementById('fcQ').textContent=q.qt.q(q.drug);
-  document.getElementById('fcAnsLbl').textContent=q.qt.prompt;
-  document.getElementById('fcAns').textContent=q.qt.a(q.drug);
+  document.getElementById('fcPrompt').textContent=getQPrompt(q);
+  document.getElementById('fcQ').textContent=getQText(q);
+  document.getElementById('fcAnsLbl').textContent=getQPrompt(q);
+  document.getElementById('fcAns').textContent=getQAns(q);
   document.getElementById('fc').classList.remove('flipped');
   QZ.flipped=false;
   document.getElementById('fcActions').style.display='none';
 }
-
-function flipCard() {
-  const fc=document.getElementById('fc');
-  fc.classList.toggle('flipped'); QZ.flipped=!QZ.flipped;
+function flipCard(){
+  document.getElementById('fc').classList.toggle('flipped');
+  QZ.flipped=!QZ.flipped;
   document.getElementById('fcActions').style.display=QZ.flipped?'grid':'none';
   haptic();
 }
-
-function markCard(correct) {
-  if(correct) {
-    QZ.correct++; G.totalCorrect++;
-    G.drugCorrect[QZ.qs[QZ.idx].drug.id]=(G.drugCorrect[QZ.qs[QZ.idx].drug.id]||0)+1;
-    QZ.xpThisQuiz+=10;
+function markCard(correct){
+  if(correct){
+    QZ.correct++;G.totalCorrect++;QZ.xpThis+=10;
+    if(!QZ.isTerms){G.drugCorrect[QZ.qs[QZ.idx].drug.id]=(G.drugCorrect[QZ.qs[QZ.idx].drug.id]||0)+1;}
     haptic('success');
-  } else { haptic('error'); }
-  G.totalQ++; QZ.idx++;
-  saveG(); renderFC();
+  }else haptic('error');
+  G.totalQ++;QZ.idx++;saveG();renderFC();
 }
+function skipCard(){QZ.idx++;renderFC();haptic();}
 
-function skipCard() { QZ.idx++; renderFC(); haptic(); }
-
-// MC
-function renderMC() {
+function renderMC(){
   const {qs,idx}=QZ;
-  if(idx>=qs.length){ showResults(); return; }
+  if(idx>=qs.length){showResults();return;}
   const q=qs[idx];
   document.getElementById('mcProg').style.width=(idx/qs.length*100)+'%';
   document.getElementById('mcCtr').textContent=`${idx+1} / ${qs.length}`;
-  document.getElementById('mcPrompt').textContent=q.qt.prompt;
-  document.getElementById('mcQ').textContent=q.qt.q(q.drug);
+  document.getElementById('mcPrompt').textContent=getQPrompt(q);
+  document.getElementById('mcQ').textContent=getQText(q);
   document.getElementById('mcNext').classList.remove('show');
   QZ.answered=false;
-  const correct=q.qt.a(q.drug);
+  const correct=getQAns(q);
   document.getElementById('mcOpts').innerHTML=q.opts.map((opt,i)=>{
     const short=opt.length>110?opt.substring(0,107)+'…':opt;
-    return `<button class="mc-opt" style="animation-delay:${i*0.07}s" onclick="answerMC(this,${opt===correct},${q.drug.id})">${short}</button>`;
+    const drugId=q.isTerm?null:q.drug.id;
+    return`<button class="mc-opt" onclick="answerMC(this,${opt===correct},${drugId})">${short}</button>`;
   }).join('');
 }
-
-function answerMC(btn, correct, drugId) {
-  if(QZ.answered) return;
+function answerMC(btn,correct,drugId){
+  if(QZ.answered)return;
   QZ.answered=true;
   if(correct){
-    btn.classList.add('correct'); QZ.correct++; G.totalCorrect++;
-    G.drugCorrect[drugId]=(G.drugCorrect[drugId]||0)+1;
-    QZ.xpThisQuiz+=10; haptic('success');
-  } else { btn.classList.add('wrong'); haptic('error'); }
+    btn.classList.add('correct');QZ.correct++;G.totalCorrect++;QZ.xpThis+=10;
+    if(drugId)G.drugCorrect[drugId]=(G.drugCorrect[drugId]||0)+1;
+    haptic('success');
+  }else{
+    btn.classList.add('wrong');haptic('error');
+    // Highlight correct answer
+    document.querySelectorAll('.mc-opt').forEach(o=>{
+      if(o.textContent===getQAns(QZ.qs[QZ.idx])||o.textContent===getQAns(QZ.qs[QZ.idx]).substring(0,107)+'…')o.classList.add('correct');
+    });
+  }
   G.totalQ++;
   document.querySelectorAll('.mc-opt').forEach(o=>o.classList.add('revealed'));
   document.getElementById('mcNext').classList.add('show');
   saveG();
 }
+function nextMC(){QZ.idx++;renderMC();haptic();}
 
-function nextMC() { QZ.idx++; renderMC(); haptic(); }
-
-function showResults() {
-  const {correct,qs,xpThisQuiz}=QZ;
-  const total=qs.length;
-  const pct=Math.round(correct/total*100);
+function showResults(){
+  const{correct,qs,xpThis}=QZ;
+  const total=qs.length,pct=Math.round(correct/total*100);
   G.quizzes++;
   const today=new Date().toDateString();
-  if(G.lastDate!==today){ G.streak++; G.lastDate=today; }
-  G.xp+=xpThisQuiz; saveG(); updateHdr();
+  if(G.lastDate!==today){G.streak++;G.lastDate=today;}
+  G.xp+=xpThis;saveG();updateHdr();
   document.getElementById('fcMode').style.display='none';
   document.getElementById('mcMode').style.display='none';
   document.getElementById('qResults').classList.add('show');
   document.getElementById('resCorrect').textContent=correct;
   document.getElementById('resTotal').textContent=total;
   document.getElementById('resPct').textContent=pct+'%';
-  document.getElementById('xpEarned').textContent=`⚡ +${xpThisQuiz} XP earned`;
+  document.getElementById('xpEarnedBtn').textContent=`⚡ +${xpThis} XP earned — tap to see progress`;
   const emoji=pct>=90?'🏆':pct>=70?'🎯':pct>=50?'📚':'💪';
   const title=pct>=90?'Outstanding!':pct>=70?'Great Work!':pct>=50?'Good Effort':'Keep Studying!';
-  const sub=pct>=90?'Excellent clinical knowledge.':pct>=70?'Solid performance — keep it up.':pct>=50?'More revision will sharpen you.':'Review the formulary and try again.';
+  const sub=pct>=90?'Excellent clinical knowledge.':pct>=70?'Solid performance.':pct>=50?'More revision will sharpen you.':'Review and try again.';
   document.getElementById('resRing').textContent=emoji;
   document.getElementById('resTitle').textContent=title;
   document.getElementById('resSub').textContent=sub;
 }
 
 // ─── STATS ────────────────────────────────────────────────────────────────────
-function updateStats() {
+function updateStats(){
   const counts={unseen:0,novice:0,learning:0,proficient:0,mastered:0};
-  MEDS.forEach(m=>counts[getDrugMastery(m.id)]++);
-  const total=MEDS.length;
+  MEDS.forEach(m=>counts[getDM(m.id)]++);
   document.getElementById('stXP').textContent=G.xp;
   document.getElementById('stStreak').textContent=G.streak;
   document.getElementById('stQuizzes').textContent=G.quizzes;
   document.getElementById('stAccuracy').textContent=G.totalQ>0?Math.round(G.totalCorrect/G.totalQ*100)+'%':'—';
-  Object.keys(counts).forEach(k=>{
-    const n=document.getElementById('n'+k.charAt(0).toUpperCase()+k.slice(1));
-    const b=document.getElementById('b'+k.charAt(0).toUpperCase()+k.slice(1));
-    if(n) n.textContent=counts[k];
-    if(b) b.style.width=(counts[k]/total*100)+'%';
-  });
+  document.getElementById('tCorrect').textContent=G.totalCorrect;
+  document.getElementById('tWrong').textContent=G.totalQ-G.totalCorrect;
+  Object.keys(counts).forEach(k=>{const el=document.getElementById('dl'+k.charAt(0).toUpperCase()+k.slice(1));if(el)el.textContent=counts[k];});
   const lv=getLevel(G.xp);
-  const nextLv=LEVELS[LEVELS.indexOf(lv)+1];
-  document.getElementById('lcLevel').textContent=lv.name;
-  if(nextLv){
-    const pct=((G.xp-lv.xp)/(lv.next-lv.xp)*100);
+  const nxt=LEVELS[LEVELS.indexOf(lv)+1];
+  document.getElementById('lcName').textContent=lv.name;
+  document.getElementById('levelCard').style.background=lv.gradient;
+  if(nxt){
+    const pct=(G.xp-lv.xp)/(lv.next-lv.xp)*100;
     document.getElementById('lcBar').style.width=pct+'%';
-    document.getElementById('lcNext').textContent=`${lv.next-G.xp} XP to ${nextLv.name}`;
-  } else {
+    document.getElementById('lcNext').textContent=`${lv.next-G.xp} XP to ${nxt.name}`;
+  }else{
     document.getElementById('lcBar').style.width='100%';
     document.getElementById('lcNext').textContent='Maximum level reached! 🎉';
   }
 }
 
-function confirmReset() {
-  if(confirm('Reset all progress? This cannot be undone.')) {
+function renderDonut(){
+  const counts={unseen:0,novice:0,learning:0,proficient:0,mastered:0};
+  MEDS.forEach(m=>counts[getDM(m.id)]++);
+  const total=MEDS.length,circ=2*Math.PI*35;
+  const order=[
+    {key:'mastered',id:'dMastered',color:'#047857'},
+    {key:'proficient',id:'dProficient',color:'#059669'},
+    {key:'learning',id:'dLearning',color:'#0E7490'},
+    {key:'novice',id:'dNovice',color:'#D97706'}
+  ];
+  let offset=0;
+  order.forEach(({key,id})=>{
+    const pct=counts[key]/total;
+    const dash=circ*pct;
+    const el=document.getElementById(id);
+    if(el){el.setAttribute('stroke-dasharray',`${dash} ${circ-dash}`);el.setAttribute('stroke-dashoffset',-(offset-circ/4));offset+=dash;}
+  });
+}
+
+function confirmReset(){
+  if(confirm('Reset all progress? This cannot be undone.')){
     G={xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,drugCorrect:{},notes:{}};
     MEDS.forEach(m=>{G.drugCorrect[m.id]=0;G.notes[m.id]='';});
-    saveG(); updateHdr(); updateStats(); renderDrugList();
-    showToast('Progress reset');
+    saveG();updateHdr();updateStats();renderDonut();renderDrugList();showToast('Progress reset');
   }
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-loadG(); loadTheme(); updateHdr(); renderDrugList(); updateQuizCounts();
+// ─── LEARN TAB ────────────────────────────────────────────────────────────────
+let learnSec='pcr',learnQ='';
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+function selLearn(sec,el){
+  document.querySelectorAll('.lchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');learnSec=sec;haptic();renderLearn();
+}
+
+function handleLearnSearch(q){learnQ=q.toLowerCase();renderLearn();}
+
+function renderLearn(){
+  const c=document.getElementById('learnContent');
+  if(learnSec==='pci')c.innerHTML=renderPCI();
+  else if(learnSec==='pcr')c.innerHTML=renderPCR();
+  else if(learnSec==='terms')c.innerHTML=renderTerms();
+  else if(learnSec==='paed')c.innerHTML=renderPaed();
+}
+
+function renderPCI(){
+  return`<div class="pci-card">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--em-400)">Primary PCI Line</div>
+    <div class="pci-number" onclick="callNumber('${PCI_NUMBER.replace(/\s/g,'')}')" style="cursor:pointer">📞 ${PCI_NUMBER}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px">Tap number to dial — then select:</div>
+    ${PCI_LABS.map(l=>`<div class="pci-row">
+      <div class="pci-num">${l.n}</div>
+      <div class="pci-hospital">${l.hospital}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderPCR(){
+  const counties=[...new Set(HOSPITALS.map(h=>h.county))];
+  const filtered=learnQ?HOSPITALS.filter(h=>h.name.toLowerCase().includes(learnQ)||h.pcr.toLowerCase().includes(learnQ)||h.county.toLowerCase().includes(learnQ)):HOSPITALS;
+  if(!filtered.length)return'<div class="empty"><div class="empty-ico">🔍</div><p>No hospitals match your search</p></div>';
+  const grouped={};
+  filtered.forEach(h=>{if(!grouped[h.county])grouped[h.county]=[];grouped[h.county].push(h);});
+  return Object.entries(grouped).map(([county,hosps])=>`
+    <div class="hosp-county">${county}</div>
+    ${hosps.map(h=>`<div class="hosp-card">
+      <div class="hosp-name">${h.name}</div>
+      <div><span class="hosp-code">${h.pcr}</span></div>
+      <div class="hosp-nums">
+        <div class="hosp-num">
+          <div class="hosp-num-lbl">Main Line</div>
+          <div class="hosp-num-val" onclick="callNumber('${h.main.replace(/[^0-9]/g,'')}')">${h.main}</div>
+        </div>
+        <div class="hosp-num">
+          <div class="hosp-num-lbl">ED / Direct</div>
+          <div class="hosp-num-val ${h.ed==='n/a'?'na':''}" ${h.ed!=='n/a'?`onclick="callNumber('${h.ed.split('/')[0].replace(/[^0-9]/g,'')}')"`:''}">${h.ed}</div>
+        </div>
+      </div>
+    </div>`).join('')}
+  `).join('');
+}
+
+function renderTerms(){
+  const filtered=learnQ?TERMS.filter(t=>t.term.toLowerCase().includes(learnQ)||t.def.toLowerCase().includes(learnQ)):TERMS;
+  if(!filtered.length)return'<div class="empty"><div class="empty-ico">🔍</div><p>No terms match your search</p></div>';
+  return`<div style="animation:pgIn .28s ease both">${filtered.map(t=>`<div class="term-card">
+    <div class="term-word">${t.term}</div>
+    <div class="term-def">${t.def}</div>
+  </div>`).join('')}</div>`;
+}
+
+function renderPaed(){
+  return`<div class="paed-card">
+    <div class="paed-title">PHECC Paediatric Weight Estimation</div>
+    <div class="paed-input-row">
+      <input type="number" class="paed-input" id="paedAge" placeholder="0" min="0" max="18" oninput="calcPaed(this.value)"/>
+      <span class="paed-unit">years old</span>
+    </div>
+    <div id="paedResult" style="display:none" class="paed-result">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--em-400)">Estimated Weight</div>
+      <div class="paed-weight" id="paedWeight">— kg</div>
+      <div class="paed-formula-grid">
+        <div class="paed-f-item"><div class="paed-f-lbl">Adrenaline 1:10,000 (cardiac arrest)</div><div class="paed-f-val" id="pdAdr">—</div></div>
+        <div class="paed-f-item"><div class="paed-f-lbl">Adrenaline 1:1,000 (anaphylaxis)</div><div class="paed-f-val" id="pdAdrIM">—</div></div>
+        <div class="paed-f-item"><div class="paed-f-lbl">Glucose 10% IV</div><div class="paed-f-val" id="pdGluc">—</div></div>
+        <div class="paed-f-item"><div class="paed-f-lbl">Midazolam buccal (seizure)</div><div class="paed-f-val" id="pdMid">—</div></div>
+        <div class="paed-f-item"><div class="paed-f-lbl">Morphine IV</div><div class="paed-f-val" id="pdMorph">—</div></div>
+        <div class="paed-f-item"><div class="paed-f-lbl">Naloxone IN (EMT)</div><div class="paed-f-val" id="pdNalox">—</div></div>
+        <div class="paed-f-item"><div class="paed-f-lbl">NaCl 0.9% (anaphylaxis)</div><div class="paed-f-val" id="pdNacl">—</div></div>
+        <div class="paed-f-item"><div class="paed-f-lbl">Paracetamol PO</div><div class="paed-f-val" id="pdParac">—</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="paed-card" style="margin-top:0">
+    <div class="paed-title">Weight Formula Reference</div>
+    <table class="paed-table">
+      <tr><th>Age Group</th><th>Formula</th></tr>
+      <tr><td>Neonate</td><td>3.5 kg</td></tr>
+      <tr><td>Six months</td><td>6 kg</td></tr>
+      <tr><td>1–5 years</td><td>(age × 2) + 8 kg</td></tr>
+      <tr><td>>5 years</td><td>(age × 3) + 7 kg</td></tr>
+    </table>
+  </div>`;
+}
+
+function calcPaed(age){
+  age=parseFloat(age);
+  if(isNaN(age)||age<0){document.getElementById('paedResult').style.display='none';return;}
+  let wt;
+  if(age===0)wt=3.5;
+  else if(age<=0.5)wt=6;
+  else if(age<=5)wt=Math.round((age*2+8)*10)/10;
+  else wt=Math.round((age*3+7)*10)/10;
+  document.getElementById('paedResult').style.display='block';
+  document.getElementById('paedWeight').textContent=wt+' kg';
+  // Drug dose calculations
+  document.getElementById('pdAdr').textContent=`${(wt*0.1).toFixed(1)} mL of 1:10,000`;
+  // Anaphylaxis IM dose
+  let adrIM='';
+  if(age<0.5)adrIM=`${(wt*0.01).toFixed(2)} mL of 1:1,000`;
+  else if(age<6)adrIM='0.15 mL IM (150mcg)';
+  else if(age<12)adrIM='0.3 mL IM (300mcg)';
+  else adrIM='0.3–0.5 mL IM';
+  document.getElementById('pdAdrIM').textContent=adrIM;
+  document.getElementById('pdGluc').textContent=`${(wt*2).toFixed(0)} mL`;
+  // Midazolam buccal
+  let mid='';
+  if(age<0.25)mid=`${(wt*0.3).toFixed(2)} mg (max 2.5mg)`;
+  else if(age<1)mid='2.5 mg buccal';
+  else if(age<5)mid='5 mg buccal';
+  else if(age<10)mid='7.5 mg buccal';
+  else mid='10 mg buccal';
+  document.getElementById('pdMid').textContent=mid;
+  document.getElementById('pdMorph').textContent=`${(wt*0.05).toFixed(2)} mg IV (50mcg/kg)`;
+  document.getElementById('pdNalox').textContent=`${(wt*0.02*1000).toFixed(0)} mcg IN`;
+  document.getElementById('pdNacl').textContent=`${(wt*20).toFixed(0)} mL`;
+  document.getElementById('pdParac').textContent=`${(wt*15).toFixed(0)} mg PO`;
+}
+
+function callNumber(num){
+  const clean=num.replace(/[^0-9+]/g,'');
+  window.location.href=`tel:${clean}`;
+  haptic();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadG();loadTheme();checkOnline();updateHdr();
+renderDrugList();updateQuizCounts();
+renderLearn();
+
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
