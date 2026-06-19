@@ -14,7 +14,55 @@ function selLearn(sec,el){
 function handleLearnSearch(q){
   learnQ=q.toLowerCase();
   document.getElementById('learnClear').style.display=q?'flex':'none';
-  renderLearn();
+  if(learnQ){
+    renderLearnSearch(learnQ);
+  } else {
+    renderLearn();
+  }
+}
+
+function renderLearnSearch(q){
+  const c=document.getElementById('learnContent');
+  let html='';
+
+  // Search terms
+  const termResults=TERMS.filter(t=>t.term.toLowerCase().includes(q)||t.def.toLowerCase().includes(q));
+  if(termResults.length){
+    html+='<div class="term-cat-header"><span class="term-cat-icon">📖</span>Medical Terms</div>';
+    html+=termResults.map(t=>`
+      <div class="term-card" onclick="toggleTerm(this)" id="term-${t.term.replace(/\s+/g,'_').replace(/[()]/g,'')}">
+        <div class="term-card-header"><div class="term-word">${t.term}</div><div class="term-chevron">›</div></div>
+        <div class="term-def">${t.def}</div>
+      </div>`).join('');
+  }
+
+  // Search hospitals
+  const hospResults=HOSPITALS.filter(h=>
+    h.name.toLowerCase().includes(q)||
+    h.pcr.toLowerCase().includes(q)||
+    h.county.toLowerCase().includes(q)
+  );
+  if(hospResults.length){
+    html+='<div class="term-cat-header" style="margin-top:16px"><span class="term-cat-icon">🏥</span>Hospitals</div>';
+    html+=hospResults.map(h=>{
+      const mainDial=h.main.split('/')[0].replace(/[^0-9]/g,'');
+      const edDial=h.ed!=='n/a'?h.ed.split('/')[0].replace(/[^0-9]/g,''):'';
+      return`<div class="hosp-card" id="hosp-${h.pcr}">
+        <div class="hosp-name">${h.name}</div>
+        <div><span class="hosp-code">${h.pcr}</span></div>
+        <div class="hosp-nums">
+          <div class="hosp-num"><div class="hosp-num-lbl">Main Line</div><div class="hosp-num-val" onclick="callNumber('${mainDial}')">${h.main}</div></div>
+          <div class="hosp-num"><div class="hosp-num-lbl">ED / Direct</div><div class="hosp-num-val ${h.ed==='n/a'?'na':''}" ${h.ed!=='n/a'?`onclick="callNumber('${edDial}')"`:''}>${h.ed}</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  if(!html){
+    html='<div class="empty"><div class="empty-ico">🔍</div><p>No results found</p></div>';
+  }
+
+  c.innerHTML=html;
 }
 
 function clearLearnSearch(){
