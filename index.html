@@ -248,7 +248,14 @@
       <button class="chart-tab" onclick="setChartMetric('quizzes',this)">Quizzes</button>
       <button class="chart-tab" onclick="setChartMetric('xp',this)">XP Earned</button>
     </div>
-    <div class="chart-area" id="chartArea"></div>
+    <div class="chart-wrap">
+      <div class="chart-yaxis" id="chartYAxis">
+        <div class="chart-ylabel">—</div>
+        <div class="chart-ylabel">—</div>
+        <div class="chart-ylabel">0</div>
+      </div>
+      <div class="chart-area" id="chartArea"></div>
+    </div>
     <div class="chart-note" id="chartNote">Data will appear here as you study</div>
   </div>
   <div class="tally-card">
@@ -299,6 +306,19 @@
       <div class="about-ver"><div class="about-ver-tag">v0.3.0</div><div class="about-ver-notes">Learn tab added with PCR codes, Primary PCI Line, medical terminology and paediatric weight calculator. Global search across drugs, terms and hospitals. Tap to call on all phone numbers. Medical terms quiz mode. Offline indicator.</div></div>
       <div class="about-ver"><div class="about-ver-tag">v0.2.0</div><div class="about-ver-notes">Dark mode, slate and emerald green theme, 5-tier mastery system, notes on drug pages, haptic feedback, XP level titles, donut chart for mastery, EMT/Paramedic/AP colour coding.</div></div>
       <div class="about-ver"><div class="about-ver-tag">v0.1.0</div><div class="about-ver-notes">Initial release. All 46 PHECC 2026 formulary drugs, reference mode with search and scope filters, flashcard and multiple choice quiz, XP and streak tracking. Hosted on GitHub Pages.</div></div>
+    </div>
+  </div>
+  <!-- Privacy Policy -->
+  <div class="badges-card" style="margin-bottom:14px">
+    <div class="mc-title">Privacy Policy</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.6;display:flex;flex-direction:column;gap:10px">
+      <p><strong>Data Storage</strong><br>Tús Medic stores all user data locally on your device using browser localStorage. No data is transmitted to any server, third party or external service.</p>
+      <p><strong>What is stored</strong><br>Your quiz progress, XP, streaks, mastery levels, personal notes and app preferences are stored on your device only. This data never leaves your device.</p>
+      <p><strong>Cookies</strong><br>This app does not use cookies or any tracking technology.</p>
+      <p><strong>Analytics</strong><br>No analytics, tracking or usage data is collected.</p>
+      <p><strong>Deleting your data</strong><br>Tap "Reset All Progress" below to delete all locally stored data, or clear your browser/Safari data from device settings.</p>
+      <p><strong>Contact</strong><br>For any privacy queries contact the developer via GitHub.</p>
+      <p style="font-size:11px;color:var(--text3)">© Keith O'Reilly 2026. Last updated June 2026.</p>
     </div>
   </div>
   <button class="reset-btn" onclick="confirmReset()">Reset All Progress</button>

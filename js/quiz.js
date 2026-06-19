@@ -161,6 +161,8 @@ function buildQuizTab(){
   const dailyQ=getDailyChallengeSeed();
   const weekDays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const today=new Date().getDay();
+  const todayDate=new Date();
+  const dateStr=todayDate.toLocaleDateString('en-IE',{day:'numeric',month:'long'});
 
   // Weak spots count
   const weakCount=((G.recentWrong||[]).length);
@@ -174,7 +176,7 @@ function buildQuizTab(){
       <div class="daily-icon">📅</div>
       <div class="daily-info">
         <div class="daily-title">Daily Challenge</div>
-        <div class="daily-sub">5 questions · ${weekDays[today]}'s set · same for everyone</div>
+        <div class="daily-sub">5 questions · ${dateStr} · same for everyone</div>
       </div>
       <div class="daily-status">${dailyDone?'<span class="daily-done-badge">✓ Done</span>':'<span class="daily-start-btn">Start →</span>'}</div>
     </div>
@@ -187,7 +189,12 @@ function buildQuizTab(){
     <div class="qmode-card" onclick="startModeSetup('standard')">
       <div class="qmode-icon">📚</div>
       <div class="qmode-name">Standard</div>
-      <div class="qmode-desc">Adaptive difficulty across all drugs</div>
+      <div class="qmode-desc">Mixed difficulty questions</div>
+    </div>
+    <div class="qmode-card" onclick="startModeSetup('adaptive')">
+      <div class="qmode-icon">🧠</div>
+      <div class="qmode-name">Adaptive</div>
+      <div class="qmode-desc">Adjusts to your mastery level</div>
     </div>
     <div class="qmode-card ${weakCount===0?'qmode-dim':''}" onclick="startModeSetup('weakspots')">
       <div class="qmode-icon">🎯</div>
@@ -258,8 +265,9 @@ function showQuizSetupScreen(mode){
   const isTimed=mode==='timed';
   const isTerms=mode==='terms';
   const isReview=mode==='review';
+  const isAdaptive=mode==='adaptive';
   document.getElementById('quizTabContent').innerHTML=`
-    <div class="det-back" style="margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--em-600);font-weight:600" onclick="renderQuizTab()">
+    <div class="quiz-back-sticky" onclick="renderQuizTab()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back
     </div>
     <div class="pg-title">${isTimed?'⚡ Timed Quiz':isTerms?'📖 Terms Quiz':isReview?'🔁 Spaced Review':'📚 Standard Quiz'}</div>
@@ -287,7 +295,7 @@ function showQuizSetupScreen(mode){
 
 function showCategoryPicker(){
   document.getElementById('quizTabContent').innerHTML=`
-    <div class="det-back" style="margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--em-600);font-weight:600" onclick="renderQuizTab()">
+    <div class="quiz-back-sticky" onclick="renderQuizTab()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back
     </div>
     <div class="pg-title">🔬 Category Quiz</div>
@@ -308,7 +316,7 @@ function selectCategory(catName){
   QZ.category=catName;
   QZ.mode='category';
   document.getElementById('quizTabContent').innerHTML=`
-    <div class="det-back" style="margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--em-600);font-weight:600" onclick="showCategoryPicker()">
+    <div class="quiz-back-sticky" onclick="showCategoryPicker()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back
     </div>
     <div class="pg-title">🔬 ${catName}</div>
@@ -335,6 +343,7 @@ function launchFromSetup(mode){
   const isTerms=mode==='terms';
   const isTimed=mode==='timed';
   const isReview=mode==='review';
+  const isAdaptive=mode==='adaptive';
   let qs;
   if(isTerms){qs=genTermQuestions(10);}
   else if(isReview){
@@ -352,6 +361,7 @@ function launchFromSetup(mode){
 function startDailyChallenge(){
   if(isDailyDone()){showToast('Already completed today — come back tomorrow!');return;}
   const qs=genDailyChallenge();
+  QZ.mode='mc';
   QZ.isDaily=true;
   launchQuiz(qs,false,false,true);
 }
@@ -362,9 +372,12 @@ function launchQuiz(qs,isTimed=false,isTerms=false,isDaily=false){
       isTimed,isTerms,isDaily,streak:0,wrongAnswers:[],
       timeLeft:30,timerInterval:null};
   QZ.lastSettings={mode:QZ.mode,scope:QZ.scope};
-  document.getElementById('quizTabContent').style.display='none';
-  document.getElementById('quizActiveWrap').style.display='block';
-  document.getElementById('qResults').classList.remove('show');
+  const qtc=document.getElementById('quizTabContent');
+  const qaw=document.getElementById('quizActiveWrap');
+  if(qtc)qtc.style.display='none';
+  if(qaw)qaw.style.display='block';
+  const qres=document.getElementById('qResults');
+  if(qres)qres.classList.remove('show');
   if(QZ.mode==='fc'||QZ.mode==='flashcard'){
     document.getElementById('fcMode').style.display='block';
     document.getElementById('mcMode').style.display='none';
@@ -378,9 +391,12 @@ function launchQuiz(qs,isTimed=false,isTerms=false,isDaily=false){
 
 function exitToQuizTab(){
   clearTimerInterval();
-  document.getElementById('quizTabContent').style.display='block';
-  document.getElementById('quizActiveWrap').style.display='none';
-  document.getElementById('qResults').classList.remove('show');
+  const qtc=document.getElementById('quizTabContent');
+  const qaw=document.getElementById('quizActiveWrap');
+  const qres=document.getElementById('qResults');
+  if(qtc)qtc.style.display='block';
+  if(qaw)qaw.style.display='none';
+  if(qres)qres.classList.remove('show');
   renderQuizTab();
 }
 

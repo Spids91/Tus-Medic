@@ -1,7 +1,7 @@
 // ─── APP.JS — Tús Medic v6.1 ──────────────────────────────────────────────────
 
 const LEVELS=[
-  {name:"Rookie",          xp:0,    next:100,      color:"#059669",gradient:"linear-gradient(135deg,#064E3B,#059669)"},
+  {name:"Rookie",          xp:0,    next:100,      color:"#475569",gradient:"linear-gradient(135deg,#0F172A,#334155)"},
   {name:"Student",         xp:100,  next:300,      color:"#0891B2",gradient:"linear-gradient(135deg,#0C4A6E,#0891B2)"},
   {name:"Responder",       xp:300,  next:600,      color:"#2563EB",gradient:"linear-gradient(135deg,#1E3A8A,#2563EB)"},
   {name:"Clinician",       xp:600,  next:1000,     color:"#7C3AED",gradient:"linear-gradient(135deg,#4C1D95,#7C3AED)"},
@@ -60,7 +60,7 @@ let G={
 };
 
 function loadG(){
-  try{const s=localStorage.getItem('tusMedicG09');if(s)G={...G,...JSON.parse(s)};}catch(e){}
+  try{const s=localStorage.getItem('tusMedicG091');if(s)G={...G,...JSON.parse(s)};}catch(e){}
   MEDS.forEach(m=>{
     if(!G.drugCorrect[m.id])G.drugCorrect[m.id]=0;
     if(G.notes[m.id]===undefined)G.notes[m.id]='';
@@ -73,7 +73,7 @@ function loadG(){
   if(!G.recentWrong)G.recentWrong=[];
   if(G.lastDailyDate===undefined)G.lastDailyDate=null;
 }
-function saveG(){try{localStorage.setItem('tusMedicG09',JSON.stringify(G));}catch(e){}}
+function saveG(){try{localStorage.setItem('tusMedicG091',JSON.stringify(G));}catch(e){}}
 function getDM(id){return getMastery(G.drugCorrect[id]||0);}
 function todayKey(){return new Date().toISOString().slice(0,10);}
 
@@ -237,8 +237,11 @@ function renderDonut(){
 let chartMetric='questions';
 function setChartMetric(m,el){
   chartMetric=m;
-  document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
+  const classes={'questions':'on','accuracy':'on-accuracy','quizzes':'on-quizzes','xp':'on-xp'};
+  document.querySelectorAll('.chart-tab').forEach(t=>{
+    t.classList.remove('on','on-accuracy','on-quizzes','on-xp');
+  });
+  el.classList.add(classes[m]||'on');
   renderChart();haptic();
 }
 

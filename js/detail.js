@@ -1,20 +1,53 @@
 // ─── DETAIL.JS v6.2 ───────────────────────────────────────────────────────────
 
-// Swipe right to close
+// iOS-style swipe right to close with animation
 let _touchStartX = 0;
 let _touchStartY = 0;
+let _swiping = false;
 
 function initSwipeBack() {
   const overlay = document.getElementById('detOverlay');
+
   overlay.addEventListener('touchstart', e => {
     _touchStartX = e.touches[0].clientX;
     _touchStartY = e.touches[0].clientY;
+    _swiping = false;
   }, { passive: true });
+
+  overlay.addEventListener('touchmove', e => {
+    const dx = e.touches[0].clientX - _touchStartX;
+    const dy = Math.abs(e.touches[0].clientY - _touchStartY);
+    // Only track horizontal swipe starting from left edge area
+    if (dx > 0 && dy < 60) {
+      _swiping = true;
+      const pct = Math.min(dx / window.innerWidth, 1);
+      overlay.style.transform = 'translateX(' + (dx * 0.6) + 'px)';
+      overlay.style.opacity = String(1 - pct * 0.3);
+    }
+  }, { passive: true });
+
   overlay.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - _touchStartX;
     const dy = Math.abs(e.changedTouches[0].clientY - _touchStartY);
-    // Swipe right at least 80px, and mostly horizontal
-    if (dx > 80 && dy < 60) closeDet();
+    if (_swiping && dx > 100 && dy < 60) {
+      // Complete the swipe
+      overlay.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+      overlay.style.transform = 'translateX(100%)';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.style.transition = '';
+        overlay.style.transform = '';
+        overlay.style.opacity = '';
+        closeDet();
+      }, 250);
+    } else {
+      // Snap back
+      overlay.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+      overlay.style.transform = '';
+      overlay.style.opacity = '';
+      setTimeout(() => { overlay.style.transition = ''; }, 300);
+    }
+    _swiping = false;
   }, { passive: true });
 }
 
