@@ -42,7 +42,7 @@
   <div class="hdr-right">
     <div class="hdr-btn streak" onclick="goProgress()"><span id="streakVal">0</span> day streak</div>
     <div class="hdr-btn" onclick="goProgress()">⚡<span id="xpVal">0</span></div>
-    <div class="dark-btn" onclick="toggleDark()" id="darkBtn">🌙</div>
+    <button class="settings-btn" onclick="openSettings()" aria-label="Settings">⚙️</button>
   </div>
 </header>
 
@@ -370,12 +370,14 @@
 <script src="js/detail.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/learn.js"></script>
+<script src="js/settings.js"></script>
 <script>
 // Init render after all scripts loaded
 renderHome();
 renderDrugList();
 renderLearn();
 renderQuizTab();
+updateDarkToggle();
 </script>
 </body>
 </html>

@@ -60,7 +60,7 @@ let G={
 };
 
 function loadG(){
-  try{const s=localStorage.getItem('tusMedicG091');if(s)G={...G,...JSON.parse(s)};}catch(e){}
+  try{const s=localStorage.getItem('tusMedicG10');if(s)G={...G,...JSON.parse(s)};}catch(e){}
   MEDS.forEach(m=>{
     if(!G.drugCorrect[m.id])G.drugCorrect[m.id]=0;
     if(G.notes[m.id]===undefined)G.notes[m.id]='';
@@ -73,7 +73,7 @@ function loadG(){
   if(!G.recentWrong)G.recentWrong=[];
   if(G.lastDailyDate===undefined)G.lastDailyDate=null;
 }
-function saveG(){try{localStorage.setItem('tusMedicG091',JSON.stringify(G));}catch(e){}}
+function saveG(){try{localStorage.setItem('tusMedicG10',JSON.stringify(G));}catch(e){}}
 function getDM(id){return getMastery(G.drugCorrect[id]||0);}
 function todayKey(){return new Date().toISOString().slice(0,10);}
 
@@ -295,13 +295,48 @@ function handleGlobalSearch(q,clearId,resultsId){
   if(clearBtn)clearBtn.style.display=q?'flex':'none';
   clearTimeout(_gsTimer);
   const el=document.getElementById(resultsId||'gsearchResults');
-  if(!q.trim()){el.classList.remove('show');el.innerHTML='';if(resultsId==='homeSearchResults'){}else renderDrugList();return;}
+  if(!q.trim()){
+    el.classList.remove('show');el.innerHTML='';
+    if(resultsId!=='homeSearchResults'){refQ='';renderDrugList();}
+    return;
+  }
   _gsTimer=setTimeout(()=>{
     const ql=q.toLowerCase(),results=[];
-    MEDS.filter(m=>m.name.toLowerCase().includes(ql)||m.classification.toLowerCase().includes(ql)||m.indications.some(i=>i.toLowerCase().includes(ql))).slice(0,5).forEach(m=>results.push({type:'drug',name:m.name,sub:m.classification,action:()=>openDet(m.id)}));
-    TERMS.filter(t=>t.term.toLowerCase().includes(ql)||t.def.toLowerCase().includes(ql)).slice(0,4).forEach(t=>results.push({type:'term',name:t.term,sub:t.def.substring(0,60)+'…',action:()=>{showPage('learn',document.getElementById('btn-learn'));selLearn('terms',document.querySelector('[data-lsec="terms"]'));setTimeout(()=>{document.getElementById('learnSearch').value=t.term;handleLearnSearch(t.term);scrollToTerm(t.term);},150);}}));
-    HOSPITALS.filter(h=>h.name.toLowerCase().includes(ql)||h.pcr.toLowerCase().includes(ql)||h.county.toLowerCase().includes(ql)).slice(0,4).forEach(h=>results.push({type:'hospital',name:h.name,sub:`${h.county} — PCR: ${h.pcr}`,action:()=>{showPage('learn',document.getElementById('btn-learn'));selLearn('pcr',document.querySelector('[data-lsec="pcr"]'));}}));
-    if(!results.length){el.innerHTML='<div class="gsr-item"><div style="color:var(--text3);font-size:13px">No results found</div></div>';el.classList.add('show');return;}
+
+    // Rank drug matches: name match first, then classification, then indications
+    const drugMatches=MEDS.filter(m=>
+      m.name.toLowerCase().includes(ql)||
+      m.classification.toLowerCase().includes(ql)||
+      m.indications.some(i=>i.toLowerCase().includes(ql))
+    ).sort((a,b)=>{
+      const aName=a.name.toLowerCase().includes(ql);
+      const bName=b.name.toLowerCase().includes(ql);
+      if(aName&&!bName)return -1;
+      if(!aName&&bName)return 1;
+      // Both match name — rank by how early the match appears
+      const aIdx=a.name.toLowerCase().indexOf(ql);
+      const bIdx=b.name.toLowerCase().indexOf(ql);
+      return aIdx-bIdx;
+    }).slice(0,5);
+    drugMatches.forEach(m=>results.push({type:'drug',name:m.name,sub:m.classification,action:()=>openDet(m.id)}));
+
+    TERMS.filter(t=>t.term.toLowerCase().includes(ql)||t.def.toLowerCase().includes(ql))
+      .slice(0,3).forEach(t=>results.push({type:'term',name:t.term,sub:t.def.substring(0,60)+'…',action:()=>{
+        showPage('learn',document.getElementById('btn-learn'));
+        selLearn('terms',document.querySelector('[data-lsec="terms"]'));
+        setTimeout(()=>{document.getElementById('learnSearch').value=t.term;handleLearnSearch(t.term);scrollToTerm(t.term);},150);
+      }}));
+
+    HOSPITALS.filter(h=>h.name.toLowerCase().includes(ql)||h.pcr.toLowerCase().includes(ql)||h.county.toLowerCase().includes(ql))
+      .slice(0,3).forEach(h=>results.push({type:'hospital',name:h.name,sub:`${h.county} — PCR: ${h.pcr}`,action:()=>{
+        showPage('learn',document.getElementById('btn-learn'));
+        selLearn('pcr',document.querySelector('[data-lsec="pcr"]'));
+      }}));
+
+    if(!results.length){
+      el.innerHTML='<div class="gsr-item"><div style="color:var(--text3);font-size:13px">No results found</div></div>';
+      el.classList.add('show');return;
+    }
     el.innerHTML=results.map((r,i)=>`<div class="gsr-item" onclick="gsrClick(${i},'${resultsId||'gsearchResults'}')"><span class="gsr-type gsr-${r.type}">${r.type}</span><div><div class="gsr-name">${r.name}</div><div class="gsr-sub">${r.sub}</div></div></div>`).join('');
     el.classList.add('show');el._actions=results.map(r=>r.action);
   },200);
@@ -317,6 +352,7 @@ function clearSearch(){
   document.getElementById('searchClear').style.display='none';
   document.getElementById('gsearchResults').classList.remove('show');
   document.getElementById('gsearchResults').innerHTML='';
+  refQ='';
   renderDrugList();
 }
 
@@ -345,3 +381,9 @@ window.addEventListener('offline',checkOnline);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDet();});
 loadG();loadTheme();checkOnline();checkDisclaimer();updateHdr();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+function updateDarkToggle(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const t=document.getElementById('darkToggle');
+  if(t)t.classList.toggle('on',isDark);
+}
