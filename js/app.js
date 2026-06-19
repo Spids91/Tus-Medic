@@ -52,12 +52,15 @@ let G={
   seenDrugs:[],
   earnedBadges:[],
   freezeTokens:1,freezesUsed:0,
-  dailyLog:{},   // "YYYY-MM-DD": {questions, correct, quizzes, xp}
-  trackingStart:null
+  dailyLog:{},
+  trackingStart:null,
+  nextReview:{},
+  recentWrong:[],
+  lastDailyDate:null
 };
 
 function loadG(){
-  try{const s=localStorage.getItem('tusMedicG62');if(s)G={...G,...JSON.parse(s)};}catch(e){}
+  try{const s=localStorage.getItem('tusMedicG08');if(s)G={...G,...JSON.parse(s)};}catch(e){}
   MEDS.forEach(m=>{
     if(!G.drugCorrect[m.id])G.drugCorrect[m.id]=0;
     if(G.notes[m.id]===undefined)G.notes[m.id]='';
@@ -66,8 +69,11 @@ function loadG(){
   if(!G.earnedBadges)G.earnedBadges=[];
   if(!G.dailyLog)G.dailyLog={};
   if(!G.trackingStart)G.trackingStart=todayKey();
+  if(!G.nextReview)G.nextReview={};
+  if(!G.recentWrong)G.recentWrong=[];
+  if(G.lastDailyDate===undefined)G.lastDailyDate=null;
 }
-function saveG(){try{localStorage.setItem('tusMedicG62',JSON.stringify(G));}catch(e){}}
+function saveG(){try{localStorage.setItem('tusMedicG08',JSON.stringify(G));}catch(e){}}
 function getDM(id){return getMastery(G.drugCorrect[id]||0);}
 function todayKey(){return new Date().toISOString().slice(0,10);}
 
@@ -166,7 +172,11 @@ function showPage(id,btn){
   btn.classList.add('active');
   haptic();
   if(id==='home')renderHome();
-  if(id==='quiz')updateQuizCounts();
+  if(id==='quiz'){
+    const qtc=document.getElementById('quizTabContent');
+    if(qtc&&qtc.innerHTML==='')renderQuizTab();
+    else if(qtc)renderQuizTab();
+  }
   if(id==='stats'){updateStats();renderDonut();renderChart();}
   if(id==='learn')renderLearn();
 }

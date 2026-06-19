@@ -1,4 +1,4 @@
-const C='tus-medic-v62';
+const C='tus-medic-v08';
 const ASSETS=['/','/index.html','/manifest.json','/css/style.css','/js/data/medications.js','/js/data/hospitals.js','/js/data/terms.js','/js/app.js','/js/home.js','/js/reference.js','/js/detail.js','/js/quiz.js','/js/learn.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(ASSETS)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim();});
