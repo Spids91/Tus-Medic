@@ -599,7 +599,4 @@ function selMode(m,el){
 }
 function updateQuizCounts(){}// kept for compatibility
 
-// Init
-document.addEventListener('DOMContentLoaded',()=>{
-  if(document.getElementById('quizTabContent'))renderQuizTab();
-});
+// Init handled by inline script in index.html

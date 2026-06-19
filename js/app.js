@@ -172,11 +172,7 @@ function showPage(id,btn){
   btn.classList.add('active');
   haptic();
   if(id==='home')renderHome();
-  if(id==='quiz'){
-    const qtc=document.getElementById('quizTabContent');
-    if(qtc&&qtc.innerHTML==='')renderQuizTab();
-    else if(qtc)renderQuizTab();
-  }
+  if(id==='quiz')renderQuizTab();
   if(id==='stats'){updateStats();renderDonut();renderChart();}
   if(id==='learn')renderLearn();
 }
