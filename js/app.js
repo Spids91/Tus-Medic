@@ -346,7 +346,8 @@ function handleGlobalSearch(q,clearId,resultsId){
       .slice(0,3).forEach(h=>results.push({type:'hospital',name:h.name,sub:`${h.county} — PCR: ${h.pcr}`,action:()=>{
         showPage('learn',document.getElementById('btn-learn'));
         selLearn('pcr',document.querySelector('[data-lsec="pcr"]'));
-        setTimeout(()=>scrollToHospital(h.pcr),350);
+        // Wait for both showPage and selLearn renders to complete before scrolling
+        setTimeout(()=>scrollToHospital(h.pcr),500);
       }}));
 
     if(!results.length){
@@ -360,7 +361,20 @@ function handleGlobalSearch(q,clearId,resultsId){
 
 function gsrClick(i,resultsId){
   const el=document.getElementById(resultsId||'gsearchResults');
-  if(el._actions&&el._actions[i])el._actions[i]();
+  if(el._actions&&el._actions[i]){
+    // Clear whichever search bar is active before navigating
+    if(resultsId==='homeSearchResults'){
+      document.getElementById('homeSearchInput').value='';
+      document.getElementById('homeSearchClear').style.display='none';
+    } else {
+      document.getElementById('searchInput').value='';
+      document.getElementById('searchClear').style.display='none';
+      refQ='';
+    }
+    el.classList.remove('show');
+    el.innerHTML='';
+    el._actions[i]();
+  }
 }
 
 function clearSearch(){
