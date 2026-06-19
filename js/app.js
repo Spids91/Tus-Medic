@@ -179,6 +179,8 @@ function showPage(id,btn){
   if(id==='quiz')renderQuizTab();
   if(id==='stats'){updateStats();renderDonut();renderChart();}
   if(id==='learn')renderStudy();
+  // Always reset scroll to top on any page switch
+  window.scrollTo({top:0,behavior:'instant'});
 }
 function goHome(){showPage('home',document.getElementById('btn-home'));scrollTop();}
 function goProgress(){showPage('stats',document.getElementById('btn-stats'));scrollTop();}
