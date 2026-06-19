@@ -67,12 +67,4 @@ function renderHome(){
   const k=todayKey();
   const seen=G.seenToday&&G.seenToday[k];
   document.getElementById('dotdSeen').textContent=seen?'✓':'';
-
-  // Quick stats
-  const counts={unseen:0,novice:0,learning:0,proficient:0,mastered:0};
-  MEDS.forEach(m=>counts[getDM(m.id)]++);
-  document.getElementById('hsMastered').textContent=counts.mastered;
-  document.getElementById('hsLearning').textContent=counts.novice+counts.learning+counts.proficient;
-  document.getElementById('hsUnseen').textContent=counts.unseen;
-  document.getElementById('hsStreak').textContent=G.streak;
 }

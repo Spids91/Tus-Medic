@@ -1,4 +1,4 @@
-const C='tus-medic-v105';
+const C='tus-medic-v107';
 const ASSETS=['/','/index.html','/manifest.json','/css/style.css',
   '/js/data/medications.js','/js/data/hospitals.js','/js/data/terms.js',
   '/js/app.js','/js/home.js','/js/reference.js','/js/detail.js',

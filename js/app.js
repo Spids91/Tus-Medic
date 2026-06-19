@@ -335,8 +335,19 @@ function handleGlobalSearch(q,clearId,resultsId){
     }).slice(0,5);
     drugMatches.forEach(m=>results.push({type:'drug',name:m.name,sub:m.classification,action:()=>openDet(m.id)}));
 
-    TERMS.filter(t=>t.term.toLowerCase().includes(ql)||t.def.toLowerCase().includes(ql))
-      .slice(0,3).forEach(t=>results.push({type:'term',name:t.term,sub:t.def.substring(0,60)+'…',action:()=>{
+    // Score terms by relevance: exact name > name starts-with > name contains > definition contains
+    TERMS.map(t=>{
+      const term=t.term.toLowerCase();
+      let score=0;
+      if(term===ql)score=100;
+      else if(term.startsWith(ql))score=80;
+      else if(term.includes(ql))score=60;
+      else if(t.def.toLowerCase().includes(ql))score=20;
+      return{t,score};
+    }).filter(x=>x.score>0)
+      .sort((a,b)=>b.score-a.score||a.t.term.localeCompare(b.t.term))
+      .slice(0,3)
+      .forEach(({t})=>results.push({type:'term',name:t.term,sub:t.def.substring(0,60)+'…',action:()=>{
         showPage('learn',document.getElementById('btn-learn'));
         selLearn('terms',document.querySelector('[data-lsec="terms"]'));
         setTimeout(()=>{document.getElementById('learnSearch').value=t.term;handleLearnSearch(t.term);scrollToTerm(t.term);},150);

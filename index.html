@@ -161,15 +161,6 @@
     <div class="dotd-tap">Tap to open →</div>
   </div>
 
-  <!-- Quick stats -->
-  <div class="home-section-label">Your Progress</div>
-  <div class="home-stats-grid">
-    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsMastered">0</div><div class="hs-lbl">Mastered</div></div>
-    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsLearning">0</div><div class="hs-lbl">In Progress</div></div>
-    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsUnseen">46</div><div class="hs-lbl">Unseen</div></div>
-    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsStreak">0</div><div class="hs-lbl">Streak</div></div>
-  </div>
-
   <div class="home-disclaimer-link" onclick="document.getElementById('disclaimerModal').style.display='flex'">⚠️ Disclaimer — learning tool only</div>
 </div>
 
@@ -410,7 +401,7 @@
     Quiz
   </button>
   <button class="nb" id="btn-learn" onclick="showPage('learn',this);scrollTop()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2"/><path d="M12 6.5C13.5 5 16 4.5 20 4.5v13c-4 0-6.5.5-8 2"/><path d="M12 6.5v13"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v13"/><path d="M12 7C10.5 5.5 8 5 4 5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2V5c-4 0-6.5.5-8 2z"/></svg>
     Learn
   </button>
   <button class="nb" id="btn-stats" onclick="showPage('stats',this);scrollTop()">

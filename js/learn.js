@@ -25,8 +25,18 @@ function renderLearnSearch(q){
   const c=document.getElementById('learnContent');
   let html='';
 
-  // Search terms
-  const termResults=TERMS.filter(t=>t.term.toLowerCase().includes(q)||t.def.toLowerCase().includes(q));
+  // Search terms — relevance scored: exact > starts-with > contains > definition
+  const termResults=TERMS.map(t=>{
+    const term=t.term.toLowerCase();
+    let score=0;
+    if(term===q)score=100;
+    else if(term.startsWith(q))score=80;
+    else if(term.includes(q))score=60;
+    else if(t.def.toLowerCase().includes(q))score=20;
+    return{t,score};
+  }).filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score||a.t.term.localeCompare(b.t.term))
+    .map(x=>x.t);
   if(termResults.length){
     html+='<div class="term-cat-header"><span class="term-cat-icon">📖</span>Medical Terms</div>';
     html+=termResults.map(t=>`
@@ -98,19 +108,8 @@ const TERM_CATEGORIES=[
 function renderTerms(){
   // Find term object by name
   function getTerm(name){return TERMS.find(t=>t.term===name);}
+  // Note: search queries are handled by renderLearnSearch — this only renders category mode
 
-  if(learnQ){
-    // Search mode — flat filtered list
-    const filtered=TERMS.filter(t=>t.term.toLowerCase().includes(learnQ)||t.def.toLowerCase().includes(learnQ));
-    if(!filtered.length)return'<div class="empty"><div class="empty-ico">🔍</div><p>No terms match your search</p></div>';
-    return`<div>${filtered.map(t=>`
-      <div class="term-card" onclick="toggleTerm(this)" id="term-${t.term.replace(/\s+/g,'_').replace(/[()]/g,'')}">
-        <div class="term-card-header"><div class="term-word">${t.term}</div><div class="term-chevron">›</div></div>
-        <div class="term-def">${t.def}</div>
-      </div>`).join('')}</div>`;
-  }
-
-  // Category mode
   return TERM_CATEGORIES.map(cat=>{
     const catTerms=cat.terms.map(name=>getTerm(name)).filter(Boolean);
     if(!catTerms.length)return'';
@@ -133,6 +132,37 @@ function toggleTerm(el){
 }
 
 // PAED CALCULATOR
+// ── PAEDIATRIC VITALS + AIRWAY REFERENCE (PHECC 2026) ────────────────────────
+// Keyed by age in years. 0 = neonate, 0.5 = six months. Values from PHECC per-age pages.
+const PAED_VITALS=[
+  {age:0,    label:'Neonate', hr:'90–180', rr:'30–60', defib:'14 J',  ett:'N/A',           lma:'N/A', igel:'N/A', lti:'N/A'},
+  {age:0.5,  label:'6 months',hr:'80–160', rr:'30–60', defib:'24 J',  ett:'N/A',           lma:'N/A', igel:'N/A', lti:'N/A'},
+  {age:1,    label:'1 year',  hr:'75–130', rr:'20–30', defib:'40 J',  ett:'N/A',           lma:'N/A', igel:'N/A', lti:'N/A'},
+  {age:2,    label:'2 years', hr:'75–130', rr:'20–30', defib:'48 J',  ett:'4.0mm (13cm)',  lma:'2',   igel:'1.5', lti:'2'},
+  {age:3,    label:'3 years', hr:'75–130', rr:'20–30', defib:'56 J',  ett:'4.0mm (13.5cm)',lma:'2',   igel:'2',   lti:'2'},
+  {age:4,    label:'4 years', hr:'70–110', rr:'16–24', defib:'64 J',  ett:'4.5mm (14cm)',  lma:'2',   igel:'2',   lti:'2'},
+  {age:5,    label:'5 years', hr:'70–110', rr:'16–24', defib:'72 J',  ett:'4.5mm (14.5cm)',lma:'2',   igel:'2',   lti:'2'},
+  {age:6,    label:'6 years', hr:'70–110', rr:'16–24', defib:'100 J', ett:'5.0mm (15cm)',  lma:'2.5', igel:'2',   lti:'2'},
+  {age:7,    label:'7 years', hr:'60–90',  rr:'14–20', defib:'112 J', ett:'5.0mm (15.5cm)',lma:'2.5', igel:'2',   lti:'2.5'},
+  {age:8,    label:'8 years', hr:'60–90',  rr:'14–20', defib:'124 J', ett:'5.5mm (16cm)',  lma:'2.5', igel:'2',   lti:'2.5'},
+  {age:9,    label:'9 years', hr:'60–90',  rr:'14–20', defib:'136 J', ett:'5.5mm (16.5cm)',lma:'2.5', igel:'2.5', lti:'2.5'},
+  {age:10,   label:'10 years',hr:'60–90',  rr:'14–20', defib:'148 J', ett:'6.0mm (17cm)',  lma:'2.5', igel:'2.5', lti:'3'},
+  {age:11,   label:'11 years',hr:'60–90',  rr:'14–20', defib:'150 J', ett:'6.0mm (17.5cm)',lma:'3',   igel:'3',   lti:'3'},
+  {age:12,   label:'12 years',hr:'60–90',  rr:'14–20', defib:'150 J', ett:'6.5mm (18cm)',  lma:'3',   igel:'3',   lti:'3'},
+  {age:13,   label:'13 years',hr:'60–90',  rr:'14–20', defib:'150 J', ett:'6.5mm (18.5cm)',lma:'3',   igel:'3',   lti:'3'},
+  {age:14,   label:'14 years',hr:'60–90',  rr:'14–20', defib:'150 J', ett:'7.0mm (19cm)',  lma:'3',   igel:'3',   lti:'4'},
+  {age:15,   label:'15 years',hr:'60–90',  rr:'14–20', defib:'150 J', ett:'7.0mm (19.5cm)',lma:'3',   igel:'3',   lti:'4'},
+];
+
+// Find the closest matching vitals row for a given age in years
+function getPaedVitals(age){
+  if(age<=0)return PAED_VITALS[0];
+  if(age<=0.5)return PAED_VITALS[1];
+  // Round to nearest whole year, clamp to 15
+  const yr=Math.min(Math.round(age),15);
+  return PAED_VITALS.find(v=>v.age===yr)||PAED_VITALS[PAED_VITALS.length-1];
+}
+
 const PAED_DRUGS={
   EMT:[
     {lbl:'Adrenaline 1:1,000 (anaphylaxis IM)',drugName:'Adrenaline 1:1,000',fn:(wt,age)=>{if(age<0.5)return`${(wt*0.01).toFixed(2)} mL IM`;if(age<6)return'0.15 mL IM (150mcg)';if(age<12)return'0.3 mL IM (300mcg)';return'0.3–0.5 mL IM';}},
@@ -149,7 +179,7 @@ const PAED_DRUGS={
     {lbl:'Adrenaline 1:1,000 (anaphylaxis IM)',drugName:'Adrenaline 1:1,000',fn:(wt,age)=>{if(age<0.5)return`${(wt*0.01).toFixed(2)} mL IM`;if(age<6)return'0.15 mL IM (150mcg)';if(age<12)return'0.3 mL IM (300mcg)';return'0.3–0.5 mL IM';}},
     {lbl:'Chlorphenamine IM',drugName:'Chlorphenamine',fn:(wt,age)=>{if(age<0.5)return`${(wt*0.25).toFixed(2)} mg IM`;if(age<6)return'2.5mg IM';if(age<12)return'5mg IM';return'10mg IM';}},
     {lbl:'Dexamethasone PO (croup)',drugName:'Dexamethasone',fn:(wt)=>`${Math.min(wt*0.3,12).toFixed(1)} mg PO`},
-    {lbl:'Glucose 10% IV (2mL/kg)',drugName:'Glucose 10% Solution',fn:(wt)=>`${(wt*2).toFixed(0)} mL IV`},
+    {lbl:'Glucose 10% IV (5mL/kg)',drugName:'Glucose 10% Solution',fn:(wt)=>`${(wt*5).toFixed(0)} mL IV`},
     {lbl:'Hydrocortisone IM (anaphylaxis)',drugName:'Hydrocortisone',fn:(wt,age)=>{if(age<0.5)return'25mg IM';if(age<6)return'50mg IM';if(age<12)return'100mg IM';return'200mg IM';}},
     {lbl:'Midazolam buccal (seizure)',drugName:'Midazolam',fn:(wt,age)=>{if(age<0.25)return`${(wt*0.3).toFixed(2)}mg`;if(age<1)return'2.5mg buccal';if(age<5)return'5mg buccal';if(age<10)return'7.5mg buccal';return'10mg buccal';}},
     {lbl:'Naloxone IM (10mcg/kg)',drugName:'Naloxone',fn:(wt)=>`${(wt*0.01*1000).toFixed(0)} mcg IM`},
@@ -159,16 +189,19 @@ const PAED_DRUGS={
   ],
   AP:[
     {lbl:'Adrenaline 1:10,000 (cardiac arrest)',drugName:'Adrenaline 1:10,000',fn:(wt)=>`${(wt*0.1).toFixed(1)} mL IV/IO (10mcg/kg)`},
+    {lbl:'Adrenaline IV/IO (sepsis 0.1mcg/kg)',drugName:'Adrenaline 1:1,000',fn:(wt)=>`${(wt*0.1).toFixed(1)} mcg IV/IO`},
     {lbl:'Adrenaline 1:1,000 (anaphylaxis IM)',drugName:'Adrenaline 1:1,000',fn:(wt,age)=>{if(age<0.5)return`${(wt*0.01).toFixed(2)} mL IM`;if(age<6)return'0.15 mL IM (150mcg)';if(age<12)return'0.3 mL IM (300mcg)';return'0.3–0.5 mL IM';}},
     {lbl:'Amiodarone VF/pVT (5mg/kg)',drugName:'Amiodarone',fn:(wt)=>`${(wt*5).toFixed(0)} mg IV/IO`},
     {lbl:'Ceftriaxone IV (50mg/kg)',drugName:'Ceftriaxone',fn:(wt)=>`${Math.min(wt*50,2000).toFixed(0)} mg IV`},
     {lbl:'Fentanyl IN (1.5mcg/kg)',drugName:'Fentanyl',fn:(wt)=>`${Math.min(wt*1.5,100).toFixed(0)} mcg IN`},
-    {lbl:'Glucose 10% IV (2mL/kg)',drugName:'Glucose 10% Solution',fn:(wt)=>`${(wt*2).toFixed(0)} mL IV`},
+    {lbl:'Glucose 10% IV (5mL/kg)',drugName:'Glucose 10% Solution',fn:(wt)=>`${(wt*5).toFixed(0)} mL IV`},
     {lbl:'Ketamine IV pain (0.1–0.3mg/kg)',drugName:'Ketamine',fn:(wt)=>`${(wt*0.1).toFixed(1)}–${(wt*0.3).toFixed(1)} mg IV`},
     {lbl:'Lidocaine IO pain (500mcg/kg)',drugName:'Lidocaine',fn:(wt)=>`${Math.min(wt*0.5,40).toFixed(1)} mg IO`},
     {lbl:'Midazolam buccal (seizure)',drugName:'Midazolam',fn:(wt,age)=>{if(age<0.25)return`${(wt*0.3).toFixed(2)}mg`;if(age<1)return'2.5mg buccal';if(age<5)return'5mg buccal';if(age<10)return'7.5mg buccal';return'10mg buccal';}},
-    {lbl:'Morphine IV (50mcg/kg)',drugName:'Morphine Sulphate',fn:(wt)=>`${(wt*0.05).toFixed(2)} mg IV`},
+    {lbl:'Morphine IV (50mcg/kg, max 2mg)',drugName:'Morphine Sulphate',fn:(wt)=>`${Math.min(wt*0.05,2).toFixed(2)} mg IV`},
     {lbl:'Naloxone IV (10mcg/kg)',drugName:'Naloxone',fn:(wt)=>`${(wt*0.01*1000).toFixed(0)} mcg IV/IO`},
+    {lbl:'Diazepam PR (seizure)',drugName:'Diazepam Rectal',fn:(wt,age)=>{if(age<0.5)return'Contraindicated';if(age<2)return'5mg PR';if(age<12)return'5–10mg PR';return'10mg PR';}},
+    {lbl:'Diazepam IV/IO (seizure 0.1mg/kg)',drugName:'Diazepam Injection',fn:(wt,age)=>{if(age<0.5)return`${(wt*0.1).toFixed(2)} mg IV/IO`;return`${(wt*0.1).toFixed(2)} mg IV/IO`;}},
     {lbl:'NaCl 0.9% (anaphylaxis 20mL/kg)',drugName:'Sodium Chloride 0.9%',fn:(wt)=>`${(wt*20).toFixed(0)} mL IV`},
   ]
 };
@@ -192,8 +225,10 @@ function renderPaed(){
       <span class="paed-unit">years old</span>
     </div>
     <div id="paedResult" style="display:none" class="paed-result">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#93C5FD">Estimated Weight</div>
+      <div class="paed-result-lbl">Estimated Weight</div>
       <div class="paed-weight" id="paedWeight">— kg</div>
+      <div id="paedVitals"></div>
+      <div class="paed-drugs-lbl">Common Drug Doses</div>
       <div class="paed-formula-grid" id="paedDrugs"></div>
     </div>
   </div>
@@ -228,6 +263,29 @@ function calcPaed(age){
   else wt=Math.round((age*3+7)*10)/10;
   document.getElementById('paedResult').style.display='block';
   document.getElementById('paedWeight').textContent=wt+' kg';
+
+  // Apply scope colour to the result panel
+  const panel=document.getElementById('paedResult');
+  panel.className='paed-result paed-result-'+paedScope.toLowerCase();
+
+  // Vitals + airway reference for this age
+  const v=getPaedVitals(age);
+  const vitalsEl=document.getElementById('paedVitals');
+  if(vitalsEl){
+    vitalsEl.innerHTML=
+      '<div class="paed-vital-row">'
+        +'<div class="paed-vital"><span class="paed-vital-lbl">HR</span><span class="paed-vital-val">'+v.hr+'</span></div>'
+        +'<div class="paed-vital"><span class="paed-vital-lbl">RR</span><span class="paed-vital-val">'+v.rr+'</span></div>'
+        +'<div class="paed-vital"><span class="paed-vital-lbl">Defib</span><span class="paed-vital-val">'+v.defib+'</span></div>'
+      +'</div>'
+      +'<div class="paed-airway-row">'
+        +'<div class="paed-airway"><span class="paed-airway-lbl">ETT</span><span class="paed-airway-val">'+v.ett+'</span></div>'
+        +'<div class="paed-airway"><span class="paed-airway-lbl">LMA</span><span class="paed-airway-val">'+v.lma+'</span></div>'
+        +'<div class="paed-airway"><span class="paed-airway-lbl">i-gel</span><span class="paed-airway-val">'+v.igel+'</span></div>'
+        +'<div class="paed-airway"><span class="paed-airway-lbl">LTI</span><span class="paed-airway-val">'+v.lti+'</span></div>'
+      +'</div>';
+  }
+
   const drugs=PAED_DRUGS[paedScope]||PAED_DRUGS.EMT;
   document.getElementById('paedDrugs').innerHTML=drugs.map(d=>`
     <div class="paed-f-item" onclick="openPaedDrugByName('${d.drugName||''}')">
