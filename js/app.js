@@ -1,13 +1,13 @@
-// ─── APP.JS — Tús Medic v6 ────────────────────────────────────────────────────
+// ─── APP.JS — Tús Medic v6.1 ──────────────────────────────────────────────────
 
-const LEVELS = [
-  {name:"Rookie",          xp:0,    next:100,      color:"#059669", gradient:"linear-gradient(135deg,#064E3B,#059669)"},
-  {name:"Student",         xp:100,  next:300,      color:"#0891B2", gradient:"linear-gradient(135deg,#0C4A6E,#0891B2)"},
-  {name:"Responder",       xp:300,  next:600,      color:"#2563EB", gradient:"linear-gradient(135deg,#1E3A8A,#2563EB)"},
-  {name:"Clinician",       xp:600,  next:1000,     color:"#7C3AED", gradient:"linear-gradient(135deg,#4C1D95,#7C3AED)"},
-  {name:"Expert",          xp:1000, next:1500,     color:"#D97706", gradient:"linear-gradient(135deg,#78350F,#D97706)"},
-  {name:"Senior Clinician",xp:1500, next:2200,     color:"#EA580C", gradient:"linear-gradient(135deg,#7C2D12,#EA580C)"},
-  {name:"Master Clinician",xp:2200, next:Infinity, color:"#DC2626", gradient:"linear-gradient(135deg,#7F1D1D,#DC2626)"}
+const LEVELS=[
+  {name:"Rookie",          xp:0,    next:100,      color:"#059669",gradient:"linear-gradient(135deg,#064E3B,#059669)"},
+  {name:"Student",         xp:100,  next:300,      color:"#0891B2",gradient:"linear-gradient(135deg,#0C4A6E,#0891B2)"},
+  {name:"Responder",       xp:300,  next:600,      color:"#2563EB",gradient:"linear-gradient(135deg,#1E3A8A,#2563EB)"},
+  {name:"Clinician",       xp:600,  next:1000,     color:"#7C3AED",gradient:"linear-gradient(135deg,#4C1D95,#7C3AED)"},
+  {name:"Expert",          xp:1000, next:1500,     color:"#D97706",gradient:"linear-gradient(135deg,#78350F,#D97706)"},
+  {name:"Senior Clinician",xp:1500, next:2200,     color:"#EA580C",gradient:"linear-gradient(135deg,#7C2D12,#EA580C)"},
+  {name:"Master Clinician",xp:2200, next:Infinity, color:"#DC2626",gradient:"linear-gradient(135deg,#7F1D1D,#DC2626)"}
 ];
 function getLevel(xp){for(let i=LEVELS.length-1;i>=0;i--)if(xp>=LEVELS[i].xp)return LEVELS[i];return LEVELS[0];}
 
@@ -21,27 +21,102 @@ function getMastery(correct){
 const MASTERY_LABELS={unseen:'· Unseen',novice:'◎ Novice',learning:'~ Learning',proficient:'✦ Proficient',mastered:'★ Mastered'};
 const MASTERY_COLORS={unseen:'#94A3B8',novice:'#D97706',learning:'#0E7490',proficient:'#059669',mastered:'#047857'};
 
-// Mastery tag label showing question count
 function masteryTag(id){
   const correct=G.drugCorrect[id]||0;
   const m=getMastery(correct);
-  if(m==='unseen') return `<div class="mtag mt-unseen">Questions (0/10)</div>`;
-  return `<div class="mtag mt-${m}">${MASTERY_LABELS[m]} (${Math.min(correct,10)}/10)</div>`;
+  return`<div class="mtag mt-${m}">Questions (${Math.min(correct,10)}/10)</div>`;
 }
 
-let G={xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,drugCorrect:{},notes:{},disclaimerDone:false};
+// BADGES
+const BADGES=[
+  {id:'first_quiz',     icon:'🎯', name:'First Quiz',           check:g=>g.quizzes>=1},
+  {id:'streak_7',       icon:'📅', name:'7 Day Streak',          check:g=>g.streak>=7},
+  {id:'streak_30',      icon:'🔥', name:'30 Day Streak',         check:g=>g.streak>=30},
+  {id:'mastered_10',    icon:'⭐', name:'10 Drugs Mastered',     check:g=>Object.values(g.drugCorrect).filter(v=>v>=10).length>=10},
+  {id:'mastered_25',    icon:'💜', name:'25 Drugs Mastered',     check:g=>Object.values(g.drugCorrect).filter(v=>v>=10).length>=25},
+  {id:'mastered_all',   icon:'👑', name:'All 46 Mastered',       check:g=>Object.values(g.drugCorrect).filter(v=>v>=10).length>=46},
+  {id:'emt_mastered',   icon:'🏆', name:'All EMT Drugs Mastered',check:g=>MEDS.filter(m=>m.scope.includes('EMT')).every(m=>(g.drugCorrect[m.id]||0)>=10)},
+  {id:'xp_500',         icon:'⚡', name:'500 XP',                check:g=>g.xp>=500},
+  {id:'xp_1000',        icon:'🚀', name:'1000 XP',               check:g=>g.xp>=1000},
+  {id:'questions_100',  icon:'🧠', name:'100 Questions',         check:g=>g.totalQ>=100},
+  {id:'all_opened',     icon:'💊', name:'Opened Every Drug',     check:g=>MEDS.every(m=>(g.drugCorrect[m.id]||0)>=0&&g.seenDrugs&&g.seenDrugs.includes(m.id))},
+  {id:'freeze_used',    icon:'❄️', name:'Used Streak Freeze',    check:g=>g.freezesUsed>=1}
+];
+
+// STATE
+let G={
+  xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,
+  drugCorrect:{},notes:{},disclaimerDone:false,
+  seenDrugs:[],
+  earnedBadges:[],
+  freezeTokens:1,freezesUsed:0,
+  dailyLog:{},   // "YYYY-MM-DD": {questions, correct, quizzes, xp}
+  trackingStart:null
+};
 
 function loadG(){
-  try{const s=localStorage.getItem('tusMedicG6');if(s)G={...G,...JSON.parse(s)};}catch(e){}
-  MEDS.forEach(m=>{if(!G.drugCorrect[m.id])G.drugCorrect[m.id]=0;if(G.notes[m.id]===undefined)G.notes[m.id]='';});
+  try{const s=localStorage.getItem('tusMedicG61');if(s)G={...G,...JSON.parse(s)};}catch(e){}
+  MEDS.forEach(m=>{
+    if(!G.drugCorrect[m.id])G.drugCorrect[m.id]=0;
+    if(G.notes[m.id]===undefined)G.notes[m.id]='';
+  });
+  if(!G.seenDrugs)G.seenDrugs=[];
+  if(!G.earnedBadges)G.earnedBadges=[];
+  if(!G.dailyLog)G.dailyLog={};
+  if(!G.trackingStart)G.trackingStart=todayKey();
 }
-function saveG(){try{localStorage.setItem('tusMedicG6',JSON.stringify(G));}catch(e){}}
+function saveG(){try{localStorage.setItem('tusMedicG61',JSON.stringify(G));}catch(e){}}
 function getDM(id){return getMastery(G.drugCorrect[id]||0);}
+function todayKey(){return new Date().toISOString().slice(0,10);}
 
+// Daily log
+function logToday(questions,correct,quizzes,xp){
+  const k=todayKey();
+  if(!G.dailyLog[k])G.dailyLog[k]={questions:0,correct:0,quizzes:0,xp:0};
+  G.dailyLog[k].questions+=questions;
+  G.dailyLog[k].correct+=correct;
+  G.dailyLog[k].quizzes+=quizzes;
+  G.dailyLog[k].xp+=xp;
+}
+
+// Streak freeze
+function useFreeze(){
+  if(G.freezeTokens<=0){showToast('No freeze tokens remaining');return;}
+  if(confirm('Use a streak freeze token to protect your streak today?')){
+    G.freezeTokens--;G.freezesUsed++;
+    // Extend lastDate to today so streak isn't broken
+    G.lastDate=todayKey();
+    checkBadges();saveG();renderHome();
+    showToast('❄️ Streak freeze used!');
+  }
+}
+
+// Badge checking
+function checkBadges(){
+  let newBadges=[];
+  BADGES.forEach(b=>{
+    if(!G.earnedBadges.includes(b.id)&&b.check(G)){
+      G.earnedBadges.push(b.id);
+      newBadges.push(b);
+    }
+  });
+  // Earn freeze tokens at milestones
+  const masteredCount=Object.values(G.drugCorrect).filter(v=>v>=10).length;
+  const expectedTokens=1+Math.floor(masteredCount/10);
+  if(expectedTokens>G.freezeTokens+G.freezesUsed){
+    G.freezeTokens=Math.min(G.freezeTokens+1,5);
+    showToast('❄️ Streak freeze token earned!');
+  }
+  if(newBadges.length){
+    newBadges.forEach(b=>setTimeout(()=>showToast(`🏅 Badge unlocked: ${b.name}`),500));
+  }
+}
+
+// Feedback / toasts
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);
 }
 function haptic(type='light'){
   if(!navigator.vibrate)return;
@@ -73,7 +148,6 @@ function loadTheme(){
 
 function checkOnline(){document.getElementById('offlineBar').classList.toggle('show',!navigator.onLine);}
 
-// DISCLAIMER
 function dismissDisclaimer(){
   document.getElementById('disclaimerModal').style.display='none';
   G.disclaimerDone=true;saveG();
@@ -91,7 +165,7 @@ function showPage(id,btn){
   haptic();
   if(id==='home')renderHome();
   if(id==='quiz')updateQuizCounts();
-  if(id==='stats'){updateStats();renderDonut();}
+  if(id==='stats'){updateStats();renderDonut();renderChart();}
   if(id==='learn')renderLearn();
 }
 function goHome(){showPage('home',document.getElementById('btn-home'));scrollTop();}
@@ -118,6 +192,24 @@ function updateStats(){
     document.getElementById('lcBar').style.width='100%';
     document.getElementById('lcNext').textContent='Maximum level reached! 🎉';
   }
+  // Study time (approx 2 min per quiz)
+  const mins=G.quizzes*2;
+  const hrs=Math.floor(mins/60),rem=mins%60;
+  document.getElementById('studyTime').textContent=hrs>0?`${hrs}h ${rem}m`:`${rem}m`;
+  // Badges
+  renderBadges();
+}
+
+function renderBadges(){
+  const el=document.getElementById('badgesGrid');
+  if(!el)return;
+  el.innerHTML=BADGES.map(b=>{
+    const earned=G.earnedBadges.includes(b.id);
+    return`<div class="badge-item ${earned?'earned':''}">
+      <div class="badge-icon ${earned?'earned':''}">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+    </div>`;
+  }).join('');
 }
 
 function renderDonut(){
@@ -133,42 +225,80 @@ function renderDonut(){
   });
 }
 
+// CHART
+let chartMetric='questions';
+function setChartMetric(m,el){
+  chartMetric=m;
+  document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderChart();haptic();
+}
+
+function renderChart(){
+  const el=document.getElementById('chartArea');
+  if(!el)return;
+  // Get last 14 days
+  const days=[];
+  for(let i=13;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  const vals=days.map(d=>{
+    const log=G.dailyLog[d]||{questions:0,correct:0,quizzes:0,xp:0};
+    if(chartMetric==='questions')return log.questions;
+    if(chartMetric==='accuracy')return log.questions>0?Math.round(log.correct/log.questions*100):0;
+    if(chartMetric==='quizzes')return log.quizzes;
+    if(chartMetric==='xp')return log.xp;
+    return 0;
+  });
+  const max=Math.max(...vals,1);
+  const hasData=vals.some(v=>v>0);
+  const labels=days.map(d=>{const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('en-IE',{weekday:'short'}).slice(0,2);});
+  el.innerHTML=days.map((d,i)=>{
+    const h=Math.round((vals[i]/max)*120);
+    const colors={questions:['#059669','#047857'],accuracy:['#2563EB','#1E3A8A'],quizzes:['#7C3AED','#4C1D95'],xp:['#D97706','#78350F']};
+    const [c1,c2]=colors[chartMetric]||['#059669','#047857'];
+    return`<div class="chart-bar-wrap">
+      <div class="chart-bar" style="height:${h}px;background:linear-gradient(to top,${c2},${c1})"></div>
+      <div class="chart-day">${labels[i]}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('chartNote').textContent=hasData?`Tracking from ${G.trackingStart||todayKey()}`:'Data will appear here as you study';
+}
+
 function confirmReset(){
   if(!confirm('Reset all progress? This cannot be undone.'))return;
-  G={...G,xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,drugCorrect:{},notes:{}};
+  const ts=G.trackingStart||todayKey();
+  G={xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,drugCorrect:{},notes:{},
+     disclaimerDone:G.disclaimerDone,seenDrugs:[],earnedBadges:[],freezeTokens:1,freezesUsed:0,
+     dailyLog:{},trackingStart:ts};
   MEDS.forEach(m=>{G.drugCorrect[m.id]=0;G.notes[m.id]='';});
-  saveG();updateHdr();updateStats();renderDonut();renderDrugList();renderHome();
+  saveG();updateHdr();updateStats();renderDonut();renderChart();renderDrugList();renderHome();
   showToast('Progress reset');
 }
 
 // GLOBAL SEARCH
 let _gsTimer=null;
-let _lastSearchResults=[];
-
-function handleGlobalSearch(q){
-  const clearBtn=document.getElementById('searchClear');
-  clearBtn.style.display=q?'flex':'none';
+function handleGlobalSearch(q,clearId,resultsId){
+  const clearBtn=document.getElementById(clearId||'searchClear');
+  if(clearBtn)clearBtn.style.display=q?'flex':'none';
   clearTimeout(_gsTimer);
-  const el=document.getElementById('gsearchResults');
-  if(!q.trim()){el.classList.remove('show');el.innerHTML='';renderDrugList();_lastSearchResults=[];return;}
+  const el=document.getElementById(resultsId||'gsearchResults');
+  if(!q.trim()){el.classList.remove('show');el.innerHTML='';if(resultsId==='homeSearchResults'){}else renderDrugList();return;}
   _gsTimer=setTimeout(()=>{
-    const ql=q.toLowerCase();
-    const results=[];
+    const ql=q.toLowerCase(),results=[];
     MEDS.filter(m=>m.name.toLowerCase().includes(ql)||m.classification.toLowerCase().includes(ql)||m.indications.some(i=>i.toLowerCase().includes(ql))).slice(0,5).forEach(m=>results.push({type:'drug',name:m.name,sub:m.classification,action:()=>openDet(m.id)}));
     TERMS.filter(t=>t.term.toLowerCase().includes(ql)||t.def.toLowerCase().includes(ql)).slice(0,4).forEach(t=>results.push({type:'term',name:t.term,sub:t.def.substring(0,60)+'…',action:()=>{showPage('learn',document.getElementById('btn-learn'));selLearn('terms',document.querySelector('[data-lsec="terms"]'));setTimeout(()=>{document.getElementById('learnSearch').value=t.term;handleLearnSearch(t.term);scrollToTerm(t.term);},150);}}));
     HOSPITALS.filter(h=>h.name.toLowerCase().includes(ql)||h.pcr.toLowerCase().includes(ql)||h.county.toLowerCase().includes(ql)).slice(0,4).forEach(h=>results.push({type:'hospital',name:h.name,sub:`${h.county} — PCR: ${h.pcr}`,action:()=>{showPage('learn',document.getElementById('btn-learn'));selLearn('pcr',document.querySelector('[data-lsec="pcr"]'));}}));
-    _lastSearchResults=results;
     if(!results.length){el.innerHTML='<div class="gsr-item"><div style="color:var(--text3);font-size:13px">No results found</div></div>';el.classList.add('show');return;}
-    el.innerHTML=results.map((r,i)=>`<div class="gsr-item" onclick="gsrClick(${i})"><span class="gsr-type gsr-${r.type}">${r.type}</span><div><div class="gsr-name">${r.name}</div><div class="gsr-sub">${r.sub}</div></div></div>`).join('');
-    el.classList.add('show');
-    el._actions=results.map(r=>r.action);
+    el.innerHTML=results.map((r,i)=>`<div class="gsr-item" onclick="gsrClick(${i},'${resultsId||'gsearchResults'}')"><span class="gsr-type gsr-${r.type}">${r.type}</span><div><div class="gsr-name">${r.name}</div><div class="gsr-sub">${r.sub}</div></div></div>`).join('');
+    el.classList.add('show');el._actions=results.map(r=>r.action);
   },200);
 }
 
-function gsrClick(i){
-  const el=document.getElementById('gsearchResults');
+function gsrClick(i,resultsId){
+  const el=document.getElementById(resultsId||'gsearchResults');
   if(el._actions&&el._actions[i])el._actions[i]();
-  // Keep search results visible — don't clear
 }
 
 function clearSearch(){
@@ -176,8 +306,14 @@ function clearSearch(){
   document.getElementById('searchClear').style.display='none';
   document.getElementById('gsearchResults').classList.remove('show');
   document.getElementById('gsearchResults').innerHTML='';
-  _lastSearchResults=[];
   renderDrugList();
+}
+
+function clearHomeSearch(){
+  document.getElementById('homeSearchInput').value='';
+  document.getElementById('homeSearchClear').style.display='none';
+  document.getElementById('homeSearchResults').classList.remove('show');
+  document.getElementById('homeSearchResults').innerHTML='';
 }
 
 function scrollToTerm(termName){
@@ -186,8 +322,7 @@ function scrollToTerm(termName){
     for(const card of cards){
       if(card.querySelector('.term-word')&&card.querySelector('.term-word').textContent===termName){
         card.scrollIntoView({behavior:'smooth',block:'center'});
-        card.classList.add('open');
-        break;
+        card.classList.add('open');break;
       }
     }
   },300);

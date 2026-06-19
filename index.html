@@ -13,7 +13,6 @@
 </head>
 <body>
 
-<!-- DISCLAIMER MODAL -->
 <div class="modal-overlay" id="disclaimerModal">
   <div class="modal-card">
     <div class="modal-icon">⚠️</div>
@@ -29,10 +28,8 @@
   </div>
 </div>
 
-<!-- OFFLINE BANNER -->
 <div class="offline-bar" id="offlineBar">⚠️ No internet — running offline</div>
 
-<!-- HEADER -->
 <header class="hdr">
   <div class="hdr-brand" onclick="goHome()">
     <div class="hdr-title">Tús Medic</div>
@@ -45,11 +42,21 @@
   </div>
 </header>
 
-<!-- HOME PAGE -->
+<!-- HOME -->
 <div class="page active" id="page-home">
   <div class="home-greeting" id="homeGreeting">Good morning</div>
   <div class="home-sub">Ready to study?</div>
-  <div class="home-level-card" id="homeLevelCard">
+
+  <!-- Global search on home -->
+  <div class="gsearch-wrap">
+    <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="search" id="homeSearchInput" placeholder="Search drugs, terms, hospitals…" autocomplete="off" spellcheck="false" oninput="handleGlobalSearch(this.value,'homeSearchClear','homeSearchResults')"/>
+    <button class="search-clear" id="homeSearchClear" onclick="clearHomeSearch()" style="display:none">✕</button>
+  </div>
+  <div class="gsearch-results" id="homeSearchResults"></div>
+
+  <!-- Level card -->
+  <div class="home-level-card" id="homeLevelCard" onclick="goProgress()">
     <div class="hlc-left">
       <div class="hlc-label">Current Level</div>
       <div class="hlc-name" id="hlcName">Rookie</div>
@@ -61,54 +68,43 @@
       <div class="hlc-xp-label">XP</div>
     </div>
   </div>
+
+  <!-- Streak + freeze row -->
+  <div class="home-streak-row">
+    <span style="font-size:18px">🔥</span>
+    <div class="hsr-streak" id="homeStreakNum">0 day streak</div>
+    <div class="hsr-freezes" id="homeFreezes"></div>
+  </div>
+
+  <!-- Drug of the Day -->
   <div class="home-section-label">Drug of the Day</div>
-  <div class="dotd-card" id="dotdCard" onclick="openDotd()">
-    <div class="dotd-name" id="dotdName">—</div>
+  <div class="dotd-card" onclick="openDotd()">
+    <div class="dotd-top">
+      <div class="dotd-name" id="dotdName">—</div>
+      <div class="dotd-seen" id="dotdSeen"></div>
+    </div>
     <div class="dotd-class" id="dotdClass">—</div>
     <div class="dotd-fact" id="dotdFact">—</div>
     <div class="dotd-tap">Tap to open →</div>
   </div>
+
+  <!-- Quick stats -->
   <div class="home-section-label">Your Progress</div>
   <div class="home-stats-grid">
-    <div class="home-stat" onclick="goProgress()">
-      <div class="hs-num" id="hsMastered">0</div>
-      <div class="hs-lbl">Mastered</div>
-    </div>
-    <div class="home-stat" onclick="goProgress()">
-      <div class="hs-num" id="hsLearning">0</div>
-      <div class="hs-lbl">In Progress</div>
-    </div>
-    <div class="home-stat" onclick="goProgress()">
-      <div class="hs-num" id="hsUnseen">46</div>
-      <div class="hs-lbl">Unseen</div>
-    </div>
-    <div class="home-stat" onclick="goProgress()">
-      <div class="hs-num" id="hsStreak">0</div>
-      <div class="hs-lbl">Day Streak</div>
-    </div>
+    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsMastered">0</div><div class="hs-lbl">Mastered</div></div>
+    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsLearning">0</div><div class="hs-lbl">In Progress</div></div>
+    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsUnseen">46</div><div class="hs-lbl">Unseen</div></div>
+    <div class="home-stat" onclick="goProgress()"><div class="hs-num" id="hsStreak">0</div><div class="hs-lbl">Streak</div></div>
   </div>
-  <div class="home-section-label">Quick Start</div>
-  <div class="home-actions">
-    <button class="home-action-btn" onclick="showPage('quiz',document.getElementById('btn-quiz'));scrollTop()">
-      <span class="ha-icon">🎯</span><span class="ha-label">Start Quiz</span>
-    </button>
-    <button class="home-action-btn" onclick="showPage('ref',document.getElementById('btn-ref'));scrollTop()">
-      <span class="ha-icon">📖</span><span class="ha-label">Reference</span>
-    </button>
-    <button class="home-action-btn" onclick="showPage('learn',document.getElementById('btn-learn'));scrollTop()">
-      <span class="ha-icon">📚</span><span class="ha-label">Learn</span>
-    </button>
-  </div>
-  <div class="home-disclaimer-link" onclick="document.getElementById('disclaimerModal').style.display='flex'">
-    ⚠️ Disclaimer — this is a learning tool only
-  </div>
+
+  <div class="home-disclaimer-link" onclick="document.getElementById('disclaimerModal').style.display='flex'">⚠️ Disclaimer — learning tool only</div>
 </div>
 
-<!-- REFERENCE PAGE -->
+<!-- REFERENCE -->
 <div class="page" id="page-ref">
   <div class="gsearch-wrap">
     <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input type="search" id="searchInput" placeholder="Search drugs, terms, hospitals…" autocomplete="off" spellcheck="false" oninput="handleGlobalSearch(this.value)"/>
+    <input type="search" id="searchInput" placeholder="Search drugs, terms, hospitals…" autocomplete="off" spellcheck="false" oninput="handleGlobalSearch(this.value,'searchClear','gsearchResults')"/>
     <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
   </div>
   <div class="gsearch-results" id="gsearchResults"></div>
@@ -122,7 +118,7 @@
   <div class="drug-list" id="drugList"></div>
 </div>
 
-<!-- QUIZ PAGE -->
+<!-- QUIZ -->
 <div class="page" id="page-quiz">
   <div class="qsetup" id="quizSetup">
     <div class="pg-title">Quiz Mode</div>
@@ -130,66 +126,31 @@
     <div class="og">
       <span class="og-lbl">Quiz Type</span>
       <div class="scope-opts">
-        <div class="sopt on-all" onclick="selScope('all',this)">
-          <div class="sdot-sm" style="background:var(--sl-500)"></div>
-          <div class="sopt-txt"><div class="sopt-name">All Drugs</div><div class="sopt-cnt" id="cntAll">46 drugs</div></div>
-          <div class="sopt-chk">✓</div>
-        </div>
-        <div class="sopt" onclick="selScope('EMT',this)">
-          <div class="sdot-sm" style="background:var(--emt)"></div>
-          <div class="sopt-txt"><div class="sopt-name">EMT</div><div class="sopt-cnt" id="cntEMT">— drugs</div></div>
-          <div class="sopt-chk">✓</div>
-        </div>
-        <div class="sopt" onclick="selScope('P',this)">
-          <div class="sdot-sm" style="background:var(--par)"></div>
-          <div class="sopt-txt"><div class="sopt-name">Paramedic</div><div class="sopt-cnt" id="cntP">— drugs</div></div>
-          <div class="sopt-chk">✓</div>
-        </div>
-        <div class="sopt" onclick="selScope('AP',this)">
-          <div class="sdot-sm" style="background:var(--ap)"></div>
-          <div class="sopt-txt"><div class="sopt-name">Advanced Paramedic</div><div class="sopt-cnt" id="cntAP">— drugs</div></div>
-          <div class="sopt-chk">✓</div>
-        </div>
-        <div class="sopt" onclick="selScope('terms',this)">
-          <div class="sdot-sm" style="background:#7C3AED"></div>
-          <div class="sopt-txt"><div class="sopt-name">Medical Terms</div><div class="sopt-cnt" id="cntTerms">— terms</div></div>
-          <div class="sopt-chk">✓</div>
-        </div>
+        <div class="sopt on-all" onclick="selScope('all',this)"><div class="sdot-sm" style="background:var(--sl-500)"></div><div class="sopt-txt"><div class="sopt-name">All Drugs</div><div class="sopt-cnt" id="cntAll">46 drugs</div></div><div class="sopt-chk">✓</div></div>
+        <div class="sopt" onclick="selScope('EMT',this)"><div class="sdot-sm" style="background:var(--emt)"></div><div class="sopt-txt"><div class="sopt-name">EMT</div><div class="sopt-cnt" id="cntEMT">— drugs</div></div><div class="sopt-chk">✓</div></div>
+        <div class="sopt" onclick="selScope('P',this)"><div class="sdot-sm" style="background:var(--par)"></div><div class="sopt-txt"><div class="sopt-name">Paramedic</div><div class="sopt-cnt" id="cntP">— drugs</div></div><div class="sopt-chk">✓</div></div>
+        <div class="sopt" onclick="selScope('AP',this)"><div class="sdot-sm" style="background:var(--ap)"></div><div class="sopt-txt"><div class="sopt-name">Advanced Paramedic</div><div class="sopt-cnt" id="cntAP">— drugs</div></div><div class="sopt-chk">✓</div></div>
+        <div class="sopt" onclick="selScope('terms',this)"><div class="sdot-sm" style="background:#7C3AED"></div><div class="sopt-txt"><div class="sopt-name">Medical Terms</div><div class="sopt-cnt" id="cntTerms">— terms</div></div><div class="sopt-chk">✓</div></div>
       </div>
     </div>
     <div class="og">
       <span class="og-lbl">Format</span>
       <div class="mode-grid">
-        <div class="mode-card on" onclick="selMode('fc',this)">
-          <div class="mode-ico">🃏</div><div class="mode-name">Flashcard</div><div class="mode-desc">Tap to flip — self-mark</div>
-        </div>
-        <div class="mode-card" onclick="selMode('mc',this)">
-          <div class="mode-ico">🎯</div><div class="mode-name">Multiple Choice</div><div class="mode-desc">4 options — auto-marked</div>
-        </div>
+        <div class="mode-card on" onclick="selMode('fc',this)"><div class="mode-ico">🃏</div><div class="mode-name">Flashcard</div><div class="mode-desc">Tap to flip — self-mark</div></div>
+        <div class="mode-card" onclick="selMode('mc',this)"><div class="mode-ico">🎯</div><div class="mode-name">Multiple Choice</div><div class="mode-desc">4 options — auto-marked</div></div>
       </div>
     </div>
     <div class="adaptive-badge">⚡ Adaptive — difficulty adjusts to your mastery level</div>
     <button class="btn-pri" onclick="startQuiz()">Start Quiz</button>
   </div>
-
   <div class="qactive" id="quizActive">
     <div id="fcMode">
-      <div class="quiz-header-row">
-        <div class="qbar"><div class="qbar-fill" id="fcProg" style="width:0%"></div></div>
-        <button class="qreset-btn" onclick="confirmResetQuiz()">End Quiz</button>
-      </div>
+      <div class="quiz-header-row"><div class="qbar"><div class="qbar-fill" id="fcProg" style="width:0%"></div></div><button class="qreset-btn" onclick="confirmResetQuiz()">End Quiz</button></div>
       <div class="qctr" id="fcCtr">1 / 10</div>
       <div class="fc-wrap" onclick="flipCard()">
         <div class="fc" id="fc">
-          <div class="fc-face fc-front">
-            <div class="fc-prompt" id="fcPrompt">—</div>
-            <div class="fc-q" id="fcQ">Loading…</div>
-            <div class="fc-hint">Tap to reveal</div>
-          </div>
-          <div class="fc-face fc-back">
-            <div class="fc-back-lbl" id="fcAnsLbl">Answer</div>
-            <div class="fc-ans" id="fcAns">—</div>
-          </div>
+          <div class="fc-face fc-front"><div class="fc-prompt" id="fcPrompt">—</div><div class="fc-q" id="fcQ">Loading…</div><div class="fc-hint">Tap to reveal</div></div>
+          <div class="fc-face fc-back"><div class="fc-back-lbl" id="fcAnsLbl">Answer</div><div class="fc-ans" id="fcAns">—</div></div>
         </div>
       </div>
       <div class="fc-actions" id="fcActions" style="display:none">
@@ -198,18 +159,13 @@
       </div>
       <button class="btn-skip" onclick="skipCard()">Skip →</button>
     </div>
-
     <div id="mcMode" style="display:none">
-      <div class="quiz-header-row">
-        <div class="qbar"><div class="qbar-fill" id="mcProg" style="width:0%"></div></div>
-        <button class="qreset-btn" onclick="confirmResetQuiz()">End Quiz</button>
-      </div>
+      <div class="quiz-header-row"><div class="qbar"><div class="qbar-fill" id="mcProg" style="width:0%"></div></div><button class="qreset-btn" onclick="confirmResetQuiz()">End Quiz</button></div>
       <div class="qctr" id="mcCtr">1 / 10</div>
       <div class="mc-qcard"><div class="mc-prompt" id="mcPrompt">—</div><div class="mc-q" id="mcQ">Loading…</div></div>
       <div class="mc-opts" id="mcOpts"></div>
       <button class="mc-next" id="mcNext" onclick="nextMC()">Next Question →</button>
     </div>
-
     <div class="qres" id="qResults">
       <div class="res-ring" id="resRing">🎉</div>
       <div class="res-title" id="resTitle">Quiz Complete!</div>
@@ -226,7 +182,7 @@
   </div>
 </div>
 
-<!-- LEARN PAGE -->
+<!-- LEARN -->
 <div class="page" id="page-learn">
   <div class="gsearch-wrap">
     <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -242,7 +198,7 @@
   <div id="learnContent"></div>
 </div>
 
-<!-- PROGRESS PAGE -->
+<!-- PROGRESS -->
 <div class="page" id="page-stats">
   <div class="pg-title">Progress</div>
   <div class="pg-sub" style="margin-bottom:16px">Your learning journey</div>
@@ -258,6 +214,25 @@
     <div class="stat-card"><div class="stat-num" id="stQuizzes">0</div><div class="stat-lbl">Quizzes Done</div></div>
     <div class="stat-card"><div class="stat-num" id="stAccuracy">—</div><div class="stat-lbl">Accuracy</div></div>
   </div>
+  <div class="study-time-card">
+    <div class="stc-icon">⏱</div>
+    <div class="stc-right">
+      <div class="stc-time" id="studyTime">0m</div>
+      <div class="stc-label">Estimated study time</div>
+    </div>
+  </div>
+  <!-- Activity Chart -->
+  <div class="chart-card">
+    <div class="mc-title">Activity — Last 14 Days</div>
+    <div class="chart-tabs">
+      <button class="chart-tab on" onclick="setChartMetric('questions',this)">Questions</button>
+      <button class="chart-tab" onclick="setChartMetric('accuracy',this)">Accuracy %</button>
+      <button class="chart-tab" onclick="setChartMetric('quizzes',this)">Quizzes</button>
+      <button class="chart-tab" onclick="setChartMetric('xp',this)">XP Earned</button>
+    </div>
+    <div class="chart-area" id="chartArea"></div>
+    <div class="chart-note" id="chartNote">Data will appear here as you study</div>
+  </div>
   <div class="tally-card">
     <div class="mc-title">Quiz Tally</div>
     <div class="tally-grid">
@@ -270,10 +245,10 @@
     <div class="donut-wrap">
       <svg class="donut-svg" width="90" height="90" viewBox="0 0 90 90">
         <circle cx="45" cy="45" r="35" fill="none" stroke="var(--surf2)" stroke-width="14"/>
-        <circle id="dMastered"   cx="45" cy="45" r="35" fill="none" stroke="#047857" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
+        <circle id="dMastered" cx="45" cy="45" r="35" fill="none" stroke="#047857" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
         <circle id="dProficient" cx="45" cy="45" r="35" fill="none" stroke="#059669" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
-        <circle id="dLearning"   cx="45" cy="45" r="35" fill="none" stroke="#0E7490" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
-        <circle id="dNovice"     cx="45" cy="45" r="35" fill="none" stroke="#D97706" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
+        <circle id="dLearning" cx="45" cy="45" r="35" fill="none" stroke="#0E7490" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
+        <circle id="dNovice" cx="45" cy="45" r="35" fill="none" stroke="#D97706" stroke-width="14" stroke-dasharray="0 220" stroke-dashoffset="55" transform="rotate(-90 45 45)" style="transition:stroke-dasharray .7s ease"/>
       </svg>
       <div class="donut-legend">
         <div class="dl-row"><div class="dl-dot" style="background:#047857"></div><div class="dl-label">★ Mastered</div><div class="dl-count" id="dlMastered">0</div></div>
@@ -285,15 +260,18 @@
     </div>
     <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:4px">Answer 10 questions correctly per drug to master it</div>
   </div>
+  <!-- Badges -->
+  <div class="badges-card">
+    <div class="mc-title">Achievements</div>
+    <div class="badges-grid" id="badgesGrid"></div>
+  </div>
   <button class="reset-btn" onclick="confirmReset()">Reset All Progress</button>
 </div>
 
 <!-- DETAIL OVERLAY -->
 <div class="overlay" id="detOverlay">
   <div class="det-hdr">
-    <div class="det-back" onclick="closeDet()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back
-    </div>
+    <div class="det-back" onclick="closeDet()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</div>
     <div class="det-name" id="detName">—</div>
     <div class="det-class" id="detClass">—</div>
     <div class="det-badges" id="detBadges"></div>
@@ -301,7 +279,7 @@
   <div class="det-body" id="detBody"></div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- NAV -->
 <nav class="bnav">
   <button class="nb active" id="btn-home" onclick="showPage('home',this);scrollTop()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -336,5 +314,12 @@
 <script src="js/detail.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/learn.js"></script>
+<script>
+// Init render after all scripts loaded
+renderHome();
+renderDrugList();
+renderLearn();
+updateQuizCounts();
+</script>
 </body>
 </html>
