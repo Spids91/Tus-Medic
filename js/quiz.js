@@ -59,10 +59,40 @@ function isDue(drugId) {
 
 // ── DISTRACTORS ───────────────────────────────────────────────────────────────
 function distractors(qt, drug, pool) {
-  const others = pool.filter(x => x.id !== drug.id).sort(() => Math.random() - .5).slice(0,3);
-  if (qt.id === 'mech')   return others.map(x => x.quizHints.mechanism.substring(0,90));
-  if (qt.id === 'contra') return others.map(x => x.contraindications.slice(0,2).join('; ').substring(0,90));
-  return others.map(x => qt.a(x).split(';')[0].trim().substring(0,90));
+  // Scope only has 3 possible values across 46 drugs — always use all three as options
+  // so the correct answer is always among 3 genuinely distinct choices
+  if (qt.id === 'scope') {
+    const all = ['EMT, P, AP', 'P, AP', 'AP'];
+    return all.filter(s => s !== drug.scope.join(', '));
+  }
+
+  // Get the answer value for a given drug under this question type
+  function getAns(x) {
+    if (qt.id === 'mech')   return x.quizHints.mechanism.substring(0,90);
+    if (qt.id === 'contra') return x.contraindications.slice(0,2).join('; ').substring(0,90);
+    return qt.a(x).split(';')[0].trim().substring(0,90);
+  }
+  const correctAns = getAns(drug);
+  // Shuffle the pool (excluding the drug being tested) then pick until we have
+  // 3 answers that are unique from each other and from the correct answer
+  const shuffled = pool.filter(x => x.id !== drug.id).sort(() => Math.random() - .5);
+  const seen = new Set([correctAns.toLowerCase()]);
+  const result = [];
+  for (const x of shuffled) {
+    if (result.length === 3) break;
+    const ans = getAns(x);
+    const key = ans.toLowerCase();
+    if (!seen.has(key)) { seen.add(key); result.push(ans); }
+  }
+  // Fallback: if pool too small to find 3 unique answers, pad with whatever remains
+  if (result.length < 3) {
+    for (const x of shuffled) {
+      if (result.length === 3) break;
+      const ans = getAns(x);
+      if (!result.includes(ans)) result.push(ans);
+    }
+  }
+  return result;
 }
 
 // ── QUESTION BUILDERS ─────────────────────────────────────────────────────────
