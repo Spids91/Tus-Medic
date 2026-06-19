@@ -147,9 +147,8 @@ ul { list-style: none; }
 .modal-overlay {
   display: none; position: fixed; inset: 0; z-index: 500;
   background: rgba(0,0,0,.6); align-items: center; justify-content: center; padding: var(--sp4);
-  pointer-events: none;
 }
-.modal-overlay.show { display: flex; pointer-events: all; }
+.modal-overlay.show { display: flex; }
 .modal-card {
   background: var(--surf); border-radius: var(--r20); padding: var(--sp6);
   max-width: 420px; width: 100%;
