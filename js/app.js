@@ -58,7 +58,8 @@ let G={
   trackingStart:null,
   nextReview:{},
   recentWrong:[],
-  lastDailyDate:null
+  lastDailyDate:null,
+  fcXpDate:null,fcXpToday:0
 };
 
 function loadG(){
@@ -74,6 +75,8 @@ function loadG(){
   if(!G.nextReview)G.nextReview={};
   if(!G.recentWrong)G.recentWrong=[];
   if(G.lastDailyDate===undefined)G.lastDailyDate=null;
+  if(G.fcXpDate===undefined)G.fcXpDate=null;
+  if(G.fcXpToday===undefined)G.fcXpToday=0;
   if(!G.seenToday)G.seenToday={};
 }
 function saveG(){try{localStorage.setItem('tusMedicG101',JSON.stringify(G));}catch(e){}}
@@ -125,13 +128,16 @@ function closeLevelUp(){
 function useFreeze(){
   if(G.freezeTokens<=0){showToast('No freeze tokens — master more drugs to earn them');return;}
   if(G.lastDate===todayKey()){showToast('Your streak is already safe for today');return;}
-  if(confirm('Use a streak freeze token to protect your streak today?')){
-    G.freezeTokens--;G.freezesUsed++;
-    // Extend lastDate to today so streak isn't broken
-    G.lastDate=todayKey();
-    checkBadges();saveG();renderHome();
-    showToast('❄️ Streak freeze used — your streak is safe!');
-  }
+  showConfirm(
+    '❄️ Use Streak Freeze?',
+    'This will protect your streak today. You have '+G.freezeTokens+' token'+(G.freezeTokens===1?'':'s')+' remaining.',
+    ()=>{
+      G.freezeTokens--;G.freezesUsed++;
+      G.lastDate=todayKey();
+      checkBadges();saveG();renderHome();
+      showToast('❄️ Streak freeze used — your streak is safe!');
+    }
+  );
 }
 
 // Badge checking
@@ -153,6 +159,22 @@ function checkBadges(){
   if(newBadges.length){
     newBadges.forEach(b=>setTimeout(()=>showToast(`🏅 Badge unlocked: ${b.name}`),500));
   }
+}
+
+// Custom confirm modal — replaces browser confirm() which is blocked in WKWebView
+function showConfirm(title, msg, onOK, isDanger=false){
+  const modal=document.getElementById('confirmModal');
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  const okBtn=document.getElementById('confirmOK');
+  okBtn.className='confirm-ok'+(isDanger?' danger':'');
+  modal.style.display='flex';
+  // Wire buttons — replace each time to avoid stacking listeners
+  const cancelBtn=document.getElementById('confirmCancel');
+  const close=()=>{ modal.style.display='none'; };
+  okBtn.onclick=()=>{ close(); onOK(); };
+  cancelBtn.onclick=close;
+  modal.onclick=(e)=>{ if(e.target===modal)close(); };
 }
 
 // Feedback / toasts
@@ -395,14 +417,20 @@ function renderChart(){
 }
 
 function confirmReset(){
-  if(!confirm('Reset all progress? This cannot be undone.'))return;
-  const ts=G.trackingStart||todayKey();
-  G={xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,drugCorrect:{},notes:{},
-     disclaimerDone:G.disclaimerDone,onboardingDone:G.onboardingDone,seenDrugs:[],earnedBadges:[],freezeTokens:1,freezesUsed:0,
-     dailyLog:{},trackingStart:ts};
-  MEDS.forEach(m=>{G.drugCorrect[m.id]=0;G.notes[m.id]='';});
-  saveG();updateHdr();updateStats();renderDonut();renderChart();renderDrugList();renderHome();
-  showToast('Progress reset');
+  showConfirm(
+    'Reset All Progress',
+    'This will erase all your XP, streaks and mastery. This cannot be undone.',
+    ()=>{
+      const ts=G.trackingStart||todayKey();
+      G={xp:0,streak:0,lastDate:null,quizzes:0,totalQ:0,totalCorrect:0,drugCorrect:{},notes:{},
+         disclaimerDone:G.disclaimerDone,onboardingDone:G.onboardingDone,seenDrugs:[],earnedBadges:[],freezeTokens:1,freezesUsed:0,
+         dailyLog:{},trackingStart:ts};
+      MEDS.forEach(m=>{G.drugCorrect[m.id]=0;G.notes[m.id]='';});
+      saveG();updateHdr();updateStats();renderDonut();renderChart();renderDrugList();renderHome();
+      showToast('Progress reset');
+    },
+    true  // danger style
+  );
 }
 
 // GLOBAL SEARCH

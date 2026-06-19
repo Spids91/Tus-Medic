@@ -161,7 +161,16 @@ function renderQuestionAccordion(query){
     card.querySelector('.ql-header').addEventListener('click',function(){
       const wasOpen=card.classList.contains('open');
       document.querySelectorAll('.ql-card.open').forEach(c=>c.classList.remove('open'));
-      if(!wasOpen)card.classList.add('open');
+      if(!wasOpen){
+        card.classList.add('open');
+        // Scroll the card header to the top of the viewport so the user
+        // sees the drug name and questions from the top, not the middle
+        setTimeout(()=>{
+          const top=card.getBoundingClientRect().top+window.scrollY;
+          const hdrH=document.querySelector('.hdr')?.offsetHeight||56;
+          window.scrollTo({top:top-hdrH-8,behavior:'smooth'});
+        },50);
+      }
       haptic();
     });
   });

@@ -1,83 +1,5 @@
 // ─── DETAIL.JS ────────────────────────────────────────────────────────────────
 
-// iOS-style swipe right to close with animation
-let _touchStartX = 0;
-let _touchStartY = 0;
-let _swiping = false;        // committed to a horizontal close swipe
-let _gestureLocked = false;  // direction decided for this gesture
-let _isVerticalScroll = false;
-
-function initSwipeBack() {
-  const overlay = document.getElementById('detOverlay');
-
-  overlay.addEventListener('touchstart', e => {
-    _touchStartX = e.touches[0].clientX;
-    _touchStartY = e.touches[0].clientY;
-    _swiping = false;
-    _gestureLocked = false;
-    _isVerticalScroll = false;
-  }, { passive: true });
-
-  overlay.addEventListener('touchmove', e => {
-    const dx = e.touches[0].clientX - _touchStartX;
-    const dy = e.touches[0].clientY - _touchStartY;
-
-    // Decide gesture direction once, on the first meaningful movement.
-    // If the user moves more vertically than horizontally, treat it as a scroll
-    // and never hijack it as a swipe (prevents the page jumping up/down).
-    if (!_gestureLocked) {
-      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
-        _gestureLocked = true;
-        // Only start a close-swipe if it begins near the left edge AND is
-        // clearly horizontal (at least twice as much X as Y movement)
-        const fromLeftEdge = _touchStartX < 80;
-        if (dx > 0 && Math.abs(dx) > Math.abs(dy) * 2 && fromLeftEdge) {
-          _swiping = true;
-        } else {
-          _isVerticalScroll = true;
-        }
-      }
-    }
-
-    if (_swiping && dx > 0) {
-      const pct = Math.min(dx / window.innerWidth, 1);
-      overlay.style.transform = 'translateX(' + (dx * 0.6) + 'px)';
-      overlay.style.opacity = String(1 - pct * 0.3);
-    }
-  }, { passive: true });
-
-  overlay.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - _touchStartX;
-    if (_swiping && dx > 100) {
-      // Complete the swipe to close
-      overlay.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
-      overlay.style.transform = 'translateX(100%)';
-      overlay.style.opacity = '0';
-      setTimeout(() => {
-        overlay.style.transition = '';
-        overlay.style.transform = '';
-        overlay.style.opacity = '';
-        closeDet();
-      }, 250);
-    } else if (_swiping) {
-      // Snap back — clear styles immediately after the animation so the next
-      // tap is never blocked by a lingering transition
-      overlay.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-      overlay.style.transform = '';
-      overlay.style.opacity = '';
-      setTimeout(() => {
-        overlay.style.transition = '';
-        overlay.style.transform = '';
-        overlay.style.opacity = '';
-      }, 300);
-    }
-    // Always reset gesture flags so the next touch starts clean
-    _swiping = false;
-    _gestureLocked = false;
-    _isVerticalScroll = false;
-  }, { passive: true });
-}
-
 function openDet(id) {
   const d = MEDS.find(m => m.id === id);
   if (!d) return;
@@ -94,7 +16,7 @@ function openDet(id) {
   document.getElementById('detBody').innerHTML = buildDet(d);
   const overlay = document.getElementById('detOverlay');
   overlay.classList.add('open');
-  overlay.scrollTop = 0;  // always start at the top of the drug detail
+  overlay.scrollTop = 0;
   document.body.style.overflow = 'hidden';
   haptic();
 }
@@ -108,78 +30,112 @@ function closeDet() {
 }
 
 function buildDet(d) {
-  const pres    = Array.isArray(d.presentation)   ? d.presentation   : [d.presentation];
-  const adm     = Array.isArray(d.administration) ? d.administration : [d.administration];
+  const pres = Array.isArray(d.presentation)   ? d.presentation   : [d.presentation];
+  const adm  = Array.isArray(d.administration) ? d.administration : [d.administration];
   const correct = G.drugCorrect[d.id] || 0;
   const pct     = Math.min(correct / 10 * 100, 100);
   const m       = getDM(d.id);
   const noteVal = (G.notes[d.id] || '').replace(/"/g, '&quot;');
+  const smap2   = { EMT:'EMT', P:'Paramedic', AP:'Advanced Paramedic' };
 
   function dh(dose) {
-    if (!dose) return '<div style="color:var(--text3);font-size:14px">Not indicated.</div>';
-    if (typeof dose === 'string') return `<div class="dose-text">${dose.replace(/\n/g, '<br>')}</div>`;
-    return Object.entries(dose).map(([k, v]) => `
-      <div style="margin-bottom:8px">
-        <div style="font-size:11px;font-weight:600;color:var(--success);margin-bottom:3px">${k}</div>
-        <div class="dose-text">${v.replace(/\n/g, '<br>')}</div>
-      </div>`).join('');
+    if (!dose || dose.trim() === 'Not indicated.') {
+      return '<div style="color:var(--text3);font-size:14px">Not indicated.</div>';
+    }
+    const lines = Array.isArray(dose) ? dose : [dose];
+    return lines.map(l => `<div class="dose-line">${l}</div>`).join('');
   }
 
-  const mLabel = m === 'unseen' ? 'Questions (0/10)' : `${MASTERY_LABELS[m]} (${Math.min(correct,10)}/10)`;
+  let out = '';
 
-  return `
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--surf2)">💊</div><div class="dst">Presentation</div></div>
-      <div class="dsb"><ul class="blist">${pres.map(p => `<li>${p}</li>`).join('')}</ul></div>
+  // Mastery progress
+  out += `<div class="dsec">
+    <div class="dsec-hdr">📊 Mastery Progress</div>
+    <div class="dsec-body">
+      <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">${Math.min(correct,10)}/10 correct answers</div>
     </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--surf2)">🛤</div><div class="dst">Routes of Administration</div></div>
-      <div class="dsb"><ul class="blist">${adm.map(a => `<li>${a}</li>`).join('')}</ul></div>
-    </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--success-light)">✅</div><div class="dst">Indications</div></div>
-      <div class="dsb"><ul class="blist">${d.indications.map(i => `<li>${i}</li>`).join('')}</ul></div>
-    </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--error-light)">🚫</div><div class="dst">Contraindications</div></div>
-      <div class="dsb"><div class="ci-list">${d.contraindications.map(c => `
-        <div class="ci"><div class="ci-dot"></div><div class="ci-text">${c}</div></div>`).join('')}
-      </div></div>
-    </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--warning-light)">💉</div><div class="dst">Dosages</div></div>
-      <div class="dsb"><div class="dose-block">
-        <div class="dose-grp"><div class="dose-lbl">👤 Adult</div>${dh(d.dosages.adult)}</div>
-        <div class="dose-grp"><div class="dose-lbl">👶 Paediatric</div>${dh(d.dosages.paediatric)}</div>
-      </div></div>
-    </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--error-light)">⚠️</div><div class="dst">Side Effects</div></div>
-      <div class="dsb"><ul class="blist">${d.sideEffects.map(s => `<li>${s}</li>`).join('')}</ul></div>
-    </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--surf2)">ℹ️</div><div class="dst">Additional Information</div></div>
-      <div class="dsb"><div class="info-box">${d.additionalInfo}</div></div>
-    </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:var(--primary-light)">📈</div><div class="dst">Question Progress</div></div>
-      <div class="dsb">
-        <div class="prog-wrap">
-          <div class="prog-fill" style="width:${pct}%;background:linear-gradient(to right,#1E3A8A,#3B82F6)"></div>
-        </div>
-        <div class="prog-lbl"><span>${mLabel}</span><span>${correct}/10 correct</span></div>
-      </div>
-    </div>
-    <div class="dsec">
-      <div class="dsh"><div class="sico" style="background:rgba(124,58,237,.08)">📝</div><div class="dst">My Notes</div></div>
-      <div class="dsb">
-        <textarea class="notes-area" id="note-${d.id}"
-          placeholder="Add your own notes, mnemonics, clinical pearls…"
-          oninput="G.notes[${d.id}]=this.value;saveG()">${noteVal}</textarea>
-        <div class="notes-hint">Notes save automatically</div>
-      </div>
+  </div>`;
+
+  // Scope
+  out += `<div class="dsec">
+    <div class="dsec-hdr">👥 Scope of Practice</div>
+    <div class="dsec-body">${d.scope.map(s=>`<span class="sbadge sbadge-${s}">${smap2[s]}</span>`).join(' ')}</div>
+  </div>`;
+
+  // Indications
+  if (d.indications?.length) {
+    out += `<div class="dsec">
+      <div class="dsec-hdr">✅ Indications</div>
+      <div class="dsec-body"><ul class="det-list">${d.indications.map(i=>`<li>${i}</li>`).join('')}</ul></div>
     </div>`;
-}
+  }
 
-// Init swipe — DOM is already parsed since this script loads at end of body
-initSwipeBack();
+  // Contraindications
+  if (d.contraindications?.length) {
+    out += `<div class="dsec">
+      <div class="dsec-hdr">🚫 Contraindications</div>
+      <div class="dsec-body"><ul class="det-list">${d.contraindications.map(i=>`<li>${i}</li>`).join('')}</ul></div>
+    </div>`;
+  }
+
+  // Presentation
+  out += `<div class="dsec">
+    <div class="dsec-hdr">💊 Presentation</div>
+    <div class="dsec-body">${pres.map(p=>`<div class="dose-line">${p}</div>`).join('')}</div>
+  </div>`;
+
+  // Administration
+  out += `<div class="dsec">
+    <div class="dsec-hdr">💉 Administration</div>
+    <div class="dsec-body">${adm.map(a=>`<div class="dose-line">${a}</div>`).join('')}</div>
+  </div>`;
+
+  // Dosages (adult + paediatric)
+  if (d.dosages?.adult) {
+    out += `<div class="dsec">
+      <div class="dsec-hdr">🧑 Adult Dose</div>
+      <div class="dsec-body">${dh(d.dosages.adult)}</div>
+    </div>`;
+  }
+  if (d.dosages?.paediatric) {
+    out += `<div class="dsec">
+      <div class="dsec-hdr">👶 Paediatric Dose</div>
+      <div class="dsec-body">${dh(d.dosages.paediatric)}</div>
+    </div>`;
+  }
+
+  // Side effects
+  if (d.sideEffects?.length) {
+    out += `<div class="dsec">
+      <div class="dsec-hdr">⚠️ Side Effects</div>
+      <div class="dsec-body"><ul class="det-list">${d.sideEffects.map(i=>`<li>${i}</li>`).join('')}</ul></div>
+    </div>`;
+  }
+
+  // Additional info
+  if (d.additionalInfo) {
+    out += `<div class="dsec">
+      <div class="dsec-hdr">ℹ️ Additional Information</div>
+      <div class="dsec-body" style="font-size:14px;color:var(--text2);line-height:1.6">${d.additionalInfo}</div>
+    </div>`;
+  }
+
+  // Mechanism (from quizHints)
+  if (d.quizHints?.mechanism) {
+    out += `<div class="dsec">
+      <div class="dsec-hdr">🔬 Mechanism of Action</div>
+      <div class="dsec-body" style="font-size:14px;color:var(--text2);line-height:1.6">${d.quizHints.mechanism}</div>
+    </div>`;
+  }
+
+  // Notes
+  out += `<div class="dsec">
+    <div class="dsec-hdr">📝 My Notes</div>
+    <div class="dsec-body">
+      <textarea class="det-note" placeholder="Add your own notes…" oninput="G.notes['${d.id}']=this.value;saveG()">${noteVal}</textarea>
+    </div>
+  </div>`;
+
+  return out;
+}

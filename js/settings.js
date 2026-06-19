@@ -123,12 +123,19 @@ function openLegal(key) {
   const doc = LEGAL[key];
   if (!doc) return;
   document.getElementById('legalTitle').textContent = doc.title;
-  document.getElementById('legalBody').innerHTML = doc.body;
-  document.getElementById('legalModal').classList.add('open');
+  const body = document.getElementById('legalBody');
+  body.innerHTML = doc.body;
+  body.scrollTop = 0;  // always start at top
+  const modal = document.getElementById('legalModal');
+  modal.classList.add('open');
   haptic();
 }
 
 function closeLegal() {
-  document.getElementById('legalModal').classList.remove('open');
+  const modal = document.getElementById('legalModal');
+  modal.classList.remove('open');
+  // Brief pointer-events pause prevents ghost taps on close
+  modal.style.pointerEvents = 'none';
+  setTimeout(() => { modal.style.pointerEvents = ''; }, 300);
   haptic();
 }

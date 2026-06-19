@@ -208,7 +208,13 @@ let QZ = {
   timeLeft: 30, timerRef: null,
   lastMode: 'standard', lastScope: 'all', lastFmt: 'mc', lastAdaptive: false,
 };
-const FC_XP_CAP = 15;  // max XP earnable from a single flashcard session
+const FC_XP_CAP = 20;  // max flashcard XP earnable per day across all sessions
+
+function fcXpRemaining() {
+  const today = todayKey();
+  if (G.fcXpDate !== today) { G.fcXpDate = today; G.fcXpToday = 0; }
+  return Math.max(0, FC_XP_CAP - (G.fcXpToday || 0));
+}
 
 // XP per correct answer — multiple choice earns full, flashcard earns less (harder to verify)
 function xpPerQ(isFlashcard) {
@@ -474,7 +480,13 @@ function newQuiz() {
   launchFromSetup();
 }
 function resetQuiz() { exitToTab(); }
-function confirmResetQuiz() { if (confirm('End this quiz?')) exitToTab(); }
+function confirmResetQuiz() {
+  showConfirm(
+    'End Quiz?',
+    'Your progress on this quiz will be lost.',
+    ()=>exitToTab()
+  );
+}
 
 // ── TIMER ─────────────────────────────────────────────────────────────────────
 function startTimer() {
@@ -567,10 +579,12 @@ function markCard(correct) {
   const q = QZ.qs[QZ.idx];
   if (correct) {
     QZ.correct++; G.totalCorrect++; QZ.streak++;
-    // Flashcard XP is reduced and capped per session — self-marked, easy to game
-    const gain = xpPerQ(true);
-    if (QZ.fcXpEarned + gain <= FC_XP_CAP) {
-      QZ.xpThis += gain; QZ.fcXpEarned += gain;
+    // Flashcard XP is capped per day across all sessions — self-marked, easy to game
+    const remaining = fcXpRemaining();
+    if (remaining > 0) {
+      const gain = Math.min(xpPerQ(true), remaining);
+      QZ.xpThis += gain;
+      G.fcXpToday = (G.fcXpToday || 0) + gain;
     }
     if (!q.isTerm) { G.drugCorrect[q.drug.id] = (G.drugCorrect[q.drug.id]||0)+1; srNextDate(q.drug.id, true); }
     checkBurst(); haptic('success');
