@@ -30,112 +30,75 @@ function closeDet() {
 }
 
 function buildDet(d) {
-  const pres = Array.isArray(d.presentation)   ? d.presentation   : [d.presentation];
-  const adm  = Array.isArray(d.administration) ? d.administration : [d.administration];
+  const pres    = Array.isArray(d.presentation)   ? d.presentation   : [d.presentation];
+  const adm     = Array.isArray(d.administration) ? d.administration : [d.administration];
   const correct = G.drugCorrect[d.id] || 0;
   const pct     = Math.min(correct / 10 * 100, 100);
   const m       = getDM(d.id);
   const noteVal = (G.notes[d.id] || '').replace(/"/g, '&quot;');
-  const smap2   = { EMT:'EMT', P:'Paramedic', AP:'Advanced Paramedic' };
 
   function dh(dose) {
-    if (!dose || dose.trim() === 'Not indicated.') {
-      return '<div style="color:var(--text3);font-size:14px">Not indicated.</div>';
-    }
-    const lines = Array.isArray(dose) ? dose : [dose];
-    return lines.map(l => `<div class="dose-line">${l}</div>`).join('');
+    if (!dose) return '<div style="color:var(--text3);font-size:14px">Not indicated.</div>';
+    if (typeof dose === 'string') return `<div class="dose-text">${dose.replace(/\n/g, '<br>')}</div>`;
+    return Object.entries(dose).map(([k, v]) => `
+      <div style="margin-bottom:8px">
+        <div style="font-size:11px;font-weight:600;color:var(--success);margin-bottom:3px">${k}</div>
+        <div class="dose-text">${v.replace(/\n/g, '<br>')}</div>
+      </div>`).join('');
   }
 
-  let out = '';
+  const mLabel = m === 'unseen' ? 'Questions (0/10)' : `${MASTERY_LABELS[m]} (${Math.min(correct,10)}/10)`;
 
-  // Mastery progress
-  out += `<div class="dsec">
-    <div class="dsec-hdr">📊 Mastery Progress</div>
-    <div class="dsec-body">
-      <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
-      <div style="font-size:12px;color:var(--text3);margin-top:4px">${Math.min(correct,10)}/10 correct answers</div>
+  return `
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--surf2)">💊</div><div class="dst">Presentation</div></div>
+      <div class="dsb"><ul class="blist">${pres.map(p => `<li>${p}</li>`).join('')}</ul></div>
     </div>
-  </div>`;
-
-  // Scope
-  out += `<div class="dsec">
-    <div class="dsec-hdr">👥 Scope of Practice</div>
-    <div class="dsec-body">${d.scope.map(s=>`<span class="sbadge sbadge-${s}">${smap2[s]}</span>`).join(' ')}</div>
-  </div>`;
-
-  // Indications
-  if (d.indications?.length) {
-    out += `<div class="dsec">
-      <div class="dsec-hdr">✅ Indications</div>
-      <div class="dsec-body"><ul class="det-list">${d.indications.map(i=>`<li>${i}</li>`).join('')}</ul></div>
-    </div>`;
-  }
-
-  // Contraindications
-  if (d.contraindications?.length) {
-    out += `<div class="dsec">
-      <div class="dsec-hdr">🚫 Contraindications</div>
-      <div class="dsec-body"><ul class="det-list">${d.contraindications.map(i=>`<li>${i}</li>`).join('')}</ul></div>
-    </div>`;
-  }
-
-  // Presentation
-  out += `<div class="dsec">
-    <div class="dsec-hdr">💊 Presentation</div>
-    <div class="dsec-body">${pres.map(p=>`<div class="dose-line">${p}</div>`).join('')}</div>
-  </div>`;
-
-  // Administration
-  out += `<div class="dsec">
-    <div class="dsec-hdr">💉 Administration</div>
-    <div class="dsec-body">${adm.map(a=>`<div class="dose-line">${a}</div>`).join('')}</div>
-  </div>`;
-
-  // Dosages (adult + paediatric)
-  if (d.dosages?.adult) {
-    out += `<div class="dsec">
-      <div class="dsec-hdr">🧑 Adult Dose</div>
-      <div class="dsec-body">${dh(d.dosages.adult)}</div>
-    </div>`;
-  }
-  if (d.dosages?.paediatric) {
-    out += `<div class="dsec">
-      <div class="dsec-hdr">👶 Paediatric Dose</div>
-      <div class="dsec-body">${dh(d.dosages.paediatric)}</div>
-    </div>`;
-  }
-
-  // Side effects
-  if (d.sideEffects?.length) {
-    out += `<div class="dsec">
-      <div class="dsec-hdr">⚠️ Side Effects</div>
-      <div class="dsec-body"><ul class="det-list">${d.sideEffects.map(i=>`<li>${i}</li>`).join('')}</ul></div>
-    </div>`;
-  }
-
-  // Additional info
-  if (d.additionalInfo) {
-    out += `<div class="dsec">
-      <div class="dsec-hdr">ℹ️ Additional Information</div>
-      <div class="dsec-body" style="font-size:14px;color:var(--text2);line-height:1.6">${d.additionalInfo}</div>
-    </div>`;
-  }
-
-  // Mechanism (from quizHints)
-  if (d.quizHints?.mechanism) {
-    out += `<div class="dsec">
-      <div class="dsec-hdr">🔬 Mechanism of Action</div>
-      <div class="dsec-body" style="font-size:14px;color:var(--text2);line-height:1.6">${d.quizHints.mechanism}</div>
-    </div>`;
-  }
-
-  // Notes
-  out += `<div class="dsec">
-    <div class="dsec-hdr">📝 My Notes</div>
-    <div class="dsec-body">
-      <textarea class="det-note" placeholder="Add your own notes…" oninput="G.notes['${d.id}']=this.value;saveG()">${noteVal}</textarea>
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--surf2)">🛤</div><div class="dst">Routes of Administration</div></div>
+      <div class="dsb"><ul class="blist">${adm.map(a => `<li>${a}</li>`).join('')}</ul></div>
     </div>
-  </div>`;
-
-  return out;
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--success-light)">✅</div><div class="dst">Indications</div></div>
+      <div class="dsb"><ul class="blist">${d.indications.map(i => `<li>${i}</li>`).join('')}</ul></div>
+    </div>
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--error-light)">🚫</div><div class="dst">Contraindications</div></div>
+      <div class="dsb"><div class="ci-list">${d.contraindications.map(c => `
+        <div class="ci"><div class="ci-dot"></div><div class="ci-text">${c}</div></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--warning-light)">💉</div><div class="dst">Dosages</div></div>
+      <div class="dsb"><div class="dose-block">
+        <div class="dose-grp"><div class="dose-lbl">👤 Adult</div>${dh(d.dosages.adult)}</div>
+        <div class="dose-grp"><div class="dose-lbl">👶 Paediatric</div>${dh(d.dosages.paediatric)}</div>
+      </div></div>
+    </div>
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--error-light)">⚠️</div><div class="dst">Side Effects</div></div>
+      <div class="dsb"><ul class="blist">${d.sideEffects.map(s => `<li>${s}</li>`).join('')}</ul></div>
+    </div>
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--surf2)">ℹ️</div><div class="dst">Additional Information</div></div>
+      <div class="dsb"><div class="info-box">${d.additionalInfo}</div></div>
+    </div>
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:var(--primary-light)">📈</div><div class="dst">Question Progress</div></div>
+      <div class="dsb">
+        <div class="prog-wrap">
+          <div class="prog-fill" style="width:${pct}%;background:linear-gradient(to right,#1E3A8A,#3B82F6)"></div>
+        </div>
+        <div class="prog-lbl"><span>${mLabel}</span><span>${Math.min(correct,10)}/10 correct</span></div>
+      </div>
+    </div>
+    <div class="dsec">
+      <div class="dsh"><div class="sico" style="background:rgba(124,58,237,.08)">📝</div><div class="dst">My Notes</div></div>
+      <div class="dsb">
+        <textarea class="notes-area" id="note-${d.id}"
+          placeholder="Add your own notes, mnemonics, clinical pearls…"
+          oninput="G.notes[${d.id}]=this.value;saveG()">${noteVal}</textarea>
+        <div class="notes-hint">Notes save automatically</div>
+      </div>
+    </div>`;
 }
