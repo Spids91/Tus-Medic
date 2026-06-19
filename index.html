@@ -32,6 +32,75 @@
   </div>
 </div>
 
+<!-- SETTINGS PANEL -->
+<div class="settings-overlay" id="settingsPanel">
+  <div class="settings-sheet">
+    <div class="settings-hdr">
+      <div class="settings-title">Settings</div>
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="settings-section-label">Appearance</div>
+      <div class="settings-row" onclick="settingsToggleDark()">
+        <div class="settings-row-icon">🌙</div>
+        <div class="settings-row-label">Dark Mode</div>
+        <div class="settings-toggle" id="darkToggle"></div>
+      </div>
+      <div class="settings-section-label">Legal</div>
+      <div class="settings-row" onclick="openLegal('terms')">
+        <div class="settings-row-icon">📄</div>
+        <div class="settings-row-label">Terms of Service</div>
+        <div class="settings-row-arrow">›</div>
+      </div>
+      <div class="settings-row" onclick="openLegal('privacy')">
+        <div class="settings-row-icon">🔒</div>
+        <div class="settings-row-label">Privacy Policy</div>
+        <div class="settings-row-arrow">›</div>
+      </div>
+      <div class="settings-row" onclick="openLegal('disclaimer')">
+        <div class="settings-row-icon">⚠️</div>
+        <div class="settings-row-label">Medical Disclaimer</div>
+        <div class="settings-row-arrow">›</div>
+      </div>
+      <div class="settings-section-label">About</div>
+      <div class="settings-row" onclick="openLegal('patches')">
+        <div class="settings-row-icon">📋</div>
+        <div class="settings-row-label">Patch Notes</div>
+        <div class="settings-row-arrow">›</div>
+      </div>
+      <div class="settings-row-info">
+        <div class="settings-row-icon">ℹ️</div>
+        <div class="settings-row-label">Version</div>
+        <div class="settings-row-value">v1.0.0</div>
+      </div>
+      <div class="settings-row-info">
+        <div class="settings-row-icon">©️</div>
+        <div class="settings-row-label">Copyright</div>
+        <div class="settings-row-value">Keith O'Reilly 2026</div>
+      </div>
+      <div class="settings-section-label">Data</div>
+      <div class="settings-row settings-row-danger" onclick="closeSettings();confirmReset()">
+        <div class="settings-row-icon">🗑️</div>
+        <div class="settings-row-label">Delete All Progress</div>
+        <div class="settings-row-arrow">›</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGAL MODAL -->
+<div class="legal-overlay" id="legalModal">
+  <div class="legal-sheet">
+    <div class="legal-hdr">
+      <button class="legal-back" onclick="closeLegal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back
+      </button>
+      <div class="legal-title" id="legalTitle">—</div>
+    </div>
+    <div class="legal-body" id="legalBody"></div>
+  </div>
+</div>
+
 <div class="offline-bar" id="offlineBar">⚠️ No internet — running offline</div>
 
 <header class="hdr">

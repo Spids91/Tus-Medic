@@ -252,7 +252,6 @@ function setChartMetric(m,el){
 function renderChart(){
   const el=document.getElementById('chartArea');
   if(!el)return;
-  // Get last 14 days
   const days=[];
   for(let i=13;i>=0;i--){
     const d=new Date();d.setDate(d.getDate()-i);
@@ -267,18 +266,30 @@ function renderChart(){
     return 0;
   });
   const max=Math.max(...vals,1);
+  // Round up to a clean number for y-axis
+  const niceMax=max<=5?5:max<=10?10:max<=25?25:max<=50?50:max<=100?100:Math.ceil(max/50)*50;
   const hasData=vals.some(v=>v>0);
+  const suffix=chartMetric==='accuracy'?'%':'';
   const labels=days.map(d=>{const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('en-IE',{weekday:'short'}).slice(0,2);});
+  const colors={questions:['#2563EB','#1E3A8A'],accuracy:['#00875A','#006644'],quizzes:['#7C3AED','#4C1D95'],xp:['#D97706','#78350F']};
+  const [c1,c2]=colors[chartMetric]||['#2563EB','#1E3A8A'];
   el.innerHTML=days.map((d,i)=>{
-    const h=Math.round((vals[i]/max)*120);
-    const colors={questions:['#2563EB','#1E3A8A'],accuracy:['#00875A','#006644'],quizzes:['#7C3AED','#4C1D95'],xp:['#D97706','#78350F']};
-    const [c1,c2]=colors[chartMetric]||['#059669','#047857'];
-    return`<div class="chart-bar-wrap">
-      <div class="chart-bar" style="height:${h}px;background:linear-gradient(to top,${c2},${c1})"></div>
-      <div class="chart-day">${labels[i]}</div>
-    </div>`;
+    const h=Math.round((vals[i]/niceMax)*120);
+    return '<div class="chart-bar-wrap">'
+      +'<div class="chart-bar" style="height:'+Math.max(h,0)+'px;background:linear-gradient(to top,'+c2+','+c1+')"></div>'
+      +'<div class="chart-day">'+labels[i]+'</div>'
+      +'</div>';
   }).join('');
-  document.getElementById('chartNote').textContent=hasData?`Tracking from ${G.trackingStart||todayKey()}`:'Data will appear here as you study';
+  // Y-axis
+  const yEl=document.getElementById('chartYAxis');
+  if(yEl){
+    yEl.innerHTML=
+      '<div class="chart-ylabel">'+niceMax+suffix+'</div>'+
+      '<div class="chart-ylabel">'+Math.round(niceMax/2)+suffix+'</div>'+
+      '<div class="chart-ylabel">0</div>';
+  }
+  const noteEl=document.getElementById('chartNote');
+  if(noteEl)noteEl.textContent=hasData?'Tracking from '+(G.trackingStart||todayKey()):'Data will appear here as you study';
 }
 
 function confirmReset(){
