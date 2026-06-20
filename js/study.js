@@ -1,7 +1,7 @@
 // ─── STUDY.JS ─────────────────────────────────────────────────────────────────
 // Study tab: Medical Terms (categorised accordion + search) and Question Bank.
 
-let studySec='terms', studyQ='';
+let studySec='drugs', studyQ='';
 
 function selStudy(sec,el){
   document.querySelectorAll('.section-chips [data-ssec]').forEach(c=>c.classList.remove('on'));
@@ -20,11 +20,25 @@ function selStudy(sec,el){
 
 function renderStudy(){
   const c=document.getElementById('learnContent');
-  if(studySec==='terms'){
-    if(studyQ)c.innerHTML=renderTermsSearch(studyQ);
-    else c.innerHTML=renderTerms();
-    attachTermHandlers(c);
+  const drugsEl=document.getElementById('studyDrugs');
+  const sw=document.getElementById('studySearchWrap');
+  if(studySec==='drugs'||!studySec){
+    if(drugsEl)drugsEl.style.display='block';
+    if(sw)sw.style.display='none';
+    if(c)c.style.display='none';
+    renderDrugList();
+  }else if(studySec==='terms'){
+    if(drugsEl)drugsEl.style.display='none';
+    if(sw)sw.style.display='flex';
+    if(c){c.style.display='block';
+      if(studyQ)c.innerHTML=renderTermsSearch(studyQ);
+      else c.innerHTML=renderTerms();
+      attachTermHandlers(c);
+    }
   }else if(studySec==='questions'){
+    if(drugsEl)drugsEl.style.display='none';
+    if(sw)sw.style.display='none';
+    if(c)c.style.display='block';
     renderQuestionBank('');
   }
 }
@@ -161,7 +175,15 @@ function renderQuestionAccordion(query){
     html+='<div class="ql-header"><div class="ql-name">'+d.name+'</div><div class="ql-chevron">›</div></div>';
     html+='<div class="ql-body">';
     [...EASY_Q,...HARD_Q].forEach(qt=>{
-      html+='<div class="ql-q"><div class="ql-q-type">'+qt.prompt+'</div><div class="ql-q-text">'+qt.q(d)+'</div></div>';
+      const answer=qt.a(d);
+      html+='<div class="ql-q">';
+      html+='<div class="ql-q-type">'+qt.prompt+'</div>';
+      html+='<div class="ql-q-text">'+qt.q(d)+'</div>';
+      html+='<div class="ql-reveal" onclick="this.classList.toggle(\'open\')">';
+      html+='<div class="ql-reveal-btn">Tap to reveal answer</div>';
+      html+='<div class="ql-answer">'+answer+'</div>';
+      html+='</div>';
+      html+='</div>';
     });
     html+='</div></div>';
   });

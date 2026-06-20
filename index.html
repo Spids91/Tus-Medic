@@ -237,31 +237,13 @@
 <div class="page" id="page-ref">
   <!-- Section chips: Drugs / Paed / PCR / PCI -->
   <div class="section-chips">
-    <button class="schip on" data-refsec="drugs" onclick="selRefSection('drugs',this)">Drugs</button>
-    <button class="schip" data-refsec="paed" onclick="selRefSection('paed',this)">Paed Calculator</button>
+    <button class="schip on" data-refsec="paed" onclick="selRefSection('paed',this)">Paed Calculator</button>
     <button class="schip" data-refsec="pcr" onclick="selRefSection('pcr',this)">PCR Codes</button>
     <button class="schip" data-refsec="pci" onclick="selRefSection('pci',this)">PCI Line</button>
   </div>
 
-  <!-- Drugs section -->
-  <div id="refDrugs">
-    <div class="gsearch-wrap">
-      <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="search" id="searchInput" placeholder="Search drugs…" autocomplete="off" spellcheck="false" oninput="handleRefSearch(this.value)"/>
-      <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
-    </div>
-    <div class="chips">
-      <button class="chip chip-all on" data-scope="all">All</button>
-      <button class="chip chip-emt" data-scope="EMT">EMT</button>
-      <button class="chip chip-p" data-scope="P">Paramedic</button>
-      <button class="chip chip-ap" data-scope="AP">Adv. Paramedic</button>
-    </div>
-    <div class="sec-lbl" id="listLabel">All Medications (46)</div>
-    <div class="drug-list" id="drugList"></div>
-  </div>
-
   <!-- Paed / PCR / PCI sections render here -->
-  <div id="refContent" style="display:none"></div>
+  <div id="refContent"></div>
 </div>
 
 <!-- QUIZ -->
@@ -351,19 +333,37 @@
 
 <!-- STUDY -->
 <div class="page" id="page-learn">
-  <!-- Section chips: Medical Terms / Question Bank -->
-  <div class="section-chips section-chips-2">
-    <button class="schip on" data-ssec="terms" onclick="selStudy('terms',this)">Medical Terms</button>
+  <!-- Section chips: Drugs / Medical Terms / Question Bank -->
+  <div class="section-chips">
+    <button class="schip on" data-ssec="drugs" onclick="selStudy('drugs',this)">Drugs</button>
+    <button class="schip" data-ssec="terms" onclick="selStudy('terms',this)">Medical Terms</button>
     <button class="schip" data-ssec="questions" onclick="selStudy('questions',this)">Question Bank</button>
   </div>
 
+  <!-- Drugs section -->
+  <div id="studyDrugs">
+    <div class="gsearch-wrap">
+      <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="search" id="searchInput" placeholder="Search drugs…" autocomplete="off" spellcheck="false" oninput="handleRefSearch(this.value)"/>
+      <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
+    </div>
+    <div class="chips">
+      <button class="chip chip-all on" data-scope="all">All</button>
+      <button class="chip chip-emt" data-scope="EMT">EMT</button>
+      <button class="chip chip-p" data-scope="P">Paramedic</button>
+      <button class="chip chip-ap" data-scope="AP">Adv. Paramedic</button>
+    </div>
+    <div class="sec-lbl" id="listLabel">All Medications (46)</div>
+    <div class="drug-list" id="drugList"></div>
+  </div>
+
   <!-- Search bar (terms only) -->
-  <div class="gsearch-wrap" id="studySearchWrap">
+  <div class="gsearch-wrap" id="studySearchWrap" style="display:none">
     <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     <input type="search" id="learnSearch" placeholder="Search terms…" autocomplete="off" spellcheck="false" oninput="handleStudySearch(this.value)"/>
     <button class="search-clear" id="learnClear" onclick="clearStudySearch()" style="display:none">✕</button>
   </div>
-  <div id="learnContent"></div>
+  <div id="learnContent" style="display:none"></div>
 </div>
 
 <!-- PROGRESS -->
@@ -522,6 +522,12 @@ renderHome();
 renderDrugList();
 renderStudy();
 renderQuizTab();
+
+// Reference tab — default to paed calculator
+(function(){
+  const contentEl=document.getElementById('refContent');
+  if(contentEl)contentEl.innerHTML=renderPaed();
+})();
 updateDarkToggle();
 </script>
 </body>

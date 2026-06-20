@@ -1,7 +1,7 @@
 // ─── REFERENCE.JS ─────────────────────────────────────────────────────────────
 // Reference tab: Drugs (list + scope filter + search), Paed Calculator, PCR Codes, PCI Line.
 
-let refScope='all', refQ='', refSec='drugs', paedScope='EMT';
+let refScope='all', refQ='', refSec='paed', paedScope='EMT';
 
 // ── SECTION SWITCHING ─────────────────────────────────────────────────────────
 function selRefSection(sec,el){
@@ -9,18 +9,10 @@ function selRefSection(sec,el){
   el.classList.add('on');
   refSec=sec;
   haptic();
-  const drugsEl=document.getElementById('refDrugs');
   const contentEl=document.getElementById('refContent');
-  if(sec==='drugs'){
-    drugsEl.style.display='block';
-    contentEl.style.display='none';
-  }else{
-    drugsEl.style.display='none';
-    contentEl.style.display='block';
-    if(sec==='paed')contentEl.innerHTML=renderPaed();
-    else if(sec==='pcr')contentEl.innerHTML=renderPCR();
-    else if(sec==='pci')contentEl.innerHTML=renderPCI();
-  }
+  if(sec==='paed')contentEl.innerHTML=renderPaed();
+  else if(sec==='pcr')contentEl.innerHTML=renderPCR();
+  else if(sec==='pci')contentEl.innerHTML=renderPCI();
 }
 
 // ── DRUGS ─────────────────────────────────────────────────────────────────────
