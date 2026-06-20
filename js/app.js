@@ -216,6 +216,32 @@ function loadTheme(){
 
 function checkOnline(){document.getElementById('offlineBar').classList.toggle('show',!navigator.onLine);}
 
+// Prevent WKWebView scroll freeze on modal overlays
+// When a fixed overlay is visible, block touchmove from reaching the native scroll handler
+function initModalScrollFix() {
+  const preventScroll = (e) => {
+    // Allow scrolling inside elements that are meant to scroll
+    let el = e.target;
+    while (el && el !== document.body) {
+      const style = window.getComputedStyle(el);
+      const overflow = style.overflow + style.overflowY;
+      if (overflow.includes('auto') || overflow.includes('scroll')) {
+        return; // let it scroll
+      }
+      el = el.parentElement;
+    }
+    e.preventDefault();
+  };
+
+  // Apply to all fixed overlays that shouldn't scroll
+  ['disclaimerModal', 'settingsPanel', 'confirmModal', 'levelUpOverlay', 'legalModal', 'onbOverlay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('touchmove', preventScroll, { passive: false });
+    }
+  });
+}
+
 function dismissDisclaimer(){
   document.getElementById('disclaimerModal').style.display='none';
   G.disclaimerDone=true;saveG();
@@ -557,6 +583,8 @@ window.addEventListener('online',checkOnline);
 window.addEventListener('offline',checkOnline);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDet();});
 loadG();loadTheme();checkOnline();checkDisclaimer();updateHdr();
+// Run after DOM is fully parsed (scripts load at end of body)
+initModalScrollFix();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 function updateDarkToggle(){
