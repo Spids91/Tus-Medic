@@ -749,3 +749,42 @@ function updateDarkToggle(){
   const t=document.getElementById('darkToggle');
   if(t)t.classList.toggle('on',isDark);
 }
+
+// ── COPYRIGHT EASTER EGG ───────────────────────────────────────────────────────
+// Tapping the copyright row fires two confetti cannons from the bottom corners,
+// launching pieces inward + upward at ~45°, arcing back down under gravity.
+let _eggCooldown=false;
+function copyrightEasterEgg(){
+  if(_eggCooldown)return;          // prevent spam / overlapping bursts
+  _eggCooldown=true;
+  setTimeout(()=>{_eggCooldown=false;},1500);
+  const layer=document.getElementById('eggConfetti');
+  if(!layer)return;
+  const colors=['#FCD34D','#34D399','#60A5FA','#F87171','#C4B5FD','#FB923C','#2563EB','#D97706'];
+  const perSide=22;
+  let html='';
+  for(let side=0;side<2;side++){
+    const fromLeft = side===0;
+    for(let i=0;i<perSide;i++){
+      const col=colors[Math.floor(Math.random()*colors.length)];
+      const size=6+Math.random()*6;
+      // Launch distance and arc height — randomised for a natural spread
+      const dx=(40+Math.random()*55)*(fromLeft?1:-1);   // horizontal travel (vw)
+      const dy=-(45+Math.random()*40);                  // peak rise (vh, negative = up)
+      const rot=Math.random()*720-360;
+      const dur=1.1+Math.random()*0.7;
+      const delay=Math.random()*0.12;
+      const startEdge=fromLeft?'left:-10px;':'right:-10px;';
+      html+=`<span class="egg-piece" style="`
+        +`${startEdge}`
+        +`width:${size}px;height:${size}px;background:${col};`
+        +`--dx:${dx}vw;--dy:${dy}vh;--rot:${rot}deg;`
+        +`animation-duration:${dur}s;animation-delay:${delay}s;`
+        +`"></span>`;
+    }
+  }
+  layer.innerHTML=html;
+  haptic('success');
+  // Clear after the longest possible animation completes
+  setTimeout(()=>{layer.innerHTML='';},2200);
+}

@@ -1,4 +1,4 @@
-const C='tus-medic-20260621233416';
+const C='tus-medic-20260621234322';
 const BASE='/Tus-Medic';
 const ASSETS=[BASE+'/',BASE+'/index.html',BASE+'/manifest.json',BASE+'/css/style.css',
   BASE+'/js/data/medications.js',BASE+'/js/data/hospitals.js',BASE+'/js/data/terms.js',BASE+'/js/data/medref.js',
