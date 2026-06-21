@@ -757,7 +757,7 @@ let _eggCooldown=false;
 function copyrightEasterEgg(){
   if(_eggCooldown)return;          // prevent spam / overlapping bursts
   _eggCooldown=true;
-  setTimeout(()=>{_eggCooldown=false;},1500);
+  setTimeout(()=>{_eggCooldown=false;},6000);
   const layer=document.getElementById('eggConfetti');
   if(!layer)return;
   const colors=['#FCD34D','#34D399','#60A5FA','#F87171','#C4B5FD','#FB923C','#2563EB','#D97706'];
@@ -772,8 +772,10 @@ function copyrightEasterEgg(){
       const dx=(40+Math.random()*55)*(fromLeft?1:-1);   // horizontal travel (vw)
       const dy=-(45+Math.random()*40);                  // peak rise (vh, negative = up)
       const rot=Math.random()*720-360;
-      const dur=1.1+Math.random()*0.7;
-      const delay=Math.random()*0.12;
+      // Longer, tighter-range duration so the whole arc reads as gravity, not a flick.
+      // Small variance keeps pieces feeling like one burst rather than random speeds.
+      const dur=2.8+Math.random()*0.6;
+      const delay=Math.random()*0.18;
       const startEdge=fromLeft?'left:-10px;':'right:-10px;';
       html+=`<span class="egg-piece" style="`
         +`${startEdge}`
@@ -785,6 +787,6 @@ function copyrightEasterEgg(){
   }
   layer.innerHTML=html;
   haptic('success');
-  // Clear after the longest possible animation completes
-  setTimeout(()=>{layer.innerHTML='';},2200);
+  // Clear after the longest possible animation completes (dur+delay max ≈ 3.6s)
+  setTimeout(()=>{layer.innerHTML='';},4000);
 }

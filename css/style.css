@@ -1305,16 +1305,21 @@ ul { list-style: none; }
 .egg-piece {
   position: fixed; bottom: 0; border-radius: 2px;
   /* launch point is the bottom corner; --dx/--dy set per piece in JS */
-  animation-name: eggArc; animation-timing-function: cubic-bezier(.15,.6,.5,1);
+  animation-name: eggArc;
+  /* gentle overall curve; the rise/fall feel comes from keyframe spacing below */
+  animation-timing-function: ease-out;
   animation-iteration-count: 1; animation-fill-mode: forwards;
   will-change: transform, opacity;
 }
 @keyframes eggArc {
-  0%   { transform: translate(0,0) rotate(0); opacity: 1; }
-  /* fast launch up + inward to the arc peak */
-  35%  { transform: translate(calc(var(--dx) * .6), var(--dy)) rotate(calc(var(--rot) * .5)); opacity: 1; }
-  /* gravity carries it back down and past the bottom */
-  100% { transform: translate(var(--dx), 30vh) rotate(var(--rot)); opacity: 0; }
+  /* Launch — fast off the corner, decelerating as it climbs (ease-out) */
+  0%   { transform: translate(0, 0) rotate(0); opacity: 1; animation-timing-function: cubic-bezier(.12,.7,.35,1); }
+  /* Apex — most horizontal travel done, piece briefly hangs at the top of its arc */
+  45%  { transform: translate(calc(var(--dx) * .8), var(--dy)) rotate(calc(var(--rot) * .55)); opacity: 1; animation-timing-function: cubic-bezier(.4,0,.7,.4); }
+  /* Hang — slight float at peak before gravity takes over */
+  55%  { transform: translate(var(--dx), calc(var(--dy) * .96)) rotate(calc(var(--rot) * .68)); opacity: 1; animation-timing-function: cubic-bezier(.5,0,.85,.6); }
+  /* Fall — accelerating downward like gravity (ease-in), fading near the floor */
+  100% { transform: translate(calc(var(--dx) * 1.08), 115vh) rotate(var(--rot)); opacity: 1; }
 }
 
 /* ── STREAK FREEZE MODAL (calm announcement, no confetti) ─────────────────── */
