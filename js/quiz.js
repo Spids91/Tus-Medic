@@ -207,7 +207,7 @@ let QZ = {
   timeLeft: 30, timerRef: null,
   lastMode: 'standard', lastScope: 'all', lastFmt: 'mc', lastAdaptive: false,
 };
-const FC_XP_CAP = 20;  // max flashcard XP earnable per day across all sessions
+const FC_XP_CAP = 100;  // max flashcard XP earnable per day, shared across ALL flashcard sessions
 
 function fcXpRemaining() {
   const today = todayKey();
@@ -552,12 +552,22 @@ function checkBurst() {
   // Every further 10 in a row also rewards +10
   if (QZ.streak > 10 && QZ.streak % 10 === 0) bonus = 10;
   if (bonus > 0) {
+    // In flashcard mode, burst XP must respect the daily flashcard cap —
+    // otherwise streaks let users earn unlimited self-marked XP past the cap.
+    if (QZ.fmt === 'fc') {
+      const remaining = fcXpRemaining();
+      bonus = Math.min(bonus, remaining);
+    }
     const el = document.getElementById('streakBurst');
-    if (el) { el.textContent = `🔥 ${QZ.streak} in a row! +${bonus} XP`; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2000); }
-    const levelBefore = getLevel(G.xp).name;
-    QZ.xpThis += bonus; G.xp += bonus; updateHdr();
-    const levelAfter = getLevel(G.xp).name;
-    if (levelBefore !== levelAfter) setTimeout(() => showLevelUp(getLevel(G.xp)), 400);
+    if (el) { el.textContent = bonus > 0 ? `🔥 ${QZ.streak} in a row! +${bonus} XP` : `🔥 ${QZ.streak} in a row!`; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2000); }
+    if (bonus > 0) {
+      // Accumulate into xpThis only — G.xp is awarded once at the results screen.
+      // (Previously this also added to G.xp directly, double-counting the bonus.)
+      QZ.xpThis += bonus;
+      if (QZ.fmt === 'fc') G.fcXpToday = (G.fcXpToday || 0) + bonus;
+      // Live header preview: show running total without permanently committing it
+      updateHdrPreview(G.xp + QZ.xpThis);
+    }
   }
 }
 
@@ -672,16 +682,40 @@ function showResults() {
   const total = qs.length;
   const pct   = Math.round(correct/total*100);
   G.quizzes++;
-  const today = new Date().toDateString();
-  if (G.lastDate !== today) { G.streak++; G.lastDate = today; }
+  // ── STREAK (calendar-day based, consistent todayKey format) ──
+  // Intro quiz does not count toward streaks.
+  if (!QZ.isIntro) {
+    const today = todayKey();
+    if (G.lastDate !== today) {
+      // First completed quiz today — extend the streak.
+      // (checkStreakOnLoad has already handled any missed-day resets/freezes,
+      //  so if we're here the streak is current: either brand new, or lastDate
+      //  was yesterday.)
+      G.streak = (G.streak || 0) + 1;
+      G.lastDate = today;
+    }
+  }
   let bonus = 0;
-  if (isDaily && !isDailyDone()) { bonus = 15; G.lastDailyDate = todayKey(); }
+  if (isDaily && !isDailyDone()) {
+    bonus = 15; G.lastDailyDate = todayKey();
+    G.dailyDoneCount = (G.dailyDoneCount || 0) + 1;  // for Daily Devotee / Daily Legend badges
+  }
   const totalXP = xpThis + bonus;
   // Capture level before and after awarding XP to detect a level-up
   const levelBefore = getLevel(G.xp).name;
   G.xp += totalXP;
   const levelAfter = getLevel(G.xp).name;
   logToday(total, correct, 1, totalXP);
+  // ── Badge counters ──
+  // Flawless: a 100% score on a full (non-intro) quiz. Guard total>0.
+  if (!QZ.isIntro && total > 0 && correct === total) {
+    G.perfectQuizzes = (G.perfectQuizzes || 0) + 1;
+  }
+  // Night Shift: any quiz completed between midnight and 06:00.
+  const hr = new Date().getHours();
+  if (hr >= 0 && hr < 6) {
+    G.nightShiftDone = true;
+  }
   checkBadges(); saveG(); updateHdr();
   // Trigger level-up celebration if the level changed
   if (levelBefore !== levelAfter) {
@@ -696,6 +730,12 @@ function showResults() {
   document.getElementById('resPct').textContent     = pct+'%';
   const xpMsg = `⚡ +${totalXP} XP earned${bonus>0?' (incl. +'+bonus+' daily bonus!)':''}`;
   document.getElementById('xpEarnedBtn').textContent = xpMsg+' — tap to see progress';
+  // Flashcard daily cap notice — only on flashcard quizzes once the cap is hit
+  const capMsg = document.getElementById('resCapMsg');
+  if (capMsg) {
+    const capReached = QZ.fmt === 'fc' && fcXpRemaining() === 0;
+    capMsg.style.display = capReached ? 'block' : 'none';
+  }
   const emoji = pct>=90?'🏆':pct>=70?'🎯':pct>=50?'📚':'💪';
   const title = pct>=90?'Outstanding!':pct>=70?'Great Work!':pct>=50?'Good Effort':'Keep Studying!';
   document.getElementById('resRing').textContent = emoji;

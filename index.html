@@ -243,11 +243,19 @@
   <!-- Section chips: Drugs / Paed / PCR / PCI -->
   <div class="section-chips">
     <button class="schip on" data-refsec="paed" onclick="selRefSection('paed',this)">Paed Calculator</button>
+    <button class="schip" data-refsec="meds" onclick="selRefSection('meds',this)">Medications</button>
     <button class="schip" data-refsec="pcr" onclick="selRefSection('pcr',this)">PCR Codes</button>
     <button class="schip" data-refsec="pci" onclick="selRefSection('pci',this)">PCI Line</button>
   </div>
 
-  <!-- Paed / PCR / PCI sections render here -->
+  <!-- Medications search bar (only visible in meds section) -->
+  <div class="gsearch-wrap" id="medrefSearchWrap" style="display:none">
+    <svg class="si" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="search" id="medrefSearch" placeholder="Search by generic or brand name…" autocomplete="off" spellcheck="false" oninput="handleMedrefSearch(this.value)"/>
+    <button class="search-clear" id="medrefClear" onclick="clearMedrefSearch()" style="display:none">✕</button>
+  </div>
+
+  <!-- Paed / Meds / PCR / PCI sections render here -->
   <div id="refContent"></div>
 </div>
 
@@ -324,6 +332,7 @@
         <div class="res-stat"><div class="res-num" id="resPct">0%</div><div class="res-lbl">Score</div></div>
       </div>
       <button class="xp-earned-btn" id="xpEarnedBtn" onclick="goProgress()">⚡ +0 XP — tap to see progress</button>
+      <div class="res-cap-msg" id="resCapMsg" style="display:none">🃏 Daily flashcard XP cap reached (100 XP) — switch to a quiz to keep earning XP today.</div>
       <div id="wrongBreakdown" style="display:none;margin-bottom:16px;text-align:left"></div>
       <div id="resIntroBtn" style="display:none">
         <button class="btn-pri" onclick="showPage('quiz',document.getElementById('btn-quiz'));scrollTop()" style="margin-bottom:10px">Start Studying →</button>
@@ -497,6 +506,17 @@
   </div>
 </div>
 
+<!-- STREAK FREEZE ANNOUNCEMENT (calm, no confetti) -->
+<div class="fz-overlay" id="freezeOverlay">
+  <div class="fz-card">
+    <div class="fz-flake">❄️</div>
+    <div class="fz-label">Streak Frozen</div>
+    <div class="fz-streak-num"><span id="fzStreak">0</span><span class="fz-streak-day">day streak</span></div>
+    <div class="fz-sub" id="fzSub">A streak freeze protected your streak.</div>
+    <button class="fz-btn" onclick="closeFreezeModal()">Continue</button>
+  </div>
+</div>
+
 <!-- CUSTOM CONFIRM MODAL -->
 <div class="confirm-overlay" id="confirmModal" style="display:none">
   <div class="confirm-card">
@@ -514,9 +534,11 @@
 <script src="js/data/medications.js"></script>
 <script src="js/data/hospitals.js"></script>
 <script src="js/data/terms.js"></script>
+<script src="js/data/medref.js"></script>
 <script src="js/app.js"></script>
 <script src="js/home.js"></script>
 <script src="js/reference.js"></script>
+<script src="js/medref.js"></script>
 <script src="js/detail.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/study.js"></script>

@@ -9,8 +9,13 @@ function selRefSection(sec,el){
   el.classList.add('on');
   refSec=sec;
   haptic();
+  // Medications search bar only shows in meds section; reset its state on every switch
+  const medSearch=document.getElementById('medrefSearchWrap');
+  if(medSearch)medSearch.style.display=sec==='meds'?'block':'none';
+  if(typeof clearMedrefSearch==='function'&&sec!=='meds')clearMedrefSearch();
   const contentEl=document.getElementById('refContent');
   if(sec==='paed')contentEl.innerHTML=renderPaed();
+  else if(sec==='meds')renderMedrefSection();
   else if(sec==='pcr')contentEl.innerHTML=renderPCR();
   else if(sec==='pci')contentEl.innerHTML=renderPCI();
 }

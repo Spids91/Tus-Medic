@@ -44,7 +44,14 @@ const BADGES=[
   {id:'xp_1000',        icon:'🚀', name:'1000 XP',               check:g=>g.xp>=1000},
   {id:'questions_100',  icon:'🧠', name:'100 Questions',         check:g=>g.totalQ>=100},
   {id:'all_opened',     icon:'💊', name:'Opened Every Drug',     check:g=>MEDS.every(m=>g.seenDrugs&&g.seenDrugs.includes(m.id))},
-  {id:'freeze_used',    icon:'❄️', name:'Used Streak Freeze',    check:g=>g.freezesUsed>=1}
+  {id:'freeze_used',    icon:'❄️', name:'Used Streak Freeze',    check:g=>g.freezesUsed>=1},
+  {id:'half_mastered',  icon:'🎖️', name:'Half Way — 23 Drugs Mastered', check:g=>Object.values(g.drugCorrect).filter(v=>v>=10).length>=23},
+  {id:'flawless',       icon:'💯', name:'Flawless — 100% Quiz',  check:g=>(g.perfectQuizzes||0)>=1},
+  {id:'daily_7',        icon:'📆', name:'Daily Devotee — 7 Daily Challenges', check:g=>(g.dailyDoneCount||0)>=7},
+  {id:'daily_30',       icon:'🗓️', name:'Daily Legend — 30 Daily Challenges',check:g=>(g.dailyDoneCount||0)>=30},
+  {id:'perfect_week',   icon:'🌟', name:'Perfect Week — 7 Day Streak',check:g=>g.streak>=7},
+  {id:'note_taker',     icon:'📝', name:'Note Taker — 10 Drug Notes', check:g=>Object.values(g.notes||{}).filter(n=>n&&n.trim().length>0).length>=10},
+  {id:'night_shift',    icon:'🌙', name:'Night Shift',            check:g=>g.nightShiftDone===true}
 ];
 
 // STATE
@@ -60,7 +67,10 @@ let G={
   recentWrong:[],
   lastDailyDate:null,
   fcXpDate:null,fcXpToday:0,
-  seenToday:{}
+  seenToday:{},
+  dailyDoneCount:0,
+  perfectQuizzes:0,
+  nightShiftDone:false
 };
 
 function loadG(){
@@ -79,6 +89,9 @@ function loadG(){
   if(G.fcXpDate===undefined)G.fcXpDate=null;
   if(G.fcXpToday===undefined)G.fcXpToday=0;
   if(!G.seenToday)G.seenToday={};
+  if(G.dailyDoneCount===undefined)G.dailyDoneCount=0;
+  if(G.perfectQuizzes===undefined)G.perfectQuizzes=0;
+  if(G.nightShiftDone===undefined)G.nightShiftDone=false;
 }
 function saveG(){
   try{
@@ -136,19 +149,89 @@ function closeLevelUp(){
   notifyModalState(false);
 }
 
-// Streak freeze
+// ── STREAK SYSTEM ──────────────────────────────────────────────────────────────
+// Streaks count consecutive CALENDAR days with at least one completed quiz.
+// All streak dates use todayKey() (ISO yyyy-mm-dd) for consistency.
+//
+// Model (Duolingo-style hybrid):
+//  • Same day as last quiz       → no change
+//  • Exactly 1 day gap           → streak continues (increments on next quiz)
+//  • 2+ day gap (missed day(s))  → auto-consume freeze tokens, one per missed day.
+//      - Enough tokens to cover  → streak survives, announce via modal
+//      - Not enough tokens       → streak resets to 0
+//
+// Day difference between two ISO date strings.
+function daysBetween(fromKey, toKey){
+  const a=new Date(fromKey+'T00:00:00');
+  const b=new Date(toKey+'T00:00:00');
+  return Math.round((b-a)/86400000);
+}
+
+// Called once on app load. Detects missed days and applies freeze protection.
+function checkStreakOnLoad(){
+  if(!G.lastDate||G.streak<=0)return;       // no active streak to protect
+  const today=todayKey();
+  const gap=daysBetween(G.lastDate, today);
+  if(gap<=1)return;                          // same day or yesterday — streak healthy
+  // gap>=2 means at least one full calendar day was missed
+  const missedDays=gap-1;
+  const tokens=G.freezeTokens||0;
+  if(tokens>=missedDays){
+    // Cover every missed day with a freeze each
+    G.freezeTokens-=missedDays;
+    G.freezesUsed+=missedDays;
+    // Advance lastDate to yesterday so the streak is "current" again and the
+    // user can continue it by completing a quiz today.
+    const y=new Date(today+'T00:00:00');y.setDate(y.getDate()-1);
+    G.lastDate=y.toISOString().slice(0,10);
+    saveG();
+    // Announce protection (after first paint so the modal lands cleanly)
+    setTimeout(()=>showFreezeModal(G.streak, missedDays, G.freezeTokens),400);
+  }else{
+    // Not enough tokens — streak is lost
+    G.streak=0;
+    G.lastDate=null;
+    saveG();
+  }
+}
+
+// Streak-freeze announcement modal (no confetti — calm announcement)
+function showFreezeModal(streakVal, daysUsed, tokensLeft){
+  const overlay=document.getElementById('freezeOverlay');
+  if(!overlay)return;
+  document.getElementById('fzStreak').textContent=streakVal;
+  const sub=document.getElementById('fzSub');
+  if(sub){
+    const dayWord=daysUsed===1?'day':'days';
+    const tokWord=tokensLeft===1?'token':'tokens';
+    sub.textContent=`A streak freeze protected your ${streakVal}-day streak. You have ${tokensLeft} ${tokWord} left.`;
+    // (daysUsed available if we later want to show multi-day detail)
+  }
+  overlay.classList.add('show');
+  notifyModalState(true);
+  haptic('success');
+}
+function closeFreezeModal(){
+  const overlay=document.getElementById('freezeOverlay');
+  if(overlay)overlay.classList.remove('show');
+  notifyModalState(false);
+}
+
+// Manual freeze button (home screen) — now explains the freeze is automatic.
 function useFreeze(){
-  if(G.freezeTokens<=0){showToast('No freeze tokens — master more drugs to earn them');return;}
-  if(G.lastDate===todayKey()){showToast('Your streak is already safe for today');return;}
+  if(G.lastDate===todayKey()){
+    showToast('Your streak is safe — you\u2019ve already studied today');
+    return;
+  }
+  const tokens=G.freezeTokens||0;
+  if(tokens<=0){
+    showToast('No freeze tokens — master more drugs to earn them');
+    return;
+  }
   showConfirm(
-    '❄️ Use Streak Freeze?',
-    'This will protect your streak today. You have '+G.freezeTokens+' token'+(G.freezeTokens===1?'':'s')+' remaining.',
-    ()=>{
-      G.freezeTokens--;G.freezesUsed++;
-      G.lastDate=todayKey();
-      checkBadges();saveG();renderHome();
-      showToast('❄️ Streak freeze used — your streak is safe!');
-    }
+    '\u2744\uFE0F Streak Freeze',
+    'You have '+tokens+' freeze '+(tokens===1?'token':'tokens')+'. Freezes are used automatically to protect your streak if you miss a day — you don\u2019t need to do anything now.',
+    ()=>{}
   );
 }
 
@@ -213,6 +296,20 @@ function updateHdr(){
   // For dark colours like Rookie slate, use a fixed light colour instead
   const darkColours=['#475569','#334155'];
   ll.style.color=darkColours.includes(lv.color)?'rgba(255,255,255,.55)':lv.color;
+}
+
+// Live XP preview during a quiz — shows running total in the header without
+// committing it to G.xp (which only happens once at the results screen).
+function updateHdrPreview(previewXp){
+  const el=document.getElementById('xpVal');
+  if(el)el.textContent=previewXp;
+  const lv=getLevel(previewXp);
+  const ll=document.getElementById('levelLabel');
+  if(ll){
+    ll.textContent=lv.name;
+    const darkColours=['#475569','#334155'];
+    ll.style.color=darkColours.includes(lv.color)?'rgba(255,255,255,.55)':lv.color;
+  }
 }
 
 function scrollTop(){window.scrollTo({top:0,behavior:'instant'});}
@@ -485,7 +582,10 @@ function confirmReset(){
         nextReview:{},recentWrong:[],
         lastDailyDate:null,
         fcXpDate:null,fcXpToday:0,
-        seenToday:{}
+        seenToday:{},
+        dailyDoneCount:0,
+        perfectQuizzes:0,
+        nightShiftDone:false
       };
       MEDS.forEach(m=>{G.drugCorrect[m.id]=0;G.notes[m.id]='';});
       saveG();updateHdr();updateStats();renderDonut();renderChart();renderDrugList();renderHome();
@@ -552,6 +652,27 @@ function handleGlobalSearch(q,clearId,resultsId){
         setTimeout(()=>scrollToHospital(h.pcr),300);
       }}));
 
+    // Medication reference — match generic or brand name
+    if(typeof MEDREF!=='undefined'){
+      MEDREF.map(d=>{
+        const gen=d.generic.toLowerCase();
+        const brands=d.brands.map(b=>b.toLowerCase());
+        let score=0;
+        if(gen===ql||brands.some(b=>b===ql))score=100;
+        else if(gen.startsWith(ql)||brands.some(b=>b.startsWith(ql)))score=80;
+        else if(gen.includes(ql)||brands.some(b=>b.includes(ql)))score=60;
+        return{d,score};
+      }).filter(x=>x.score>0)
+        .sort((a,b)=>b.score-a.score||a.d.generic.localeCompare(b.d.generic))
+        .slice(0,3)
+        .forEach(({d})=>results.push({type:'med',name:d.generic,sub:d.brands.join(', '),action:()=>{
+          showPage('ref',document.getElementById('btn-ref'));
+          selRefSection('meds',document.querySelector('[data-refsec="meds"]'));
+          const inp=document.getElementById('medrefSearch');
+          if(inp){inp.value=d.generic;handleMedrefSearch(d.generic);}
+        }}));
+    }
+
     if(!results.length){
       el.innerHTML='<div class="gsr-item"><div style="color:var(--text3);font-size:13px">No results found</div></div>';
       el.classList.add('show');return;
@@ -594,7 +715,7 @@ function scrollToHospital(pcr){
 window.addEventListener('online',checkOnline);
 window.addEventListener('offline',checkOnline);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDet();});
-loadG();loadTheme();checkOnline();checkDisclaimer();updateHdr();
+loadG();loadTheme();checkOnline();checkStreakOnLoad();checkDisclaimer();updateHdr();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 function updateDarkToggle(){

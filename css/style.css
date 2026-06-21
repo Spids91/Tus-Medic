@@ -366,9 +366,11 @@ ul { list-style: none; }
 .gsr-drug     { background: var(--primary-light); color: var(--primary); }
 .gsr-term     { background: rgba(124,58,237,.1); color: #7C3AED; }
 .gsr-hospital { background: var(--warning-light); color: var(--warning); }
+.gsr-med      { background: var(--success-light); color: var(--success); }
 [data-theme="dark"] .gsr-drug     { background: var(--primary-mid); color: #93C5FD; }
 [data-theme="dark"] .gsr-term     { background: rgba(124,58,237,.2); color: #C4B5FD; }
 [data-theme="dark"] .gsr-hospital { background: rgba(217,119,6,.2); color: #FCD34D; }
+[data-theme="dark"] .gsr-med      { background: rgba(0,135,90,.2); color: #6EE7B7; }
 .gsr-name { font-size: var(--text-base); font-weight: 600; color: var(--text); }
 .gsr-sub  { font-size: var(--text-xs); color: var(--text3); }
 
@@ -668,6 +670,13 @@ ul { list-style: none; }
   font-family: var(--font);
 }
 [data-theme="dark"] .xp-earned-btn { background: rgba(0,135,90,.1); border-color: rgba(0,135,90,.3); color: #6EE7B7; }
+.res-cap-msg {
+  background: var(--warning-light); border: 1px solid rgba(217,119,6,.3);
+  border-radius: var(--r12); padding: var(--sp3); margin: calc(var(--sp4) * -1 + var(--sp1)) 0 var(--sp4);
+  font-size: var(--text-sm); font-weight: 600; color: var(--warning);
+  line-height: 1.5; text-align: center;
+}
+[data-theme="dark"] .res-cap-msg { background: rgba(217,119,6,.12); border-color: rgba(217,119,6,.35); color: #FCD34D; }
 
 /* ── TOAST ───────────────────────────────────────────────────────────── */
 .toast {
@@ -795,6 +804,22 @@ ul { list-style: none; }
 .term-cat-wrap.open .term-cat-body { display: block; }
 .term-cat-header { font-size: var(--text-sm); font-weight: 700; color: var(--text); padding: var(--sp3) 0 var(--sp2); border-bottom: 2px solid var(--primary); margin-bottom: var(--sp2); display: flex; align-items: center; gap: var(--sp2); }
 .term-cat-icon { font-size: 15px; }
+/* ── MEDICATION REFERENCE ─────────────────────────────────────────────────── */
+.medref-results-lbl { font-size: 12px; font-weight: 600; color: var(--text3); margin: 0 0 var(--sp2) 2px; }
+.medref-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: var(--r12); padding: var(--sp3) var(--sp4);
+  margin-bottom: var(--sp2); box-shadow: var(--shadow);
+}
+.medref-generic { font-size: var(--text-base); font-weight: 700; color: var(--text); line-height: 1.3; }
+.medref-brands { font-size: var(--text-sm); font-weight: 500; color: var(--primary); margin-top: 2px; }
+.medref-indication { font-size: var(--text-sm); color: var(--text2); line-height: 1.5; margin-top: 6px; }
+.medref-cat-chip {
+  display: inline-block; margin-top: var(--sp2);
+  font-size: 10px; font-weight: 600; letter-spacing: .3px;
+  color: var(--text3); background: var(--surf2);
+  border-radius: 20px; padding: 3px 10px;
+}
 .term-card { background: var(--surf); border: 1px solid var(--border); border-radius: var(--r12); margin-bottom: var(--sp2); overflow: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: var(--shadow); transition: box-shadow var(--dur-fast) var(--ease); }
 .term-card-header { display: flex; align-items: center; justify-content: space-between; padding: var(--sp3); }
 .term-word    { font-size: var(--text-base); font-weight: 700; color: var(--text); }
@@ -1231,6 +1256,41 @@ ul { list-style: none; }
   0% { transform: translateY(0) rotate(0); opacity: 1; }
   100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
+
+/* ── STREAK FREEZE MODAL (calm announcement, no confetti) ─────────────────── */
+.fz-overlay {
+  display: none; position: fixed; inset: 0; z-index: 700;
+  background: rgba(0,0,0,.6); align-items: center; justify-content: center;
+  padding: var(--sp4); overflow: hidden;
+}
+.fz-overlay.show { display: flex; animation: luFade .3s var(--ease); }
+.fz-card {
+  position: relative; z-index: 2;
+  background: linear-gradient(135deg,#0C4A6E,#0EA5E9);
+  border-radius: var(--r20); padding: var(--sp6) var(--sp5);
+  max-width: 340px; width: 100%; text-align: center; color: #fff;
+  box-shadow: var(--shadow-lg); animation: luPop .5s cubic-bezier(.2,1.3,.4,1);
+}
+.fz-flake {
+  font-size: 56px; margin-bottom: var(--sp3);
+  animation: fzFloat 3s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes fzFloat {
+  0%,100% { transform: translateY(0) rotate(-8deg); }
+  50%     { transform: translateY(-8px) rotate(8deg); }
+}
+.fz-label { font-size: var(--text-xs); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.8); }
+.fz-streak-num { font-size: var(--text-3xl); font-weight: 800; margin: var(--sp1) 0 var(--sp2); display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.fz-streak-day { font-size: var(--text-sm); font-weight: 600; color: rgba(255,255,255,.7); letter-spacing: .5px; }
+.fz-sub { font-size: var(--text-sm); color: rgba(255,255,255,.85); margin-bottom: var(--sp5); line-height: 1.5; }
+.fz-btn {
+  background: #fff; color: #0C4A6E; border: none; border-radius: var(--r12);
+  padding: var(--sp3) var(--sp6); font-size: var(--text-base); font-weight: 700;
+  cursor: pointer; font-family: var(--font); width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+.fz-btn:active { transform: scale(.97); }
 
 /* ── STREAK FREEZE BUTTON ─────────────────────────────────────────────────── */
 .freeze-btn {
