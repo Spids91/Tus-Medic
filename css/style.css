@@ -145,6 +145,9 @@ ul { list-style: none; }
   background: rgba(0,0,0,.6); align-items: center; justify-content: center; padding: var(--sp4);
 }
 .modal-overlay.show { display: flex; }
+/* Solid backdrop — used for the first-run disclaimer so nothing shows behind it */
+.modal-solid { background: var(--bg); }
+[data-theme="dark"] .modal-solid { background: var(--bg); }
 .modal-card {
   background: var(--surf); border-radius: var(--r20); padding: var(--sp6);
   max-width: 420px; width: 100%;
