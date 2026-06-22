@@ -71,11 +71,9 @@ const LEGAL = {
       <h2>Third Party Services</h2>
       <p>The app loads the Inter font from Google Fonts. This is the only external resource loaded and is subject to Google's privacy policy. No personal data is shared with Google as part of this request.</p>
       <h2>Deleting Your Data</h2>
-      <p>You can delete all locally stored data at any time by tapping <strong>Delete All Progress</strong> in Settings, or by clearing your browser or Safari data in your device settings.</p>
-      <h2>GDPR</h2>
-      <p>As all data is stored locally on your device and no personal data is collected or processed by the developer, the General Data Protection Regulation (GDPR) data processing obligations do not apply to this app in its current form.</p>
-      <h2>Contact</h2>
-      <p>For privacy queries, contact us at support@airevalearning.com.</p>
+      <p>You can delete all locally stored data at any time by tapping <strong>Delete All Progress</strong> in Settings.</p>
+      <h2>Contact and Email</h2>
+      <p>If you contact the developer at support@airevalearning.com, any personal information you provide (such as your name and email address) will be used solely to respond to your query. This information is processed lawfully under the General Data Protection Regulation (GDPR) on the basis of legitimate interest, is never shared with third parties, and is retained only as long as needed to address your enquiry. You have the right to request access to, correction of, or deletion of any personal data you have sent. To make such a request, contact support@airevalearning.com.</p>
       <p class="legal-meta">Last updated: June 2026 · © Keith O'Reilly 2026</p>`
   },
   disclaimer: {
