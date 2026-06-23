@@ -30,6 +30,23 @@
 //   not just prose. This is a model change (new vital field + per-variant value +
 //   card rendering), so it's deferred to avoid scope creep. When added: make AVPU/GCS
 //   COHERE with the variant (an "unresponsive" variant must read P or U / low GCS).
+//
+//   ── BUILD TOGETHER WITH: PAEDIATRIC ASSESSMENT TRIANGLE (PAT) ──
+//   PROBLEM this solves: the engine currently applies the same presentation text at
+//   any age, so it can describe a 1-year-old as "alert, talking, following commands" —
+//   clinically nonsense (pre-verbal child can't). Real paeds assessment uses the PAT
+//   (Appearance / Work of Breathing / Circulation to skin) precisely BECAUSE you can't
+//   take a verbal history from a small child.
+//   KEITH'S DESIGN DECISIONS (agreed):
+//     • Age boundary: UNDER 5 = pre-verbal-style — no "talking / following commands"
+//       language; assess via PAT. Age 5–15 can show BOTH AVPU and PAT.
+//     • PAT SUPPLEMENTS the existing framing (doesn't replace vitals/SAMPLE) — show a
+//       PAT block for paediatric patients in addition to the normal card.
+//     • Pre-verbal patients must never be described as giving a verbal history or
+//       following commands; presentation language must be age-appropriate.
+//   This is a model + engine + rendering change; deferred to a dedicated session
+//   alongside AVPU/GCS so the whole "age-appropriate neuro / global status" model is
+//   designed coherently in one go.
 
 // ── NORMAL VITAL RANGES BY AGE BAND ──────────────────────────────────────────────
 // age = upper bound (years) for the band; engine picks first band whose age >= patient age.

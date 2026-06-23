@@ -96,8 +96,34 @@ function generateScenario(presId) {
   // realistic value rather than fabricating a history.
   const lastIntake = conscious ? pres.sample.lastIntake : 'Unknown — patient unresponsive, no reliable history.';
 
+  // For an UNCONSCIOUS patient, almost no reliable history is obtainable — the student's
+  // learning is to assess (vitals/BGL), NOT to interrogate a bystander and hope they
+  // mention "diabetic". So SAMPLE/OPQRST default to "Unknown" — EXCEPT Events Leading Up,
+  // which can carry the witnessed-collapse framing (a bystander plausibly saw them go
+  // down even if they know nothing else about them).
+  const UNK = 'Unknown — no reliable history available.';
+  const UNK_SHORT = 'Unknown';
+  const sample = conscious ? {
+    symptoms:    pres.sample.symptoms,
+    allergies:   variant.allergies,
+    medications: pres.sample.medications,
+    pmh:         pres.sample.pmh,
+    lastIntake:  lastIntake,
+  } : {
+    symptoms:    UNK,
+    allergies:   UNK_SHORT,
+    medications: UNK_SHORT,
+    pmh:         UNK_SHORT,
+    lastIntake:  lastIntake,   // already the unresponsive message
+  };
+  // OPQRST: also Unknown for unconscious (can't self-report pain/onset/etc).
+  const opqrst = !pres.opqrst ? null : (conscious ? pres.opqrst : {
+    onset: UNK_SHORT, provocation: UNK_SHORT, quality: UNK_SHORT,
+    radiates: UNK_SHORT, severity: 'Unknown', time: UNK_SHORT,
+  });
+
   return { pres, variant, age, sex, band, dispatch, ecg, conscious, location,
-           events, lastIntake,
+           events, lastIntake, sample, opqrst,
            vitals: { hr, rr, spo2, sys, dia, temp, bgl } };
 }
 
@@ -117,18 +143,18 @@ function renderScenarioCard(sc) {
   if (sc.ecg) vitalRows.push(['ECG Rhythm', sc.ecg]);
 
   const sampleRows = [
-    ['Signs/Symptoms', p.sample.symptoms],
-    ['Allergies', variant.allergies],
-    ['Medications', p.sample.medications],
-    ['Past Medical History', p.sample.pmh],
-    ['Last Oral Intake', sc.lastIntake],
+    ['Signs/Symptoms', sc.sample.symptoms],
+    ['Allergies', sc.sample.allergies],
+    ['Medications', sc.sample.medications],
+    ['Past Medical History', sc.sample.pmh],
+    ['Last Oral Intake', sc.sample.lastIntake],
     ['Events Leading Up', sc.events],
   ];
-  // OPQRST: severity is a 0–10 number. Show "/10" suffix for clarity.
-  const opqrst = p.opqrst ? [
-    ['Onset', p.opqrst.onset], ['Provocation', p.opqrst.provocation],
-    ['Quality', p.opqrst.quality], ['Radiates', p.opqrst.radiates],
-    ['Severity', `${p.opqrst.severity}/10`], ['Time', p.opqrst.time],
+  // OPQRST: severity is a 0–10 number for conscious pain cases; "Unknown" if unconscious.
+  const opqrst = sc.opqrst ? [
+    ['Onset', sc.opqrst.onset], ['Provocation', sc.opqrst.provocation],
+    ['Quality', sc.opqrst.quality], ['Radiates', sc.opqrst.radiates],
+    ['Severity', sc.conscious ? `${sc.opqrst.severity}/10` : sc.opqrst.severity], ['Time', sc.opqrst.time],
   ] : [];
 
   const sec = (title, rows) => `
