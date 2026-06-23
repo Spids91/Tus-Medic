@@ -20,6 +20,16 @@
 //   ⚠️ = PLACEHOLDER (general medical refs / first-draft), PENDING Keith's PHECC review.
 //        ALL of: diastolic BP, the DEV_PCT_BANDS percentages, and every presentation's
 //        deviation + reveal content are placeholders to be replaced with verified values.
+//
+// ── TODO (future enhancement) — ADD AVPU / GCS AS A CONSCIOUS-LEVEL VITAL ─────────
+//   Conscious level is currently conveyed only in each variant's presentation TEXT
+//   (e.g. "unresponsive to voice, cannot swallow"). For some presentations — most
+//   importantly HYPOGLYCAEMIA — conscious level is the pivotal decision step (alert &
+//   able to swallow → buccal glucose; unresponsive/can't swallow → IM glucagon), so it
+//   deserves to be a proper structured vital (AVPU and/or GCS) shown in Vital Signs,
+//   not just prose. This is a model change (new vital field + per-variant value +
+//   card rendering), so it's deferred to avoid scope creep. When added: make AVPU/GCS
+//   COHERE with the variant (an "unresponsive" variant must read P or U / low GCS).
 
 // ── NORMAL VITAL RANGES BY AGE BAND ──────────────────────────────────────────────
 // age = upper bound (years) for the band; engine picks first band whose age >= patient age.
@@ -53,15 +63,55 @@ const SCEN_VITALS = [
 // rising to 100% for adults. age = upper bound of the band.
 // ⚠️ PLACEHOLDER ramp — Keith to tune every value.
 const DEV_PCT_BANDS = [
-  { age:0,   maxPct:5  },   // neonate — barely shifts
-  { age:0.5, maxPct:8  },
-  { age:1,   maxPct:12 },
-  { age:2,   maxPct:18 },
+  { age:0,   maxPct:10 },   // neonate
+  { age:0.5, maxPct:13 },
+  { age:1,   maxPct:14 },
+  { age:2,   maxPct:20 },
   { age:5,   maxPct:25 },
   { age:8,   maxPct:35 },
   { age:11,  maxPct:50 },
   { age:15,  maxPct:70 },
   { age:120, maxPct:100 }, // adult — can ~double
+];
+
+// ── SHARED LOCATION BANK ─────────────────────────────────────────────────────────
+// Any presentation draws from this pool, so the setting never correlates with the
+// diagnosis (if "café" only ever meant anaphylaxis, students would guess from the
+// location alone). Deliberately Irish-flavoured for immersion, and deliberately
+// DEMOGRAPHICALLY NEUTRAL — no nursing homes / schools / playgrounds, because a
+// location that implies an age would steer the student's reasoning down a false
+// path before they've assessed the patient. Each entry slots into "{location}".
+const SCEN_LOCATIONS = [
+  'a private residence',
+  'a terraced house',
+  'an apartment',
+  'a busy café',
+  'a restaurant',
+  'a shopping centre',
+  'a Centra car park',
+  'a supermarket',
+  'a pub',
+  'a hotel lobby',
+  'a GP surgery waiting room',
+  'a pharmacy',
+  'an office',
+  'a building site',
+  'a factory floor',
+  'a bus stop',
+  'a Luas stop',
+  'a train station',
+  'a petrol station',
+  'a hair salon',
+  'a gym',
+  'a leisure centre',
+  'a GAA clubhouse',
+  'a sports ground',
+  'a public park',
+  'a town square',
+  'a rural farmhouse',
+  'a country road layby',
+  'a beach car park',
+  'a community hall',
 ];
 
 // ── PRESENTATION TEMPLATES ───────────────────────────────────────────────────────
@@ -93,22 +143,22 @@ const PRESENTATIONS = [
     demographics: { minAge: 1, maxAge: 90, sex: 'any' },
     variants: [
       { cause:'bee sting',
-        dispatch:'You are called to a private residence for a PATIENT with difficulty breathing shortly after being stung by a bee.',
+        dispatch:'You are called to {location} for a PATIENT with difficulty breathing.',
         presentation:'Visible facial and lip swelling, widespread urticarial (hive-like) rash, audible wheeze, looks anxious and flushed.',
         allergies:'Known allergy to bee/wasp stings.',
-        events:'Stung by a bee in the garden roughly 10 minutes ago; symptoms came on rapidly.' },
+        events:'Was stung by a bee roughly 10 minutes ago; symptoms came on rapidly afterwards.' },
       { cause:'peanuts',
-        dispatch:'You are called to a café for a PATIENT who became acutely unwell after eating a dessert.',
+        dispatch:'You are called to {location} for a PATIENT who has become acutely unwell.',
         presentation:'Swollen lips and tongue, blotchy raised rash on neck and chest, noisy breathing, clutching at throat.',
         allergies:'Known nut allergy.',
         events:'Ate a dessert that unknowingly contained peanuts about 15 minutes ago.' },
       { cause:'shellfish',
-        dispatch:'You are called to a restaurant for a PATIENT with sudden breathing difficulty during a meal.',
+        dispatch:'You are called to {location} for a PATIENT with sudden difficulty breathing.',
         presentation:'Facial swelling, urticaria over the arms and torso, wheeze, appears distressed and sweaty.',
         allergies:'Known shellfish allergy.',
-        events:'Began eating a seafood dish shortly before symptoms started.' },
+        events:'Had just eaten a seafood dish shortly before the symptoms started.' },
       { cause:'penicillin',
-        dispatch:'You are called to a residence for a PATIENT who became acutely breathless after taking medication.',
+        dispatch:'You are called to {location} for a PATIENT who is acutely short of breath.',
         presentation:'Lip and periorbital swelling, spreading hives, wheeze, anxious and flushed.',
         allergies:'No previously documented drug allergy.',
         events:'Took a first dose of a newly prescribed antibiotic about 20 minutes ago.' },
@@ -146,6 +196,146 @@ const PRESENTATIONS = [
         { name:'Chlorphenamine',     paramedic:'10mg IM.', ap:'10mg IV.' },
         { name:'Hydrocortisone',     paramedic:'200mg IM.', ap:'200mg IV.' },
         { name:'Salbutamol',         paramedic:'5mg NEB (if wheeze present).' },
+      ],
+    },
+  },
+
+  {
+    id: 'hypoglycaemia',
+    name: 'Hypoglycaemia',
+    demographics: { minAge: 1, maxAge: 90, sex: 'any' },
+    variants: [
+      // NOTE: conscious level is the key decision fork here (gel vs glucagon). It's
+      // currently expressed in the presentation text only. See the AVPU/GCS TODO at
+      // the top of this file — that should eventually become a structured vital.
+      // CONSCIOUS / able to swallow → leads toward buccal glucose.
+      { cause:'missed meal — conscious',
+        dispatch:'You are called to {location} for a PATIENT who is confused and not themselves.',
+        presentation:'Alert but confused and sweaty, pale and clammy, slurred speech — but able to talk, follow simple instructions and hold a cup. Airway is their own and they can swallow.',
+        allergies:'No known drug allergies.',
+        events:'Took their usual insulin this morning but skipped breakfast; became increasingly confused over the last half hour.' },
+      { cause:'odd behaviour — conscious',
+        dispatch:'You are called to {location} for a PATIENT who is behaving strangely.',
+        presentation:'Confused and agitated but awake and responsive, sweating heavily, unsteady, almost intoxicated in manner though no alcohol involved. Able to protect their own airway and swallow.',
+        allergies:'No known drug allergies.',
+        events:'Has been increasingly muddled and clumsy over the past 20 minutes; family say this happens if they go too long without eating.' },
+      // UNCONSCIOUS / unable to swallow → leads toward IM glucagon.
+      { cause:'collapse — unresponsive',
+        dispatch:'You are called to {location} for a PATIENT who has collapsed.',
+        presentation:'Found slumped and unresponsive to voice, only groaning to a painful stimulus, profuse sweating, cool clammy skin. NOT able to swallow or protect their own airway.',
+        allergies:'No known drug allergies.',
+        events:'Was reportedly fine earlier, then became vacant and slumped over; a bystander could not wake them.' },
+      { cause:'found unresponsive',
+        dispatch:'You are called to {location} for a PATIENT who is unconscious.',
+        presentation:'Unrousable to voice, withdraws to pain only, sweaty and pale, breathing on their own. Cannot swallow safely — no gag/airway protection.',
+        allergies:'No known drug allergies.',
+        events:'Known diabetic on insulin; found unresponsive by a family member who says they had not eaten since the morning.' },
+    ],
+    // ⚠️ PLACEHOLDER deviations — Keith to verify.
+    // The DEFINING abnormal vital is BGL (driven LOW, absolute range). HR mildly
+    // raised (adrenergic response); other vitals largely normal — the teaching
+    // point is that hypoglycaemia mimics many things until you CHECK THE BGL.
+    deviations: {
+      hr:  { dir:'up', intensity:0.4 },   // mild adrenergic tachycardia
+      bgl: [1.5, 3.2],                    // absolute hypoglycaemia (mmol/L)
+      // rr / bp / spo2 / temp omitted → stay normal
+    },
+    sample: {
+      symptoms:'Confusion, sweating, tremor, hunger, slurred speech, altered behaviour.',
+      medications:'Insulin (and/or oral hypoglycaemic agents).',
+      pmh:'Type 1 (or insulin-treated) diabetes mellitus.',
+      lastIntake:'Missed or inadequate food intake relative to insulin/medication.',
+    },
+    opqrst: {
+      onset:'Gradual over minutes to tens of minutes.',
+      provocation:'Worsens without sugar; improves with glucose.',
+      quality:'Confusion, weakness, "not with it".',
+      radiates:'N/A.',
+      severity:'Moderate to severe; may progress to unresponsiveness.',
+      time:'Symptoms over roughly the last 20–30 minutes.',
+    },
+    reveal: {
+      diagnosis:'Hypoglycaemia (low blood glucose), commonly in insulin-treated diabetes.',
+      pathway:'Confirm with a BGL reading. If the patient can protect their own airway and swallow → oral/buccal glucose. If they cannot swallow safely or are unresponsive → IM glucagon. Reassess BGL and conscious level, then encourage a longer-acting carbohydrate once recovered. Transport if not fully recovered or recurrent.',
+      interventions:'Check BGL, position safely, buccal glucose if able to swallow, IM glucagon if unable to swallow / unresponsive, recheck BGL after ~15 min, complex carbohydrate on recovery, monitor. (IV glucose is Advanced Paramedic scope.)',
+      drugs: [
+        { name:'Glucose Gel', paramedic:'10–20g buccal (if able to swallow). Recheck BGL, repeat after 15 min if required.' },
+        { name:'Glucagon',    paramedic:'1mg IM (adult) if unable to swallow / unresponsive.' },
+        { name:'Glucose 10% Solution', paramedic:'Not in Paramedic scope.', ap:'100mL IV/IO, repeat after 5 min to max 300mL.' },
+      ],
+    },
+  },
+
+  {
+    id: 'acs',
+    name: 'Acute Coronary Syndrome',
+    demographics: { minAge: 35, maxAge: 90, sex: 'any' },
+    // ECG rhythm field (first presentation to use it). Descriptive labels — a real
+    // 12-lead would be handed to candidates in the room; here the student reads the
+    // rhythm and interprets. Picked at random per scenario.
+    ecg: [
+      'Sinus rhythm.',
+      'Sinus tachycardia.',
+      'Sinus rhythm with ST elevation in the inferior leads (II, III, aVF).',
+      'Sinus rhythm with ST elevation in the anterior leads (V2–V4).',
+      'Sinus rhythm with ST depression and T-wave inversion.',
+      'Sinus rhythm with hyperacute (peaked) T-waves.',
+      'Atrial fibrillation with a controlled ventricular rate.',
+    ],
+    variants: [
+      { cause:'exertional onset',
+        dispatch:'You are called to {location} for a PATIENT complaining of chest pain.',
+        presentation:'Clutching their chest, pale and sweaty (diaphoretic), looks anxious and uncomfortable, mild shortness of breath.',
+        allergies:'No known drug allergies.',
+        events:'Pain started about 40 minutes ago while climbing stairs and has not settled.' },
+      { cause:'at rest onset',
+        dispatch:'You are called to {location} for a PATIENT with central chest pain.',
+        presentation:'Grey and clammy, holding the centre of their chest, nauseated, breathing a little fast.',
+        allergies:'No known drug allergies.',
+        events:'Was sitting watching television when the pain came on suddenly about half an hour ago.' },
+      { cause:'collapse with pain',
+        dispatch:'You are called to {location} for a PATIENT who felt unwell with chest discomfort.',
+        presentation:'Sitting forward, sweaty and pale, one hand on the chest, looks frightened, mild breathlessness.',
+        allergies:'No known drug allergies.',
+        events:'Felt heavy chest pressure that built up over the last 20–30 minutes and is ongoing.' },
+      { cause:'atypical presentation',
+        dispatch:'You are called to {location} for a PATIENT who feels generally unwell and short of breath.',
+        presentation:'Pale and sweaty, vague discomfort across the chest and into the jaw, a little breathless, uneasy.',
+        allergies:'No known drug allergies.',
+        events:'Has felt off and clammy for about an hour with discomfort that is hard to pin down.' },
+    ],
+    // ⚠️ PLACEHOLDER deviations — Keith to verify.
+    // ACS has NO single rigid vital fingerprint — the history + ECG carry the diagnosis,
+    // not dramatically abnormal vitals. So shifts here are deliberately MILD: a student
+    // who waits for crashing vitals in ACS has missed it. That is the teaching point.
+    deviations: {
+      hr:    { dir:'up', intensity:0.3 },   // mild — pain/anxiety; often near-normal
+      bpSys: { dir:'up', intensity:0.25 },  // mild catecholamine rise; can also be normal
+      // rr / spo2 / bgl / temp omitted → largely normal (SpO₂ may sit at lower-normal)
+    },
+    sample: {
+      symptoms:'Central chest pain/pressure, sweating, nausea, shortness of breath, anxiety.',
+      medications:'May be on antihypertensives, statins, or none.',
+      pmh:'Possible hypertension, high cholesterol, smoking, diabetes, or previous cardiac history.',
+      lastIntake:'Variable — not directly relevant to onset.',
+    },
+    opqrst: {
+      onset:'Came on over minutes; note whether at rest or on exertion.',
+      provocation:'Brought on / worsened by exertion or emotional stress.',
+      quality:'Heavy, crushing, tight or pressure-like ("like a band" or "weight on the chest").',
+      radiates:'Often to the left arm, both arms, neck, jaw or back.',
+      severity:'Commonly reported around 6–9 out of 10.',
+      time:'Ongoing for roughly the last 20–40 minutes.',
+    },
+    reveal: {
+      diagnosis:'Acute Coronary Syndrome (suspected) — possible STEMI/NSTEMI/unstable angina depending on ECG.',
+      pathway:'Recognise the ACS picture (cardiac-sounding pain + risk factors + ECG changes). Position of comfort, oxygen only if hypoxic, aspirin, GTN if not contraindicated and SBP adequate, acquire/transmit a 12-lead early, and pre-alert/transport to a PCI-capable centre. Reassess pain and vitals throughout.',
+      interventions:'12-lead ECG early, position of comfort, oxygen titrated only if SpO₂ low, aspirin PO, GTN sublingual if SBP ≥110 mmHg and not contraindicated, antiplatelet per pathway, continuous monitoring, pre-alert and rapid transport. (IV access and IV analgesia such as morphine are Advanced Paramedic scope.)',
+      drugs: [
+        { name:'Aspirin',  paramedic:'300mg PO (chewed).' },
+        { name:'GTN (Glyceryl Trinitrate)', paramedic:'400mcg sublingual, repeat at 3–5 min intervals (max 1200mcg). Requires SBP ≥110 mmHg.' },
+        { name:'Oxygen',   paramedic:'Only if hypoxic — titrate to SpO₂ 94–98%.' },
+        { name:'Morphine Sulphate', paramedic:'Not in Paramedic scope.', ap:'4mg IV initial, repeat 2mg at ≥2 min PRN (max 16mg).' },
       ],
     },
   },

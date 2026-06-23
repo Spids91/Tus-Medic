@@ -67,13 +67,16 @@ function generateScenario(presId) {
   const bgl  = Array.isArray(d.bgl)  ? _rf(d.bgl[0], d.bgl[1])   : _rf(band.bgl[0], band.bgl[1]);
   const ecg = pres.ecg ? _pick(pres.ecg) : null;
 
-  // 4. Readable patient descriptor for the dispatch line.
+  // 4. Readable patient descriptor + a random (diagnosis-neutral) location for dispatch.
   const ageLabel = age < 1 ? band.label.toLowerCase()
                  : age <= 15 ? `${age}-year-old` : `${age}-year-old`;
   const personWord = age <= 15 ? (sex === 'male' ? 'boy' : 'girl')
                                : (sex === 'male' ? 'man' : 'woman');
-  const dispatch = variant.dispatch.replace('a PATIENT', `a ${ageLabel} ${personWord}`)
-                                   .replace('PATIENT', `${ageLabel} ${personWord}`);
+  const location = _pick(SCEN_LOCATIONS);
+  const dispatch = variant.dispatch
+    .replace('{location}', location)
+    .replace('a PATIENT', `a ${ageLabel} ${personWord}`)
+    .replace('PATIENT', `${ageLabel} ${personWord}`);
 
   return { pres, variant, age, sex, band, dispatch, ecg,
            vitals: { hr, rr, spo2, sys, dia, temp, bgl } };
@@ -129,8 +132,8 @@ function renderScenarioCard(sc) {
         <div class="scen-badge">OSCE Station</div>
         <div class="scen-title">Emergency Call</div>
       </div>
-      ${sec('Patient', [['Age', sc.age < 1 ? sc.band.label : `${sc.age} years`], ['Sex', sc.sex === 'male' ? 'Male' : 'Female']])}
       <div class="scen-sec"><div class="scen-sec-title">Dispatch</div><div class="scen-dispatch">${sc.dispatch}</div></div>
+      ${sec('Patient', [['Age', sc.age < 1 ? sc.band.label : `${sc.age} years`], ['Sex', sc.sex === 'male' ? 'Male' : 'Female']])}
       <div class="scen-sec"><div class="scen-sec-title">On Arrival</div><div class="scen-dispatch">${variant.presentation}</div></div>
       ${sec('Vital Signs', vitalRows)}
       ${sec('SAMPLE History', sampleRows)}
