@@ -1524,10 +1524,10 @@ ul { list-style: none; }
 /* Branch blocks — decision fork, cobalt edge + tag */
 .rv-branch { border-left:3px solid var(--primary); }
 .rv-branch .rv-tag { color:var(--primary); }
-/* Note blocks — quieter aside */
-.rv-note { background:transparent; border:1px dashed var(--border); }
+/* Note blocks — quieter aside, but still on a surface for legibility */
+.rv-note { background:var(--surf2); border-left:3px solid var(--text3); }
 .rv-note .rv-tag { color:var(--text3); }
-.rv-note .rv-body { color:var(--text3); }
+.rv-note .rv-body { color:var(--text2); }
 /* Step blocks — numbered sequential actions */
 .rv-step { display:flex; gap:10px; align-items:flex-start; background:transparent; padding:4px 0; }
 .rv-num { flex:0 0 22px; height:22px; border-radius:50%; background:var(--primary); color:#fff;
