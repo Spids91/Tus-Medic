@@ -136,6 +136,36 @@ function generateScenario(presId) {
            vitals: { hr, rr, spo2, sys, dia, temp, bgl } };
 }
 
+// Renders a reveal field. If the presentation provides a structured `blocks`
+// array it draws labelled sub-bubbles (grade/branch/step/note/lead); otherwise
+// it falls back to the plain prose string. The "AP only" phrase inside any body
+// is turned into the same amber pill used in the drugs section.
+function apPillify(text) {
+  // Wrap a parenthetical "(AP only)" or bare "AP only" mention in the amber pill.
+  return String(text)
+    .replace(/\(AP only\)/g, '<span class="scen-ap-pill">AP only</span>')
+    .replace(/\bIV is AP only\b/g, 'IV is <span class="scen-ap-pill">AP only</span>');
+}
+function renderRevealField(title, blocks, fallbackStr) {
+  let inner;
+  if (Array.isArray(blocks) && blocks.length) {
+    let stepN = 0;
+    inner = blocks.map(b => {
+      const body = apPillify(b.body || '');
+      if (b.type === 'lead') return `<div class="rv-lead">${body}</div>`;
+      if (b.type === 'grade') return `<div class="rv-block rv-grade rv-sev-${b.sev || 'mod'}"><div class="rv-tag">${b.label}</div><div class="rv-body">${body}</div></div>`;
+      if (b.type === 'branch') return `<div class="rv-block rv-branch"><div class="rv-tag">${b.label}</div><div class="rv-body">${body}</div></div>`;
+      if (b.type === 'note') return `<div class="rv-block rv-note">${b.label ? `<div class="rv-tag">${b.label}</div>` : ''}<div class="rv-body">${body}</div></div>`;
+      if (b.type === 'step') { stepN++; return `<div class="rv-block rv-step"><div class="rv-num">${stepN}</div><div class="rv-body">${body}</div></div>`; }
+      return `<div class="rv-body">${body}</div>`;
+    }).join('');
+  } else {
+    inner = `<div class="scen-dispatch">${fallbackStr || ''}</div>`;
+  }
+  return `<div class="scen-sec"><div class="scen-sec-title">${title}</div>${inner}</div>`;
+}
+
+
 // ── STATION CARD UI ──────────────────────────────────────────────────────────────
 function renderScenarioCard(sc) {
   if (!sc) return;
@@ -201,9 +231,9 @@ function renderScenarioCard(sc) {
       ${opqrst.length ? sec('OPQRST', opqrst) : ''}
       <button class="scen-reveal-btn" id="scenRevealBtn">Reveal Diagnosis &amp; Management</button>
       <div class="scen-reveal" id="scenReveal" style="display:none">
-        <div class="scen-sec"><div class="scen-sec-title">Diagnosis</div><div class="scen-dispatch">${p.reveal.diagnosis}</div></div>
-        <div class="scen-sec"><div class="scen-sec-title">Pathway</div><div class="scen-dispatch">${p.reveal.pathway}</div></div>
-        <div class="scen-sec"><div class="scen-sec-title">Interventions</div><div class="scen-dispatch">${p.reveal.interventions}</div></div>
+        ${renderRevealField('Diagnosis', p.reveal.diagnosisBlocks, p.reveal.diagnosis)}
+        ${renderRevealField('Pathway', p.reveal.pathwayBlocks, p.reveal.pathway)}
+        ${renderRevealField('Interventions', p.reveal.interventionsBlocks, p.reveal.interventions)}
         <div class="scen-sec"><div class="scen-sec-title">Drugs &amp; Doses (Paramedic scope)</div><ul class="scen-drugs">${drugLines}</ul></div>
         <div class="scen-disclaimer">For study practice only — not a clinical reference. Generated vital signs are for practice and may not be physiologically exact. Always follow current clinical practice guidelines.</div>
       </div>

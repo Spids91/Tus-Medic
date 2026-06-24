@@ -224,6 +224,27 @@ const PRESENTATIONS = [
       diagnosis:'Anaphylaxis (severe systemic allergic reaction): moderate allergic symptoms plus airway, breathing and/or circulatory compromise after exposure to a trigger. Severity grades: Mild = urticaria. Moderate = mild symptoms plus angio-oedema or simple bronchospasm. Severe / anaphylaxis = moderate symptoms plus haemodynamic and/or respiratory compromise.',
       pathway:'Grade the reaction and treat accordingly. Mild: monitor, and consider Chlorphenamine PO. Moderate: oxygen therapy, Chlorphenamine (PO, or IM \u2014 IV is AP), and if bronchospasm consider Salbutamol NEB; reassess, and request ALS if it deteriorates. Severe / anaphylaxis: oxygen therapy, then unless adrenaline was given pre-arrival within 5 minutes and was effective, give Adrenaline IM without delay (repeat at 5-minute intervals PRN). Request ALS. NaCl 0.9% IV/IO (AP) and Chlorphenamine (IM, or IV which is AP). If it recurs, deteriorates or improves poorly: monitor ECG and SpO\u2082, repeat Adrenaline IM, check for bradycardia (Bradycardia CPG if present), give Salbutamol NEB if bronchospasm, and for severe or recurrent reactions and/or bronchospasm give Hydrocortisone (IM, or IV which is AP).',
       interventions:'Recognise anaphylaxis early, remove the trigger if possible, high-flow oxygen and position appropriately. Adrenaline IM is the first-line, time-critical drug and must not be delayed. Salbutamol NEB for bronchospasm, Chlorphenamine and Hydrocortisone as adjuncts, and IV fluids for circulatory compromise. Reassess frequently, repeat Adrenaline at 5-minute intervals as needed, and transport urgently. Note: autoinjectors should not be used by healthcare professionals unless they are the only source available.',
+      diagnosisBlocks: [
+        { type:'lead', body:'Anaphylaxis — a severe systemic allergic reaction: moderate allergic symptoms plus airway, breathing and/or circulatory compromise after exposure to a trigger.' },
+        { type:'grade', label:'Mild', sev:'mild', body:'Urticaria.' },
+        { type:'grade', label:'Moderate', sev:'mod', body:'Mild symptoms plus angio-oedema or simple bronchospasm.' },
+        { type:'grade', label:'Severe / anaphylaxis', sev:'sev', body:'Moderate symptoms plus haemodynamic and/or respiratory compromise.' },
+      ],
+      pathwayBlocks: [
+        { type:'lead', body:'Grade the reaction and treat accordingly.' },
+        { type:'grade', label:'Mild', sev:'mild', body:'Monitor. Consider Chlorphenamine PO.' },
+        { type:'grade', label:'Moderate', sev:'mod', body:'Oxygen therapy. Chlorphenamine PO or IM (IV is AP only). If bronchospasm, consider Salbutamol NEB. Reassess; request ALS if it deteriorates.' },
+        { type:'grade', label:'Severe / anaphylaxis', sev:'sev', body:'Oxygen therapy. Unless adrenaline was given pre-arrival within 5 minutes and was effective, give Adrenaline IM without delay (repeat at 5-minute intervals PRN). Request ALS. NaCl 0.9% IV/IO (AP only) and Chlorphenamine IM (IV is AP only).' },
+        { type:'note', label:'If it recurs, deteriorates or improves poorly', body:'Monitor ECG and SpO₂. Repeat Adrenaline IM. Check for bradycardia (Bradycardia CPG if present). Salbutamol NEB if bronchospasm. For severe or recurrent reactions and/or bronchospasm, give Hydrocortisone IM (IV is AP only).' },
+      ],
+      interventionsBlocks: [
+        { type:'step', body:'Recognise anaphylaxis early; remove the trigger if possible.' },
+        { type:'step', body:'High-flow oxygen and position appropriately.' },
+        { type:'step', body:'Adrenaline IM — first-line, time-critical, must not be delayed.' },
+        { type:'step', body:'Adjuncts: Salbutamol NEB for bronchospasm; Chlorphenamine and Hydrocortisone; IV fluids for circulatory compromise.' },
+        { type:'step', body:'Reassess frequently, repeat Adrenaline at 5-minute intervals as needed, transport urgently.' },
+        { type:'note', body:'Autoinjectors should not be used by healthcare professionals unless they are the only source available.' },
+      ],
       drugs: [
         { name:'Adrenaline (1:1000) IM',
           adult:{ paramedic:'500mcg IM, repeat at 5-minute intervals PRN. First-line, give without delay.' },
@@ -315,6 +336,21 @@ const PRESENTATIONS = [
       diagnosis:'Hypoglycaemia (BGL < 4 mmol/L), most commonly in insulin-treated diabetes. Note: in a non-diabetic hypoglycaemic patient, glucagon is unlikely to be effective.',
       pathway:'Confirm with a BGL reading. The decision fork is conscious level / ability to swallow. Conscious and able to swallow: glucose gel buccal (plus a sweetened drink), allow 5 minutes and reassess; once recovered, advise a carbohydrate meal (a sandwich); if still low or impaired, repeat and consider ALS. Not conscious or unable to swallow: glucagon IM (Paramedic) and/or glucose 10% IV/IO (AP), allow 5 minutes and reassess; if still unable to swallow, consider ALS.',
       interventions:'Check BGL, position safely, manage airway. If able to swallow: glucose gel buccal plus a sweetened drink, reassess at 5 minutes, carbohydrate meal on recovery. If unable to swallow / unresponsive: glucagon IM, reassess, and arrange transport if not fully recovered or recurrent. Glucose 10% IV/IO and NaCl 0.9% IV/IO are Advanced Paramedic scope.',
+      diagnosisBlocks: [
+        { type:'lead', body:'Hypoglycaemia — BGL < 4 mmol/L, most commonly in insulin-treated diabetes.' },
+        { type:'note', body:'In a non-diabetic hypoglycaemic patient, glucagon is unlikely to be effective.' },
+      ],
+      pathwayBlocks: [
+        { type:'lead', body:'Confirm with a BGL reading. The decision fork is conscious level / ability to swallow.' },
+        { type:'branch', label:'Conscious and able to swallow', body:'Glucose gel buccal (plus a sweetened drink). Allow 5 minutes and reassess. Once recovered, advise a carbohydrate meal (a sandwich). If still low or impaired, repeat and consider ALS.' },
+        { type:'branch', label:'Not conscious or unable to swallow', body:'Glucagon IM (Paramedic) and/or glucose 10% IV/IO (AP only). Allow 5 minutes and reassess. If still unable to swallow, consider ALS.' },
+      ],
+      interventionsBlocks: [
+        { type:'step', body:'Check BGL, position safely, manage airway.' },
+        { type:'branch', label:'If able to swallow', body:'Glucose gel buccal plus a sweetened drink. Reassess at 5 minutes. Carbohydrate meal on recovery.' },
+        { type:'branch', label:'If unable to swallow / unresponsive', body:'Glucagon IM. Reassess. Arrange transport if not fully recovered or recurrent.' },
+        { type:'note', body:'Glucose 10% IV/IO and NaCl 0.9% IV/IO are Advanced Paramedic scope.' },
+      ],
       drugs: [
         { name:'Glucose Gel (Consider)',
           adult:{ paramedic:'10\u201320g buccal, plus a sweetened drink. For the conscious, swallowing patient.' },
@@ -411,6 +447,28 @@ const PRESENTATIONS = [
       diagnosis:'Acute Coronary Syndrome (suspected). Classify on the 12-lead ECG. STEMI: ST elevation \u22652mm in V2/V3 or \u22651mm in two or more other contiguous leads, or new / presumably new LBBB with symptoms of acute MI. Otherwise treat as non-STEMI / unstable angina.',
       pathway:'Apply a 3-lead ECG and SpO\u2082 monitor, and consider oxygen (titrate SpO\u2082 94\u201398%, lower range if COPD). Give Aspirin 300mg PO, then acquire and interpret a 12-lead ECG. If there is chest pain, give GTN 400mcg SL and repeat PRN to a max of 1.2mg; if pain is not relieved, move to the Pain Management CPG. If STEMI is identified, assess time to a PPCI centre within 90 minutes of STEMI identification. If yes: discuss with the PPCI physician, give Ticagrelor 180mg PO, and transport to the Primary PCI facility. If no: give Clopidogrel 300mg PO (75mg PO if \u226575 years) and commence time-critical transport to the nearest appropriate hospital. If not a STEMI, commence time-critical transport to the nearest appropriate hospital.',
       interventions:'3-lead then early 12-lead ECG, SpO\u2082 monitoring, position of comfort, oxygen titrated only if needed, Aspirin PO, GTN SL for ongoing chest pain (with adequate blood pressure), the appropriate oral antiplatelet per the STEMI / PPCI pathway, continuous monitoring, pre-alert and rapid transport to the appropriate facility. Everything on this pathway is within Paramedic scope up to the PCI handover.',
+      diagnosisBlocks: [
+        { type:'lead', body:'Acute Coronary Syndrome (suspected). Classify on the 12-lead ECG.' },
+        { type:'grade', label:'STEMI', sev:'sev', body:'ST elevation ≥2mm in V2/V3, or ≥1mm in two or more other contiguous leads, or new / presumably new LBBB with symptoms of acute MI.' },
+        { type:'grade', label:'Non-STEMI / unstable angina', sev:'mod', body:'Otherwise, treat as non-STEMI / unstable angina.' },
+      ],
+      pathwayBlocks: [
+        { type:'step', body:'Apply a 3-lead ECG and SpO₂ monitor. Consider oxygen (titrate SpO₂ 94–98%, lower range if COPD).' },
+        { type:'step', body:'Give Aspirin 300mg PO, then acquire and interpret a 12-lead ECG.' },
+        { type:'step', body:'If chest pain, give GTN 400mcg SL and repeat PRN to a max of 1.2mg. If pain not relieved, move to the Pain Management CPG.' },
+        { type:'step', body:'If STEMI identified, assess time to a PPCI centre within 90 minutes of STEMI identification.' },
+        { type:'branch', label:'PPCI reachable within 90 min', body:'Discuss with the PPCI physician, give Ticagrelor 180mg PO, transport to the Primary PCI facility.' },
+        { type:'branch', label:'PPCI not reachable within 90 min', body:'Give Clopidogrel 300mg PO (75mg PO if ≥75 years), commence time-critical transport to the nearest appropriate hospital.' },
+        { type:'note', body:'If not a STEMI, commence time-critical transport to the nearest appropriate hospital.' },
+      ],
+      interventionsBlocks: [
+        { type:'step', body:'3-lead then early 12-lead ECG; SpO₂ monitoring.' },
+        { type:'step', body:'Position of comfort; oxygen titrated only if needed.' },
+        { type:'step', body:'Aspirin PO; GTN SL for ongoing chest pain (with adequate blood pressure).' },
+        { type:'step', body:'Appropriate oral antiplatelet per the STEMI / PPCI pathway.' },
+        { type:'step', body:'Continuous monitoring, pre-alert, and rapid transport to the appropriate facility.' },
+        { type:'note', body:'Everything on this pathway is within Paramedic scope up to the PCI handover.' },
+      ],
       drugs: [
         { name:'Aspirin',  paramedic:'300mg PO (chewed).' },
         { name:'GTN (Glyceryl Trinitrate)', paramedic:'400mcg SL, repeat PRN to a max of 1.2mg. For ongoing chest pain with adequate blood pressure.' },

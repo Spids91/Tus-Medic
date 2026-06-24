@@ -1503,6 +1503,37 @@ ul { list-style: none; }
   color:#fff; background:var(--warning); padding:3px 9px; border-radius:var(--r-pill); }
 .scen-drugs li { margin-bottom:9px; }
 
+/* ── Reveal sub-blocks (structured diagnosis/pathway/interventions) ─────────── */
+.rv-lead { font-size:14px; color:var(--text2); line-height:1.5; margin-bottom:10px; }
+.rv-block { background:var(--surf2); border-radius:var(--r8); padding:9px 11px; margin-bottom:8px; }
+.rv-block:last-child { margin-bottom:0; }
+.rv-tag { font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+  margin-bottom:4px; color:var(--text2); }
+.rv-body { font-size:13.5px; color:var(--text2); line-height:1.5; }
+/* Inside reveal prose the AP pill sits inline, not as a block-level margin */
+.rv-body .scen-ap-pill { margin-top:0; font-size:11px; padding:1px 7px; vertical-align:baseline; }
+/* Grade blocks — severity-coloured left edge + tag */
+.rv-grade { border-left:3px solid var(--border); }
+.rv-grade .rv-tag { }
+.rv-sev-mild { border-left-color:#16A34A; }
+.rv-sev-mild .rv-tag { color:#16A34A; }
+.rv-sev-mod  { border-left-color:var(--warning); }
+.rv-sev-mod .rv-tag { color:var(--warning); }
+.rv-sev-sev  { border-left-color:var(--error); }
+.rv-sev-sev .rv-tag { color:var(--error); }
+/* Branch blocks — decision fork, cobalt edge + tag */
+.rv-branch { border-left:3px solid var(--primary); }
+.rv-branch .rv-tag { color:var(--primary); }
+/* Note blocks — quieter aside */
+.rv-note { background:transparent; border:1px dashed var(--border); }
+.rv-note .rv-tag { color:var(--text3); }
+.rv-note .rv-body { color:var(--text3); }
+/* Step blocks — numbered sequential actions */
+.rv-step { display:flex; gap:10px; align-items:flex-start; background:transparent; padding:4px 0; }
+.rv-num { flex:0 0 22px; height:22px; border-radius:50%; background:var(--primary); color:#fff;
+  font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.rv-step .rv-body { padding-top:2px; }
+
 /* Scenario landing page */
 .scen-intro { display:flex; flex-direction:column; gap:12px; margin:4px 0 22px; }
 .scen-intro-card { display:flex; gap:14px; align-items:flex-start; background:var(--surf);
