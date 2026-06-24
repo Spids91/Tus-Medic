@@ -68,7 +68,8 @@ function generateScenario(presId) {
   const ecg = pres.ecg ? _pick(pres.ecg) : null;
 
   // 4. Readable patient descriptor + a random (diagnosis-neutral) location for dispatch.
-  const ageLabel = age < 1 ? band.label.toLowerCase()
+  const ageLabel = age < 1
+                 ? band.label.replace(/^(\d+)\s+months?$/i, '$1-month-old').toLowerCase()
                  : age <= 15 ? `${age}-year-old` : `${age}-year-old`;
   const personWord = age <= 15 ? (sex === 'male' ? 'boy' : 'girl')
                                : (sex === 'male' ? 'man' : 'woman');
@@ -196,7 +197,7 @@ function renderScenarioCard(sc) {
         <div class="scen-sec"><div class="scen-sec-title">Pathway</div><div class="scen-dispatch">${p.reveal.pathway}</div></div>
         <div class="scen-sec"><div class="scen-sec-title">Interventions</div><div class="scen-dispatch">${p.reveal.interventions}</div></div>
         <div class="scen-sec"><div class="scen-sec-title">Drugs &amp; Doses (Paramedic scope)</div><ul class="scen-drugs">${drugLines}</ul></div>
-        <div class="scen-disclaimer">Placeholder clinical content pending PHECC verification. For study practice only — always follow current clinical practice guidelines.</div>
+        <div class="scen-disclaimer">For study practice only — not a clinical reference. Generated vital signs are for practice and may not be physiologically exact. Always follow current clinical practice guidelines.</div>
       </div>
       <button class="scen-new-btn" id="scenNewBtn">Generate New Scenario</button>
     </div>`;
