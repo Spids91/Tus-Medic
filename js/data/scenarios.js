@@ -599,4 +599,98 @@ const PRESENTATIONS = [
       ],
     },
   },
+
+  {
+    id: 'copd',
+    name: 'Exacerbation of COPD',
+    category: 'Airway and Breathing',
+    demographics: { minAge: 45, maxAge: 90, sex: 'any' },
+    variants: [
+      // severity 0-1 drives SpO2 within spo2Severe[78,88]: higher = sicker = lower SpO2.
+      { cause:'infective exacerbation — known COPD', conscious:true, severity:0.3,
+        dispatch:'You are called to {location} for a PATIENT who is short of breath.',
+        presentation:'Sitting upright, working hard to breathe with pursed lips, audible wheeze, productive cough with discoloured sputum, able to speak only in short phrases. Alert and oriented.',
+        allergies:'No known drug allergies.',
+        events:'Known COPD; a chest infection over the last few days has left them increasingly breathless, with more sputum than usual.' },
+      { cause:'gradual worsening — home oxygen', conscious:true, severity:0.35,
+        dispatch:'You are called to {location} for a PATIENT with worsening breathlessness.',
+        presentation:'Breathless at rest, using accessory muscles, wheeze on auscultation, anxious but alert. Has a home oxygen concentrator and an oxygen alert card.',
+        allergies:'No known drug allergies.',
+        events:'Long-standing COPD on home oxygen; breathing has deteriorated steadily over two days despite their usual inhalers.' },
+      { cause:'cold-triggered exacerbation', conscious:true, severity:0.4,
+        dispatch:'You are called to {location} for a PATIENT struggling to breathe.',
+        presentation:'Visibly breathless, leaning forward on their knees (tripod position), prolonged expiratory wheeze, able to answer in short sentences. Alert, anxious, tiring.',
+        allergies:'No known drug allergies.',
+        events:'Known COPD; went out in cold weather and became acutely wheezy and breathless, not relieved by their own inhaler.' },
+      { cause:'severe — deteriorating despite nebulisers', conscious:true, severity:0.75,
+        dispatch:'You are called to {location} for a PATIENT in severe respiratory distress.',
+        presentation:'Severely breathless, exhausted, barely able to speak, silent chest in places, drowsy at the edges but still rousable and answering. Not improving with bronchodilators.',
+        allergies:'No known drug allergies.',
+        events:'Known severe COPD; this exacerbation is worse than usual and has not responded to repeated nebulisers, with the patient tiring.' },
+      { cause:'hypoxic exacerbation — no alert card', conscious:true, severity:0.65,
+        dispatch:'You are called to {location} for a breathless PATIENT.',
+        presentation:'Breathless and cyanosed at the lips, wheezy, working hard, alert but clearly hypoxic. No oxygen alert card available.',
+        allergies:'No known drug allergies.',
+        events:'Known COPD, increasingly breathless today; does not carry an oxygen alert card.' },
+      { cause:'profound exacerbation — peri-arrest', conscious:false, severity:1.0,
+        dispatch:'You are called to {location} for an unresponsive PATIENT with breathing difficulty.',
+        presentation:'Barely responsive, exhausted from the work of breathing, shallow ineffective respirations, deeply cyanosed. Profound refractory hypoxia.',
+        allergies:'No known drug allergies.',
+        events:'Known severe COPD; deteriorated rapidly to near-unresponsive despite treatment.' },
+    ],
+    painBased: false,   // breathlessness, not pain → OPQRST shows honest negatives
+    deviations: {
+      spo2Severe: [78, 88],               // SpO2 band; biased by variant.severity (sicker = lower)
+      rr:  { dir:'up', intensity:0.55 },  // respiratory distress / accessory muscle use
+      hr:  { dir:'up', intensity:0.45 },  // hypoxia, β-agonist, work of breathing
+      // bp / bgl / temp omitted → stay normal
+    },
+    sample: {
+      symptoms:'Increasing breathlessness, wheeze, cough, sometimes increased/discoloured sputum.',
+      medications:'Inhalers (bronchodilators, steroids); some on home oxygen.',
+      pmh:'Chronic Obstructive Pulmonary Disease, often with a smoking history.',
+      lastIntake:'Not relevant to the complaint.',
+    },
+    opqrst: {
+      onset:'Came on over hours to days, worsening.',
+      provocation:'No pain — worse on exertion and lying flat; eased a little sitting up.',
+      quality:'No pain; breathlessness and chest tightness.',
+      radiates:'No.',
+      severity:'0',
+      time:'Building over the last day or two, worse today.',
+    },
+    reveal: {
+      diagnosis:'Exacerbation of COPD: acute worsening of breathlessness in a patient with known COPD. Confirm the history of COPD — if absent, this is not the pathway (go to Abnormal Work of Breathing CPG). Oxygen target in COPD is SpO₂ 92% — over-oxygenation can be harmful. If an O₂ alert card is issued, follow its directions; if none, commence at 28%.',
+      pathway:'Confirm a history of COPD. If no COPD history, go to the Abnormal Work of Breathing CPG. Oxygen therapy: if an O₂ alert card is issued, follow its directions; if no alert card, commence at 28%; titrate O₂ to SpO₂ 92%. ECG and SpO₂ monitoring. Salbutamol 5mg NEB — if no improvement, may repeat at 5-minute intervals. Add Ipratropium Bromide 500mcg NEB mixed with Salbutamol 5mg NEB. If the patient deteriorates or is unstable: request ALS and give Hydrocortisone 200mg IM (Paramedic), or 200mg IV in 100mL NaCl 0.9% or IM (AP). Consider CPAP for profound refractory hypoxia. If ventilation is not adequate, go to the Abnormal Work of Breathing CPG; if adequate, transport.',
+      interventions:'Confirm COPD history; if absent, go to Abnormal Work of Breathing CPG. Oxygen titrated to SpO₂ 92% (alert-card directions, or 28% if none); ECG and SpO₂ monitoring. Salbutamol 5mg NEB, repeated at 5-minute intervals if no improvement. Add Ipratropium Bromide 500mcg NEB mixed with Salbutamol. If deteriorating/unstable, request ALS and give Hydrocortisone (IM Paramedic, IV AP). Consider CPAP for profound refractory hypoxia. Reassess ventilation; transport.',
+      diagnosisBlocks: [
+        { type:'lead', body:'Exacerbation of COPD: acute worsening of breathlessness in a patient with known COPD. Confirm the history of COPD — if absent, this is not the pathway (go to Abnormal Work of Breathing CPG).' },
+        { type:'note', label:'Oxygen target', body:'Oxygen target in COPD is SpO₂ 92% — over-oxygenation can be harmful. If an O₂ alert card is issued, follow its directions; if none, commence at 28%.' },
+      ],
+      pathwayBlocks: [
+        { type:'lead', body:'Confirm a history of COPD. If no COPD history, go to the Abnormal Work of Breathing CPG.' },
+        { type:'step', body:'Oxygen therapy — if an O₂ alert card is issued, follow its directions; if no alert card, commence at 28%; titrate O₂ to SpO₂ 92%.' },
+        { type:'step', body:'ECG and SpO₂ monitoring.' },
+        { type:'step', body:'Salbutamol 5mg NEB. If no improvement, may repeat at 5-minute intervals.' },
+        { type:'step', body:'Ipratropium Bromide 500mcg NEB mixed with Salbutamol 5mg NEB.' },
+        { type:'branch', label:'Deteriorates / unstable', body:'Request ALS. Give Hydrocortisone 200mg IM (Paramedic), or 200mg IV in 100mL NaCl 0.9% or IM (AP only).' },
+        { type:'note', label:'Consider CPAP', body:'Consider CPAP for profound refractory hypoxia (Paramedic).' },
+        { type:'note', label:'Adequate ventilation?', body:'If not adequate, go to the Abnormal Work of Breathing CPG. If adequate, transport.' },
+      ],
+      interventionsBlocks: [
+        { type:'step', body:'Confirm COPD history; if absent, go to the Abnormal Work of Breathing CPG.' },
+        { type:'step', body:'Oxygen titrated to SpO₂ 92% (alert-card directions, or 28% if none); ECG and SpO₂ monitoring.' },
+        { type:'step', body:'Salbutamol 5mg NEB, repeated at 5-minute intervals if no improvement.' },
+        { type:'step', body:'Add Ipratropium Bromide 500mcg NEB mixed with Salbutamol.' },
+        { type:'step', body:'If deteriorating / unstable — request ALS and give Hydrocortisone (IM Paramedic, IV AP only).' },
+        { type:'note', body:'Consider CPAP for profound refractory hypoxia. Reassess ventilation; transport.' },
+      ],
+      drugs: [
+        { name:'Oxygen therapy', adult:{ paramedic:'If O₂ alert card issued, follow its directions; if none, commence at 28%; titrate to SpO₂ 92%.' } },
+        { name:'Salbutamol', adult:{ paramedic:'5mg NEB. Repeat at 5-minute intervals if no improvement.' } },
+        { name:'Ipratropium Bromide', adult:{ paramedic:'500mcg NEB, mixed with Salbutamol 5mg NEB.' } },
+        { name:'Hydrocortisone', adult:{ paramedic:'200mg IM. For the deteriorating/unstable patient.', ap:'200mg IV in 100mL NaCl 0.9%, or IM.' } },
+      ],
+    },
+  },
 ];

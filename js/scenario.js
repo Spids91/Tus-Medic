@@ -62,7 +62,21 @@ function generateScenario(presId) {
   const rr  = d.rr  ? applyRelative(band.rr, d.rr, age) : _ri(band.rr[0], band.rr[1]);
   const sys = d.bpSys ? applyRelative([band.bp[0], band.bp[1]], d.bpSys, age) : _ri(band.bp[0], band.bp[1]);
   const dia = d.bpDia ? applyRelative([band.bp[2], band.bp[3]], d.bpDia, age) : _ri(band.bp[2], band.bp[3]);
-  const spo2 = Array.isArray(d.spo2) ? _ri(d.spo2[0], d.spo2[1]) : _ri(band.spo2[0], band.spo2[1]);
+  // SpO2: most presentations use a flat absolute range [min,max]. A presentation
+  // can instead provide `spo2Severe:[low,high]` and tag each variant with a
+  // `severity` (0-1); then SpO2 is biased toward the LOW end for high-severity
+  // variants (e.g. peri-arrest) and the HIGH end for milder ones, with a little
+  // jitter so it varies run to run. Falls back to flat range / band otherwise.
+  let spo2;
+  if (Array.isArray(d.spo2Severe) && typeof variant.severity === 'number') {
+    const [lo, hi] = d.spo2Severe;                 // lo = sickest, hi = mildest
+    const sev = Math.max(0, Math.min(1, variant.severity));
+    const target = hi - sev * (hi - lo);           // sev 1 -> lo, sev 0 -> hi
+    const jittered = target + (Math.random() * 4 - 2); // +/- 2% jitter
+    spo2 = Math.max(lo, Math.min(hi, Math.round(jittered)));
+  } else {
+    spo2 = Array.isArray(d.spo2) ? _ri(d.spo2[0], d.spo2[1]) : _ri(band.spo2[0], band.spo2[1]);
+  }
   const temp = Array.isArray(d.temp) ? _rf(d.temp[0], d.temp[1]) : _rf(band.temp[0], band.temp[1]);
   const bgl  = Array.isArray(d.bgl)  ? _rf(d.bgl[0], d.bgl[1])   : _rf(band.bgl[0], band.bgl[1]);
   const ecg = pres.ecg ? _pick(pres.ecg) : null;
