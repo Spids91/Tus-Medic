@@ -85,6 +85,14 @@ function generateScenario(presId) {
   // across (home, street), but somewhere you travelled to (GP surgery, café) you
   // "collapsed / became unresponsive there", never "found".
   const conscious = variant.conscious !== false;  // default conscious unless flagged false
+
+  // Under-3 conscious patients are pre-verbal: if the variant carries an
+  // age-appropriate presentationU3 string, use it instead of the verbal-assessment
+  // wording (which describes "talking / following commands" — wrong for a toddler).
+  // Falls back to the standard presentation when no U3 text exists or age >= 3.
+  const presentationText = (conscious && age < 3 && variant.presentationU3)
+    ? variant.presentationU3
+    : variant.presentation;
   let events = variant.events;
   if (!conscious) {
     const frame = location.found
@@ -187,7 +195,7 @@ function renderScenarioCard(sc) {
       </div>
       <div class="scen-sec"><div class="scen-sec-title">Dispatch</div><div class="scen-dispatch">${sc.dispatch}</div></div>
       ${sec('Patient', [['Age', sc.age < 1 ? sc.band.label : `${sc.age} years`], ['Sex', sc.sex === 'male' ? 'Male' : 'Female']])}
-      <div class="scen-sec"><div class="scen-sec-title">On Arrival</div><div class="scen-dispatch">${variant.presentation}</div></div>
+      <div class="scen-sec"><div class="scen-sec-title">On Arrival</div><div class="scen-dispatch">${presentationText}</div></div>
       ${sec('Vital Signs', vitalRows)}
       ${sec('SAMPLE History', sampleRows)}
       ${opqrst.length ? sec('OPQRST', opqrst) : ''}
