@@ -166,11 +166,17 @@ function renderScenarioCard(sc) {
     </div>`;
 
   // Authored reveal drugs: Paramedic dose normal, optional AP route in amber bubble.
-  const drugLines = (p.reveal.drugs || []).map(dr => `
+  // Each drug carries age-specific dosing. Patients >15 get adult doses; <=15 get
+  // paediatric doses, matching the split between the Adult and Paediatric CPGs.
+  const isAdult = sc.age > 15;
+  const drugLines = (p.reveal.drugs || []).map(dr => {
+    const d = isAdult ? (dr.adult || dr) : (dr.paed || dr);
+    return `
     <li>
-      <strong>${dr.name}</strong> — ${dr.paramedic}
-      ${dr.ap ? `<span class="scen-ap-pill">AP only: ${dr.ap}</span>` : ''}
-    </li>`).join('');
+      <strong>${dr.name}</strong> &mdash; ${d.paramedic}
+      ${d.ap ? `<span class="scen-ap-pill">AP only: ${d.ap}</span>` : ''}
+    </li>`;
+  }).join('');
 
   const html = `
     <div class="scen-card">
