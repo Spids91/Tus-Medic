@@ -91,7 +91,9 @@ const LEGAL = {
   patches: {
     title: 'Patch Notes',
     body: `
-      <h2>v1.0.0</h2>
+      <h2>v0.9.3</h2>
+      <p>New floating nav bar with amber Practice target. OSCE reveal redesigned into colour-coded grade, branch and step blocks. New scenario: Foreign Body Airway Obstruction. Scenario variants doubled (6 each) with age-appropriate wording for young children. Onboarding reordered. Scenarios grouped by PHECC section. Wording and clarity fixes throughout.</p>
+      <h2>v0.9.2</h2>
       <p>Settings panel with dark mode, legal documents and version info. Complete quiz engine rewrite. Terms of Service and Privacy Policy. Streak XP multiplier. Hospital search scrolls to result. Drug of the Day full shuffle. Theme audit: all token references corrected.</p>
       <h2>v0.9.1</h2>
       <p>Floating pill tab bar. Chart y-axis. Standard and Adaptive as separate quiz modes. Real date on daily challenge. Rookie level card fixed. Privacy policy added.</p>
