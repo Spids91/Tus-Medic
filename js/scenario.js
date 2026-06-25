@@ -103,8 +103,15 @@ function generateScenario(presId) {
   const rr  = Array.isArray(d.rr) ? _ri(d.rr[0], d.rr[1])
             : d.rr ? applyRelative(band.rr, d.rr, age)
             : _ri(band.rr[0], band.rr[1]);
-  const sys = d.bpSys ? applyRelative([band.bp[0], band.bp[1]], d.bpSys, age) : _ri(band.bp[0], band.bp[1]);
-  const dia = d.bpDia ? applyRelative([band.bp[2], band.bp[3]], d.bpDia, age) : _ri(band.bp[2], band.bp[3]);
+  // BP: usually a relative deviation, but a variant may give an absolute [lo,hi] range
+  // (like rr/spo2) for precise control, e.g. a severe-shock systolic [60,85] that should
+  // never read near-normal.
+  const sys = Array.isArray(d.bpSys) ? _ri(d.bpSys[0], d.bpSys[1])
+            : d.bpSys ? applyRelative([band.bp[0], band.bp[1]], d.bpSys, age)
+            : _ri(band.bp[0], band.bp[1]);
+  const dia = Array.isArray(d.bpDia) ? _ri(d.bpDia[0], d.bpDia[1])
+            : d.bpDia ? applyRelative([band.bp[2], band.bp[3]], d.bpDia, age)
+            : _ri(band.bp[2], band.bp[3]);
   // SpO2: most presentations use a flat absolute range [min,max]. A presentation
   // can instead provide `spo2Severe:[low,high]` and tag each variant with a
   // `severity` (0-1); then SpO2 is biased toward the LOW end for high-severity
@@ -123,6 +130,13 @@ function generateScenario(presId) {
   const temp = Array.isArray(d.temp) ? _rf(d.temp[0], d.temp[1]) : _rf(band.temp[0], band.temp[1]);
   const bgl  = Array.isArray(d.bgl)  ? _rf(d.bgl[0], d.bgl[1])   : _rf(band.bgl[0], band.bgl[1]);
   const ecg = pres.ecg ? _pick(pres.ecg) : null;
+
+  // Cardiac arrest: a variant may declare `arrestRhythm` (e.g. 'VF / pulseless VT',
+  // 'PEA', 'Not yet determined'). When present, this patient is in arrest — pulseless,
+  // apnoeic/agonal, no meaningful BP/SpO2 — and the card shows the arrest STATE and the
+  // monitor rhythm instead of normal vital numbers (which would be clinically absurd
+  // for an arrest). Other presentations are unaffected (no arrestRhythm = normal vitals).
+  const arrest = variant.arrestRhythm ? { rhythm: variant.arrestRhythm } : null;
 
   // 4. Readable patient descriptor + a random (diagnosis-neutral) location for dispatch.
   const ageLabel = age < 1
@@ -160,12 +174,21 @@ function generateScenario(presId) {
   const presentationText = (conscious && age < 3 && variant.presentationU3)
     ? variant.presentationU3
     : variant.presentation;
-  let events = variant.events;
-  if (!conscious) {
-    const frame = location.found
-      ? 'Found unresponsive by a bystander.'
-      : `Collapsed and became unresponsive at ${location.name}.`;
-    events = `${frame} ${variant.events}`;
+  // A variant may carry `eventsCues`: an array of alternative Events lines, one picked at
+  // random per run. Used to seed occasional teaching nudges (e.g. reversible-cause hints
+  // for PEA) while keeping most runs generic. Each cue is a self-contained scene sentence,
+  // so it is used as-is (no extra "found/collapsed" frame prepended).
+  let events;
+  if (Array.isArray(variant.eventsCues) && variant.eventsCues.length) {
+    events = _pick(variant.eventsCues);
+  } else {
+    events = variant.events;
+    if (!conscious) {
+      const frame = location.found
+        ? 'Found unresponsive by a bystander.'
+        : `Collapsed and became unresponsive at ${location.name}.`;
+      events = `${frame} ${variant.events}`;
+    }
   }
 
   // Last oral intake: an unresponsive patient can't tell you — Unknown is the honest,
@@ -261,7 +284,7 @@ function generateScenario(presId) {
       });
 
   return { pres, variant, age, sex, band, dispatch, ecg, conscious, location,
-           events, lastIntake, sample, opqrst, presentationText,
+           events, lastIntake, sample, opqrst, presentationText, arrest,
            vitals: { hr, rr, spo2, sys, dia, temp, bgl } };
 }
 
@@ -300,7 +323,15 @@ function renderScenarioCard(sc) {
   if (!sc) return;
   const v = sc.vitals, p = sc.pres, variant = sc.variant;
 
-  const vitalRows = [
+  // Cardiac arrest patients show the arrest STATE and monitor rhythm, not generated
+  // HR/BP/SpO2 numbers (a patient in arrest has no pulse, no spontaneous breathing, no
+  // meaningful SpO2 — showing normal-ish numbers would be clinically wrong).
+  const vitalRows = sc.arrest ? [
+    ['Pulse', 'Absent (pulseless)'],
+    ['Breathing', 'Absent or agonal'],
+    ['Monitor', sc.arrest.rhythm],
+    ['BGL', `${v.bgl} mmol/L`],
+  ] : [
     ['Heart Rate', `${v.hr} bpm`],
     ['Resp Rate', `${v.rr} /min`],
     ['SpO₂', `${v.spo2}%`],
@@ -308,7 +339,7 @@ function renderScenarioCard(sc) {
     ['BGL', `${v.bgl} mmol/L`],
     ['Temperature', `${v.temp}°C`],
   ];
-  if (sc.ecg) vitalRows.push(['ECG Rhythm', sc.ecg]);
+  if (sc.ecg && !sc.arrest) vitalRows.push(['ECG Rhythm', sc.ecg]);
 
   const sampleRows = [
     ['Signs/Symptoms', sc.sample.symptoms],
@@ -397,10 +428,57 @@ function renderScenarioCard(sc) {
 // ── ENTRY POINTS ─────────────────────────────────────────────────────────────────
 // Open the Scenario landing page inside the quiz tab: explains the feature and lets
 // the user start. (Future: this is where a presentation/category picker will live.)
+// The cohort choice buttons (Adult / Paeds / Mega OSCE). Shared by the intro screen and
+// the skip path. Adult is the cobalt primary; Paeds (amber) and Mega OSCE (purple) are
+// "coming soon" placeholders (greyed, disabled) until their content/engine exists,
+// mirroring the old qmode-coming pattern. When paeds content lands, flip the Paeds button
+// to call openScenarioRunner('paeds'); when the Mega OSCE engine lands, flip Mega likewise.
+function scenarioChoiceHTML() {
+  return `
+    <div class="scen-choice">
+      <button class="scen-cohort-btn scen-cohort-adult" id="scenAdultBtn">
+        <span class="scen-cohort-ico">🧑</span>
+        <span class="scen-cohort-txt"><span class="scen-cohort-name">Adult Scenario</span><span class="scen-cohort-sub">Generate an adult OSCE station</span></span>
+      </button>
+      <button class="scen-cohort-btn scen-cohort-paeds scen-cohort-soon" id="scenPaedsBtn" disabled>
+        <span class="scen-cohort-ico">🧒</span>
+        <span class="scen-cohort-txt"><span class="scen-cohort-name">Paediatric Scenario</span><span class="scen-cohort-sub">Generate a paediatric OSCE station</span></span>
+        <span class="scen-cohort-soon-badge">Coming soon</span>
+      </button>
+      <button class="scen-cohort-btn scen-cohort-mega scen-cohort-soon" id="scenMegaBtn" disabled>
+        <span class="scen-cohort-ico">🏔️</span>
+        <span class="scen-cohort-txt"><span class="scen-cohort-name">Mega OSCE</span><span class="scen-cohort-sub">Two or more presentations combined into one station</span></span>
+        <span class="scen-cohort-soon-badge">Coming soon</span>
+      </button>
+    </div>`;
+}
+// Wire the two cohort buttons after the HTML is in the DOM.
+function wireScenarioChoice() {
+  document.getElementById('scenAdultBtn')?.addEventListener('click', () => { openScenarioRunner('adult'); haptic(); });
+  document.getElementById('scenPaedsBtn')?.addEventListener('click', () => { showToast('Paediatric scenarios, coming soon'); });
+  document.getElementById('scenMegaBtn')?.addEventListener('click', () => { showToast('Mega OSCE, coming soon'); });
+}
+
 function goScenario() {
   window.scrollTo({ top: 0, behavior: 'instant' });
   const wrap = document.getElementById('quizTabContent');
   if (!wrap) return;
+  // If the user previously ticked "don't show again", show JUST the cohort choice
+  // (Adult / Paeds), not the explainer, and not an auto-generated scenario.
+  if (G.scenIntroSeen) {
+    wrap.innerHTML = `
+      <div class="quiz-back-sticky" id="scenBack">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back
+      </div>
+      <div class="pg-title">🏥 OSCE Scenario Generator</div>
+      <div class="pg-sub">Choose a cohort to generate a station.</div>
+      ${scenarioChoiceHTML()}
+      <div class="scen-intro-note">Scenarios are study practice only. Always follow your current clinical practice guidelines.</div>`;
+    document.getElementById('scenBack')?.addEventListener('click', renderQuizTab);
+    wireScenarioChoice();
+    return;
+  }
+  // First time (or not yet dismissed): explanation cards + don't-show-again + the choice.
   wrap.innerHTML = `
     <div class="quiz-back-sticky" id="scenBack">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back
@@ -423,15 +501,31 @@ function goScenario() {
       </div>
     </div>
 
-    <button class="btn-pri" id="scenStartBtn">Generate a Scenario</button>
+    ${scenarioChoiceHTML()}
+    <label class="scen-intro-skip" id="scenSkipRow">
+      <input type="checkbox" id="scenSkipChk"> Don't show this again
+    </label>
     <div class="scen-intro-note">Scenarios are study practice only. Always follow your current clinical practice guidelines.</div>`;
   document.getElementById('scenBack')?.addEventListener('click', renderQuizTab);
-  document.getElementById('scenStartBtn')?.addEventListener('click', () => { openScenarioRunner(); haptic(); });
+  // The skip checkbox is honoured when a cohort is chosen, so re-wire the cohort
+  // buttons to persist the preference first, then proceed.
+  document.getElementById('scenAdultBtn')?.addEventListener('click', () => {
+    if (document.getElementById('scenSkipChk')?.checked) { G.scenIntroSeen = true; saveG(); }
+    openScenarioRunner('adult'); haptic();
+  });
+  document.getElementById('scenPaedsBtn')?.addEventListener('click', () => {
+    if (document.getElementById('scenSkipChk')?.checked) { G.scenIntroSeen = true; saveG(); }
+    showToast('Paediatric scenarios, coming soon');
+  });
+  document.getElementById('scenMegaBtn')?.addEventListener('click', () => {
+    if (document.getElementById('scenSkipChk')?.checked) { G.scenIntroSeen = true; saveG(); }
+    showToast('Mega OSCE, coming soon');
+  });
 }
 
 // The runner view: the back bar returns to the landing page, and a container the
 // generated station card renders into.
-function openScenarioRunner() {
+function openScenarioRunner(cohort) {
   window.scrollTo({ top: 0, behavior: 'instant' });
   const wrap = document.getElementById('quizTabContent');
   if (!wrap) return;
@@ -440,11 +534,19 @@ function openScenarioRunner() {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back
     </div>
     <div id="scenarioContent"></div>`;
+  // Back returns to the cohort choice screen (goScenario), so the user can switch
+  // between Adult and Paeds without leaving the feature.
   document.getElementById('scenRunnerBack')?.addEventListener('click', goScenario);
-  startScenario();
+  startScenario(undefined, cohort);
 }
 
-function startScenario(presId) {
+// Current cohort for the scenario runner ('adult' | 'paeds'). Stored so "Generate New
+// Scenario" stays in the same cohort. Until paediatric presentations exist, the cohort
+// does not change generation (all presentations are adult); it is threaded now so paeds
+// can filter here later (e.g. generateScenario with a cohort/age filter).
+let _scenCohort = 'adult';
+function startScenario(presId, cohort) {
+  if (cohort) _scenCohort = cohort;
   const wrap = document.getElementById('scenarioContent');
   // Brief "generating" beat — hints that each station is freshly built, and stops
   // the card from just popping in. ~900ms, then render.
