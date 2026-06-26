@@ -109,7 +109,9 @@ let G={
   perfectQuizzes:0,
   nightShiftDone:false,
   scenIntroSeen:false,
-  prestige:0
+  prestige:0,
+  scenTimerOn:false,
+  scenTimerMins:10
 };
 
 // Load the saved game state, then BACKFILL any fields missing from older saves.
@@ -541,6 +543,7 @@ function clearAllSearches(){
 }
 
 function showPage(id,btn){
+  if(typeof stopScenTimer==='function')stopScenTimer();  // clear scenario timer when leaving for any tab
   clearAllSearches();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
@@ -844,7 +847,11 @@ window.addEventListener('online',checkOnline);
 window.addEventListener('offline',checkOnline);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDet();});
 loadG();loadTheme();checkOnline();checkStreakOnLoad();checkDisclaimer();updateHdr();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+// Register the service worker only on the web. Inside the Capacitor native shell the
+// app is served from the bundled assets, so the SW is unnecessary (and can interfere
+// with native asset serving), hence the Capacitor guard.
+if('serviceWorker' in navigator && !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()))
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 function updateDarkToggle(){
   const isDark=document.documentElement.getAttribute('data-theme')==='dark';

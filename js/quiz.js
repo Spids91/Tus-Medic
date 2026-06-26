@@ -1,4 +1,4 @@
-// ─── QUIZ.JS v0.9.6 ───────────────────────────────────────────────────────────
+// ─── QUIZ.JS v0.9.7 ───────────────────────────────────────────────────────────
 // The entire quiz engine. Modes: daily challenge, standard, adaptive, weak spots,
 // timed, category, spaced repetition, plus the intro quiz. Two answer formats:
 // multiple-choice (auto-marked) and flashcard (self-marked).
@@ -267,6 +267,7 @@ function showQuizActive() {
 
 // ── QUIZ TAB RENDER ───────────────────────────────────────────────────────────
 function renderQuizTab() {
+  if (typeof stopScenTimer === 'function') stopScenTimer();  // clear any running scenario timer
   showQuizTab();
   const done = isDailyDone();
   const now  = new Date();

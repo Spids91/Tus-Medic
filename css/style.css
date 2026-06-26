@@ -11,7 +11,7 @@
   --primary-light: #EFF6FF;   /* tinted background */
   --primary-mid:   #DBEAFE;   /* border/subtle */
 
-  --success:       #00875A;   /* deep green — correct, mastered, positive */
+  --success:       #007A50;   /* deep green — correct, mastered, positive (WCAG AA: darkened from #00875A for 4.5:1 on light) */
   --success-dark:  #006644;
   --success-light: #E3F9F0;
   --success-mid:   #B3E8D5;
@@ -20,13 +20,13 @@
   --error-light:   #FEE2E2;
   --error-mid:     #FCA5A5;
 
-  --warning:       #D97706;   /* amber — AP scope, caution */
+  --warning:       #A85708;   /* amber — AP scope, caution (WCAG AA: darkened from #D97706 for 4.5:1 on light) */
   --warning-light: #FEF3C7;
 
   /* COLOURS — Scope */
   --emt:   #059669;   /* EMT green */
   --par:   #2563EB;   /* Paramedic cobalt — same as primary */
-  --ap:    #D97706;   /* Advanced Paramedic amber */
+  --ap:    #A85708;   /* Advanced Paramedic amber (matches --warning) */
 
   /* COLOURS — Surfaces (light mode) */
   --bg:      #F4F2EE;   /* warm off-white background */
@@ -107,6 +107,13 @@
   --text3:   #64748B;
   --text4:   #475569;
   --hdr-bg:  #0A1221;
+  /* Scope colours in dark mode: amber restored to #D97706 (the light-mode darkening is
+     too dark on dark surfaces, and #D97706 already clears 4.5:1 here). Cobalt and green
+     are kept saturated because --primary/--success are used as button/badge BACKGROUNDS
+     with white text, which needs a dark-enough fill; lightening them broke that. Where
+     they appear as small text on dark they sit on tinted pill backgrounds that aid legibility. */
+  --warning: #D97706;
+  --ap:      #D97706;
   --shadow:    0 2px 8px rgba(0,0,0,.3);
   --shadow-md: 0 4px 16px rgba(0,0,0,.35);
   --shadow-lg: 0 8px 32px rgba(0,0,0,.4);
@@ -1583,6 +1590,30 @@ ul { list-style: none; }
 /* Mega OSCE: purple accent, outline style. Reuses the shared amber "coming soon" badge
    (.scen-cohort-soon-badge stays amber for consistency with Paeds, per design). */
 .scen-cohort-mega { background:rgba(124,58,237,.12); color:#7C3AED; border-color:#7C3AED; }
+
+/* ─── SCENARIO TIMER ───────────────────────────────────────────────────────── */
+/* Choice-screen control: toggle + slider (slider hidden until toggled on). */
+.scen-timer-ctrl { margin-top:14px; padding:12px 14px; border-radius:var(--r12);
+  background:var(--surf2); border:1px solid var(--border); }
+.scen-timer-row { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
+.scen-timer-label { font-size:var(--text-sm); font-weight:700; color:var(--text2); }
+.scen-timer-toggle { position:relative; width:44px; height:26px; border-radius:var(--r-pill);
+  background:var(--border); transition:background var(--dur-fast) var(--ease); flex:0 0 auto; }
+.scen-timer-toggle.on { background:var(--primary); }
+.scen-timer-knob { position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%;
+  background:#fff; transition:transform var(--dur-fast) var(--ease); box-shadow:0 1px 3px rgba(0,0,0,.2); }
+.scen-timer-toggle.on .scen-timer-knob { transform:translateX(18px); }
+.scen-timer-slider-wrap { display:flex; align-items:center; gap:12px; margin-top:12px; }
+.scen-timer-slider { flex:1; accent-color:var(--primary); cursor:pointer; }
+.scen-timer-val { font-size:var(--text-sm); font-weight:700; color:var(--text); min-width:48px; text-align:right; }
+/* Runner countdown bar — solid fill for clear contrast against the page background. */
+.scen-timer-bar { display:flex; align-items:center; justify-content:center; gap:8px;
+  margin:0 0 12px; padding:9px 14px; border-radius:var(--r12);
+  background:var(--primary); color:#fff; font-weight:800; font-size:var(--text-base);
+  font-variant-numeric:tabular-nums; box-shadow:0 1px 6px rgba(37,99,235,.25);
+  transition:background var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+.scen-timer-bar.warn { background:var(--warning); color:#fff; box-shadow:0 1px 6px rgba(217,119,6,.3); }
+.scen-timer-bar.done { background:var(--danger, #DC2626); color:#fff; box-shadow:0 1px 6px rgba(220,38,38,.3); }
 /* Coming-soon state: greyed and non-interactive, amber "coming soon" badge */
 .scen-cohort-soon { opacity:.55; cursor:default; }
 .scen-cohort-soon:active { transform:none; }
