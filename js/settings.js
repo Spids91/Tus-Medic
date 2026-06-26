@@ -1,4 +1,4 @@
-// ─── SETTINGS.JS v0.9.13 ───────────────────────────────────────────────────────
+// ─── SETTINGS.JS v0.9.14 ───────────────────────────────────────────────────────
 
 function openSettings() {
   document.getElementById('settingsPanel').classList.add('open');
@@ -119,6 +119,8 @@ const LEGAL = {
   patches: {
     title: 'Patch Notes',
     body: `
+      <h2>v0.9.14</h2>
+      <p>Mega OSCE is here. The third scenario mode puts a single patient in front of you with more than one thing going on at once, the kind of layered presentation you meet on the road, where the obvious problem is not the whole picture. A set of curated cases spans adult, paediatric and trauma. Every Mega station carries two sets of observations: an initial set and a reassessment five minutes later, revealed when you tap to reassess, so you can see the patient evolving and practise catching the change. Work the patient first, then reveal to see both problems and the management for each. Find it on the third button on the scenario screen.</p>
       <h2>v0.9.12</h2>
       <p>Small fixes to the paediatric Symptomatic Bradycardia scenario: the pathway now includes applying ECG and SpO2 monitoring, and the wording around chest compressions has been clarified.</p>
       <h2>v0.9.11</h2>
